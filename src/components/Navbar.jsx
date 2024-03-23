@@ -15,7 +15,7 @@ function Navbar() {
   };
 
   // Kustomisasi className berdasarkan apakah link aktif atau tidak
-  const linkClass = ({ isActive }) => isActive ? "py-2 px-3 text-red-700 bg-gray-700 rounded md:bg-transparent md:text-red-700 md:p-0 text-white hover:bg-gray-700 md:hover:bg-transparent" : "block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 text-white md:hover:text-red-500 hover:bg-gray-700";
+  const linkClass = ({ isActive }) => isActive ? "py-2 px-3 text-red-700 bg-red-700 rounded md:bg-transparent md:text-red-700 md:p-0 text-white hover:bg-gray-700 md:hover:bg-transparent" : "block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 text-white md:hover:text-red-500 hover:bg-gray-700";
 
   return (
     <nav className="bg-black">
@@ -24,7 +24,7 @@ function Navbar() {
           <img src={logo} alt="Logo" className="h-12" />
           <span className="self-center text-xl font-semibold whitespace-nowrap text-white">RANTING GONDANG</span>
         </a>
-        <button onClick={handleNavbar} data-collapse-toggle="navbar-dropdown" type="button" className="inline-flex items-center p-2 text-sm text-gray-400 rounded-lg md:hidden hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
+        <button onClick={handleNavbar} data-collapse-toggle="navbar-dropdown" type="button" className="inline-flex items-center p-2 text-sm text-gray-400 rounded-lg md:hidden hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
           <span className="sr-only">Open main menu</span>
           {/* Icon untuk menu */}
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
@@ -35,7 +35,7 @@ function Navbar() {
               <NavLink to="/" className={linkClass} aria-current="page">Home</NavLink>
             </li>
             <li className="relative">
-              <button onClick={toggleDropdown} className="py-2 px-3 text-white rounded hover:bg-gray-700 md:hover:bg-transparent md:border-0 md:p-0 md:hover:text-red-700 flex items-center justify-between w-full md:w-auto">
+              <button onClick={toggleDropdown} className="py-2 px-3 text-white rounded hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0 md:hover:text-red-700 flex items-center justify-between w-full md:w-auto">
                 Profil
                 {/* Icon dropdown */}
                 <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
