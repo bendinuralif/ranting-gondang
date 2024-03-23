@@ -36,8 +36,6 @@ function HomePage() {
         Perkembangan PSHT tidak terlepas dari jasa beberapa tokoh yang turut membesarkan PSHT, diantaranya Bpk. RM Soetomo Mangkudjojo; Bpk. Santoso Kartoatmodjo; Bpk. Irsyad; Mas RM. Imam Koesoepangat dan Mas KRT Tarmadji Budi Harsono, SE. Beliau-beliaulah yang meletakkan berbagai dasar dan memperintis pengembangan PSHT yang masih digunakan dan berlaku hingga saat ini. Berkat jasa mereka semua, PSHT sejak lama sudah memiliki AD-ART, mendirikan sebuah yayasan, mengembangkan PSHT dengan membentuk banyak cabang, membangun padepokan sebagai pusat kegiatan PSHT, mendirikan koperasi yang kini akan diperluas dengan melibatkan semua anggota di seluruh cabang, dan makin dikenalnya PSHT melalui berbagai kejuaraan.
         <br /><br />
         Kepengurusan yang baru di bawah pimpinan DR. Ir. M. Taufiq SH., MSc. selaku Ketua Umum untuk periode 2021 – 2026, telah menetapkan rencana strategis yang digunakan sebagai pedoman bagi seluruh pengurus di semua tingkatan. Dibandingkan dengan kepengurusan sebelumnya, pada periode ini organisasi PSHT mengalami perubahan struktur dan diperluas dengan menambah bidang Pengabdian Masyarakat untuk lebih mengorganisir kegiatan-kegiatan PSHT yang memberi dampak langsung dan positif terhadap masyarakat.
-        <br /><br />
-        Lalu tahun 2026-2031 ketua di ganti mas zaini paling ganteng di lanjut mas diki si paling molet
             </p>
             <a
               href="/sejarah-singkat"
