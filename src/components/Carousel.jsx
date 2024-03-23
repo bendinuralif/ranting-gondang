@@ -4,11 +4,11 @@ import Carousel1 from '../assets/img/01.png';
 import Carousel2 from '../assets/img/02.png';
 import Carousel3 from '../assets/img/03.png';
 import Carousel4 from '../assets/img/04.png';
-import Carousel5 from '../assets/img/05.png';
+// import Carousel5 from '../assets/img/05.png';
 
 function CustomCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const images = [Carousel1, Carousel2, Carousel3, Carousel4, Carousel5];
+  const images = [Carousel1, Carousel2, Carousel3, Carousel4,];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -36,7 +36,7 @@ function CustomCarousel() {
             <img src={image} className="absolute inset-0 w-full h-full object-cover" alt={`Slide ${index + 1}`} />
             <div className="absolute inset-0 flex items-center justify-center flex-col h-full text-center text-white">
               <span className="text-2xl font-semibold">PERSAUDARAAN SETIA HATI TERATE</span>
-              <span className="text-2xl font-semibold">RANTING BODEAN</span>
+              <span className="text-2xl font-semibold">RANTING GONDANG</span>
               <span className="text-m font-semibold mt-2">“Dengan Pencak Silat Kita Berbudaya Dan Berprestasi”</span>
             </div>
           </div>
