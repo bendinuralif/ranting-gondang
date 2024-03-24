@@ -18,7 +18,7 @@ function Navbar() {
   const linkClass = ({ isActive }) => isActive ? "py-2 px-3 text-red-700 bg-red-700 rounded md:bg-transparent md:text-red-700 md:p-0 text-white hover:bg-gray-700 md:hover:bg-transparent" : "block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-red-700 md:p-0 text-white md:hover:text-red-500 hover:bg-gray-700";
 
   return (
-    <nav className="bg-black">
+    <nav className="bg-black fixed top-0 left-0 right-0 z-50">
       <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between p-4">
         <a href="/" className="flex items-center space-x-3">
           <img src={logo} alt="Logo" className="h-12" />

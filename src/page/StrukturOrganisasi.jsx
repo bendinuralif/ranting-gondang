@@ -3,7 +3,7 @@ import Layout from "./Layout";
 function StrukturOrganisasi() {
   return (
     <Layout>
-        <div className="">
+        <div className="pt-20">
           <div className="text-lg md:text-2xl font-semibold pt-10 text-center">
             STRUKTUR ORGANISASI RANTING GONDANG
           </div>
@@ -63,7 +63,7 @@ function StrukturOrganisasi() {
                 <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-2 py-2">6</td>
                   <td className="px-2 py-2">Sumarno</td>
-                  <td className="px-2 py-2">Ketua Rantng Gondang</td>
+                  <td className="px-2 py-2">Ketua Ranting Gondang</td>
                 </tr>
               </tbody>
             </table>

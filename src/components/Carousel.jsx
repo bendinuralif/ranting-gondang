@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import Carousel1 from '../assets/img/01.png';
-import Carousel2 from '../assets/img/02.png';
-import Carousel3 from '../assets/img/03.png';
-import Carousel4 from '../assets/img/04.png';
+import Carousel1 from '../assets/img/01-min.png';
+import Carousel2 from '../assets/img/02-min.png';
+import Carousel3 from '../assets/img/03-min.png';
+import Carousel4 from '../assets/img/04-min.png';
 // import Carousel5 from '../assets/img/05.png';
 
 function CustomCarousel() {
@@ -29,14 +29,14 @@ function CustomCarousel() {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full pt-20">
       <div className="relative overflow-hidden rounded-lg h-96 md:h-120 lg:h-144 xl:h-160">
         {images.map((image, index) => (
           <div key={index} className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === activeIndex ? 'opacity-100' : 'opacity-0'}`}>
             <img src={image} className="absolute inset-0 w-full h-full object-cover" alt={`Slide ${index + 1}`} />
             <div className="absolute inset-0 flex items-center justify-center flex-col h-full text-center text-white">
-              <span className="text-[1.3rem] text-red-600 font-semibold md:text-4xl">PERSAUDARAAN SETIA HATI TERATE</span>
-              <span className="text-[1.3rem] text-red-600 font-semibold md:text-4xl">RANTING GONDANG</span>
+              <span className="text-[1.3rem] text-white font-bold md:text-4xl">PERSAUDARAAN SETIA HATI TERATE</span>
+              <span className="text-[1.3rem] text-white font-bold md:text-4xl">RANTING GONDANG</span>
               <span className="text-sm font-semibold mt-2 md:text-2xl">“Dengan Pencak Silat Kita Berbudaya Dan Berprestasi”</span>
             </div>
           </div>
