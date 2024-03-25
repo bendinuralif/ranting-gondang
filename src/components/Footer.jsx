@@ -8,14 +8,14 @@ function CustomFooter() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row items-center justify-between">
           <div className="w-full sm:w-auto mb-4 sm:mb-0 text-center sm:text-left">
-            <a href="https://flowbite.com" className="inline-flex items-center" target="_blank" rel="noopener noreferrer">
+            <a href="/" className="inline-flex items-center" target="_blank" rel="noopener noreferrer">
               <img src={logo} alt="Flowbite Logo" title="RANTING GONDANG" className="h-10 " />
-              <span className="text-white text-xl ml-2 font-bold">RANTING GONDANG</span>
+              <span className="text-white text-l md:text-xl ml-2 font-bold">RANTING GONDANG</span>
             </a>
           </div>
           <div className="flex space-x-10">
             <a href="#" className="text-white">
-              <BsInstagram size={30} /> {/* Adjust the size as needed */}
+              <BsInstagram size={30}  /> {/* Adjust the size as needed */}
             </a>
             {/* <a href="#" className="text-white">
               <BsTwitter size={30} />
@@ -29,7 +29,7 @@ function CustomFooter() {
           </div>
         </div>
         <hr className="border-gray-700 my-4" />
-        <div className="text-center text-gray-400 text-sm">
+        <div className="text-center text-gray-400 text-xs md:text-sm">
           &copy; PSHT Ranting Gondang™ 2024
         </div>
       </div>
