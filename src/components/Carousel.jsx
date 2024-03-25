@@ -50,7 +50,7 @@ function CustomCarousel() {
       <button type="button" className="absolute top-[60%] -translate-y-1/2 left-4 z-30 flex items-center justify-center w-7 h-7 md:w-10 md:h-10 bg-white/30 rounded-full md:left-8 lg:left-12 xl:left-16 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none" onClick={goToPrev} data-carousel-prev>
   <span className="inline-flex items-center justify-center w-full h-full text-white">
     {/* SVG for Previous */}
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg className="w-4 h-4 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
     </svg>
   </span>
@@ -59,7 +59,7 @@ function CustomCarousel() {
 <button type="button" className="absolute top-[60%] -translate-y-1/2 right-4 z-30 flex items-center justify-center w-7 h-7 md:w-10 md:h-10 bg-white/30 rounded-full md:right-8 lg:right-12 xl:right-16 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none" onClick={goToNext} data-carousel-next>
   <span className="inline-flex items-center justify-center w-full h-full text-white">
     {/* SVG for Next */}
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg className="w-4 h-4 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
     </svg>
   </span>
