@@ -8,7 +8,7 @@ function HomePage() {
         <CustomCarousel />
         <div class=" justify-center items-center">
           <div class="px-2 block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
-            <div class="text-sm font-bold    text-center mb-4 md:text-2xl">
+            <div class="text-{1.2rem} font-bold    text-center mb-4 md:text-2xl">
               "Manusia dapat dihancurkan, manusia dapat dimatikan (dibunuh)
               tetapi manusia tidak dapat dikalahkan selama manusia itu setia
               pada hatinya sendiri atau ber-SH pada diri sendiri."
@@ -17,16 +17,9 @@ function HomePage() {
         </div>
 
         <div class="block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
-          <a href="#">
-            <img
-              class="rounded-t-lg"
-              src="/docs/images/blog/image-1.jpg"
-              alt=""
-            />
-          </a>
-          <div class="p-5">
+          <div class="">
             <a href="#">
-              <h5 class="mb-5 text-xl font-bold tracking-tight text-gray-900 dark:text-white text-center md:text-3xl">
+              <h5 class="mb-3 md:mb-5 text-xl font-bold tracking-tight text-gray-900 dark:text-white text-center md:text-3xl">
                 PERSAUDARAAN SETIA HATI TERATE
               </h5>
             </a>
