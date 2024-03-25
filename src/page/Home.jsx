@@ -7,13 +7,13 @@ function HomePage() {
       <Layout>
         <CustomCarousel />
         <div class=" justify-center items-center">
-          <a href="#" class="px-2 block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
+          <div class="px-2 block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
             <div class="text-sm font-bold    text-center mb-4 md:text-2xl">
               "Manusia dapat dihancurkan, manusia dapat dimatikan (dibunuh)
               tetapi manusia tidak dapat dikalahkan selama manusia itu setia
               pada hatinya sendiri atau ber-SH pada diri sendiri."
             </div>
-          </a>
+          </div>
         </div>
 
         <div class="block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
@@ -36,6 +36,8 @@ function HomePage() {
         Perkembangan PSHT tidak terlepas dari jasa beberapa tokoh yang turut membesarkan PSHT, diantaranya Bpk. RM Soetomo Mangkudjojo; Bpk. Santoso Kartoatmodjo; Bpk. Irsyad; Mas RM. Imam Koesoepangat dan Mas KRT Tarmadji Budi Harsono, SE. Beliau-beliaulah yang meletakkan berbagai dasar dan memperintis pengembangan PSHT yang masih digunakan dan berlaku hingga saat ini. Berkat jasa mereka semua, PSHT sejak lama sudah memiliki AD-ART, mendirikan sebuah yayasan, mengembangkan PSHT dengan membentuk banyak cabang, membangun padepokan sebagai pusat kegiatan PSHT, mendirikan koperasi yang kini akan diperluas dengan melibatkan semua anggota di seluruh cabang, dan makin dikenalnya PSHT melalui berbagai kejuaraan.
         <br /><br />
         Kepengurusan yang baru di bawah pimpinan DR. Ir. M. Taufiq SH., MSc. selaku Ketua Umum untuk periode 2021 – 2026, telah menetapkan rencana strategis yang digunakan sebagai pedoman bagi seluruh pengurus di semua tingkatan. Dibandingkan dengan kepengurusan sebelumnya, pada periode ini organisasi PSHT mengalami perubahan struktur dan diperluas dengan menambah bidang Pengabdian Masyarakat untuk lebih mengorganisir kegiatan-kegiatan PSHT yang memberi dampak langsung dan positif terhadap masyarakat.
+        <br /><br />
+        di tahun 2026-2031 di lanjut diki dondo
             </p>
             <a
               href="/sejarah-singkat"
