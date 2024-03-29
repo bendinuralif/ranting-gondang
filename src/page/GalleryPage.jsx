@@ -1,59 +1,55 @@
 import React from 'react';
 import Layout from './Layout';
+import galeri1 from '../assets/img/galeri-1.jpg';
+import galeri2 from '../assets/img/galeri-2.jpg';
 
 const GalleryPage = () => {
   return (
     <div>
       <Layout>
-    <div className="container mx-auto mt-8">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="grid gap-4">
+        <div className="flex items-center justify-center py-4 md:py-8 flex-wrap mt-20">
+          <button type="button" className="text-blue-700 hover:text-white border border-blue-600 bg-white hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-full text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:bg-gray-900 dark:focus:ring-blue-800">All categories</button>
+          <button type="button" className="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800">Shoes</button>
+          <button type="button" className="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800">Bags</button>
+          <button type="button" className="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800">Electronics</button>
+          <button type="button" className="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800">Gaming</button>
+        </div>
+        <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-10 px-10">
           <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image.jpg" alt="" />
+              <img className="w-full h-auto rounded-lg" src={galeri1} alt="" />
           </div>
           <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-1.jpg" alt="" />
+              <img className="w-full h-auto rounded-lg" src={galeri2} alt="" />
           </div>
           <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-2.jpg" alt="" />
+              <img className="w-full h-auto rounded-lg" src={galeri1} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri2} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri1} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri2} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri1} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri2} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri1} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri2} alt="" />
+          </div>
+          <div>
+              <img className="w-full h-auto rounded-lg" src={galeri1} alt="" />
           </div>
         </div>
-        <div className="grid gap-4">
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-3.jpg" alt="" />
-          </div>
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-4.jpg" alt="" />
-          </div>
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-5.jpg" alt="" />
-          </div>
-        </div>
-        <div className="grid gap-4">
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-6.jpg" alt="" />
-          </div>
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-7.jpg" alt="" />
-          </div>
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-8.jpg" alt="" />
-          </div>
-        </div>
-        <div className="grid gap-4">
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-9.jpg" alt="" />
-          </div>
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-10.jpg" alt="" />
-          </div>
-          <div>
-            <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/masonry/image-11.jpg" alt="" />
-          </div>
-        </div>
-      </div>
-    </div>
-    </Layout>
+      </Layout>
     </div>
   );
 }
