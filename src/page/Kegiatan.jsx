@@ -10,13 +10,13 @@ function Kegiatan() {
   return (
     <div>
       <Layout>
-      <div class="block mx-auto max-w-7xl mt-40 mb-10 sm:px-10">
+      <div class="block mx-auto max-w-7xl mb-10 sm:px-10">
           <div class="">
-            <a href="#">
-              <h5 class="mb-3 md:mb-5 text-xl font-bold tracking-tight text-gray-900 dark:text-white text-center md:text-3xl">
-                KEGIATAN TERBARU
-              </h5>
-            </a>
+          <div className="pt-20 text-center">
+                <div className="text-2xl md:text-3xl font-semibold pt-10 pb-3 md:pb-10">
+                    KEGIATAN
+                </div>
+            </div>
             <CardKegiatan1 />
           </div>
         </div>
