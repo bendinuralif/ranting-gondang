@@ -8,7 +8,7 @@ const CardKegiatan1 = () => {
       <div class="block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
           <div class="">
             
-            <a
+            <div
           href="#"
           className=" mt-10 my-10 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-6xl mx-5 md:mx-auto hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-70"
         >
@@ -34,8 +34,8 @@ const CardKegiatan1 = () => {
               RANTING GONDANG NYAWIJI
             </p>
           </div>
-        </a>
-        <a
+        </div>
+        <div
           href="#"
           className=" mt-10 my-10 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-6xl mx-5 md:mx-auto hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-70"
         >
@@ -64,8 +64,8 @@ const CardKegiatan1 = () => {
               RANTING GONDANG NYAWIJI
             </p>
           </div>
-        </a>
-        <a
+        </div>
+        <div
           href="#"
           className=" mt-10 my-10 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-6xl mx-5 md:mx-auto hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-70"
         >
@@ -88,7 +88,7 @@ const CardKegiatan1 = () => {
               RANTING GONDANG NYAWIJI
             </p>
           </div>
-        </a>
+        </div>
           </div>
         </div>
     </>
