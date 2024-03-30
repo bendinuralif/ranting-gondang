@@ -29,11 +29,11 @@ function CustomCarousel() {
   };
 
   return (
-    <div className="relative w-full pt-20">
+    <div className="relative w-full pt-20 ">
       <div className="relative overflow-hidden h-96 md:h-120 lg:h-144 xl:h-160 rounded-lg">
         {images.map((image, index) => (
           <div key={index} className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === activeIndex ? 'opacity-100' : 'opacity-0'}`}>
-            <img src={image} className="absolute inset-0 w-full h-full object-cover rounded-none" alt={`Slide ${index + 1}`} />
+            <img src={image} className="absolute inset-0 w-full h-full object-cover rounded-none " alt={`Slide ${index + 1}`} />
             <div className="absolute inset-0 flex items-center justify-center flex-col h-full text-center text-white">
               <span className="text-[1.3rem] text-white font-bold md:text-4xl">PERSAUDARAAN SETIA HATI TERATE</span>
               <span className="text-[1.3rem] text-white font-bold md:text-4xl">RANTING GONDANG</span>
