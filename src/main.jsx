@@ -11,6 +11,7 @@ import Kontak from './page/Kontak.jsx';
 import SejarahSingkat from './page/SejarahSingkat.jsx';
 import StrukturOrganisasi from './page/StrukturOrganisasi.jsx';
 import Tujuan from './page/Tujuan.jsx';
+import Login from './page/login.jsx';
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
   {
     path: "/tujuan",
     element: <Tujuan />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ]);
 
