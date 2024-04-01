@@ -1,41 +1,69 @@
-import React, { useState } from 'react';
+import React from 'react';
+import {
+  MDBBtn,
+  MDBContainer,
+  MDBRow,
+  MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBInput,
+  MDBIcon
+}
+from 'mdb-react-ui-kit';
 
-const Login = ({ onSubmit }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit({ email, password, rememberMe });
-  };
-
+function Login() {
   return (
-    <div className="bg-gray-100 p-6 rounded-md shadow-md">
-      <h2 className="text-xl font-medium mb-4">Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 mb-1">Email</label>
-          <input type="email" name="email" id="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-gray-700 mb-1">Password</label>
-          <input type="password" name="password" id="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-        </div>
-        <div className="flex items-center mb-4">
-          <input type="checkbox" name="rememberMe" id="rememberMe" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="mr-2" />
-          <label htmlFor="rememberMe" className="text-gray-700">Remember me</label>
-        </div>
-        <div className="mb-4">
-          <button type="submit" className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:shadow-outline-indigo">Login Now</button>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-700">Don't have an account? <a href="/signup" className="text-indigo-500 underline">Sign up</a></p>
-          <p className="text-gray-700"><a href="/forgot-password" className="text-indigo-500 underline">Forgot password?</a></p>
-        </div>
-      </form>
+    <div className="min-h-screen bg-gradient-to-r from-purple-700 via-purple-600 to-blue-500 flex justify-center items-center">
+      <div className="bg-white p-8 rounded-lg shadow-lg">
+        {/* Konten halaman login */}
+        <h1 className="text-3xl font-bold mb-4">Login</h1>
+        <MDBContainer fluid>
+
+      <MDBRow className='d-flex justify-content-center align-items-center h-100'>
+        <MDBCol col='12'>
+
+          <MDBCard className='bg-dark text-black my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '400px'}}>
+            <MDBCardBody className='p-5 d-flex flex-column align-items-center mx-auto w-100'>
+
+              <h2 className="fw-bold mb-2 text-uppercase">Login</h2>
+              <p className="text-black-50 mb-5">Please enter your login and password!</p>
+
+              <MDBInput wrapperClass='mb-4 mx-5 w-100' labelClass='text-black' label='Email address' id='formControlLg' type='email' size="lg"/>
+              <MDBInput wrapperClass='mb-4 mx-5 w-100' labelClass='text-black' label='Password' id='formControlLg' type='password' size="lg"/>
+
+              <p className="small mb-3 pb-lg-2"><a class="text-black-50" href="#!">Forgot password?</a></p>
+              <MDBBtn outline className='mx-2 px-5' color='white' size='lg'>
+                Login
+              </MDBBtn>
+
+              <div className='d-flex flex-row mt-3 mb-5'>
+                <MDBBtn tag='a' color='none' className='m-3' style={{ color: 'white' }}>
+                  <MDBIcon fab icon='facebook-f' size="lg"/>
+                </MDBBtn>
+
+                <MDBBtn tag='a' color='none' className='m-3' style={{ color: 'white' }}>
+                  <MDBIcon fab icon='twitter' size="lg"/>
+                </MDBBtn>
+
+                <MDBBtn tag='a' color='none' className='m-3' style={{ color: 'white' }}>
+                  <MDBIcon fab icon='google' size="lg"/>
+                </MDBBtn>
+              </div>
+
+              <div>
+                <p className="mb-0">Don't have an account? <a href="#!" class="text-black-50 fw-bold">Sign Up</a></p>
+
+              </div>
+            </MDBCardBody>
+          </MDBCard>
+
+        </MDBCol>
+      </MDBRow>
+
+    </MDBContainer>
+      </div>
     </div>
   );
-};
+}
 
 export default Login;
