@@ -12,6 +12,9 @@ import SejarahSingkat from './page/SejarahSingkat.jsx';
 import StrukturOrganisasi from './page/StrukturOrganisasi.jsx';
 import Tujuan from './page/Tujuan.jsx';
 import Login from './page/login.jsx';
+import Siswa from './components/Siswa.jsx';
+import Rayon from './components/Rayon.jsx';
+import SubRayon from './components/Subrayon.jsx';
 
 const router = createBrowserRouter([
   {
@@ -49,6 +52,18 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/siswa",
+    element: <Siswa />,
+  },
+  {
+    path: "/rayon",
+    element: <Rayon />,
+  },
+  {
+    path: "/subrayon",
+    element: <SubRayon />,
   },
 ]);
 

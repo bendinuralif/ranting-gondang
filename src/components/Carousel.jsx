@@ -1,39 +1,46 @@
 import React, { useState, useEffect } from 'react';
-
 import Carousel1 from '../assets/img/01-min.png';
 import Carousel2 from '../assets/img/02-min.png';
 import Carousel3 from '../assets/img/03-min.png';
 import Carousel4 from '../assets/img/04-min.png';
-// import Carousel5 from '../assets/img/05.png';
 
 function CustomCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const images = [Carousel1, Carousel2, Carousel3, Carousel4,];
+  const images = [Carousel1, Carousel2, Carousel3, Carousel4];
 
   useEffect(() => {
     const timer = setTimeout(() => {
       goToNext();
-    }, 3000); // Ubah ke 15000 untuk mengganti slide setiap 15 detik
+    }, 15000); // Mengganti slide setiap 15 detik
 
-    return () => clearTimeout(timer);     
+    return () => clearTimeout(timer);
   }, [activeIndex]);
-     
+
   const goToPrev = () => {
-    const newIndex = (activeIndex === 0) ? images.length - 1 : activeIndex - 1;
+    const newIndex = activeIndex === 0 ? images.length - 1 : activeIndex - 1;
     setActiveIndex(newIndex);
   };
 
   const goToNext = () => {
-    const newIndex = (activeIndex === images.length - 1) ? 0 : activeIndex + 1;
+    const newIndex = activeIndex === images.length - 1 ? 0 : activeIndex + 1;
     setActiveIndex(newIndex);
   };
 
   return (
-    <div className="relative w-full pt-20 ">
-      <div className="relative overflow-hidden h-96 md:h-120 lg:h-144 xl:h-160 rounded-lg">
+    <div className="relative w-full pt-20">
+      <div className="relative overflow-hidden h-96 md:h-160 lg:h-144 xl:h-160 rounded-lg">
         {images.map((image, index) => (
-          <div key={index} className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === activeIndex ? 'opacity-100' : 'opacity-0'}`}>
-            <img src={image} className="absolute inset-0 w-full h-full object-cover rounded-none " alt={`Slide ${index + 1}`} />
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+              index === activeIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <img
+              src={image}
+              className="absolute inset-0 w-full h-full object-fill md:object-cover rounded-none clip-custom"
+              alt={`Slide ${index + 1}`}
+            />
             <div className="absolute inset-0 flex items-center justify-center flex-col h-full text-center text-white">
               <span className="text-[1.3rem] text-white font-bold md:text-4xl">PERSAUDARAAN SETIA HATI TERATE</span>
               <span className="text-[1.3rem] text-white font-bold md:text-4xl">RANTING GONDANG</span>
@@ -44,22 +51,50 @@ function CustomCarousel() {
       </div>
       <div className="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3">
         {images.map((_, index) => (
-          <button key={index} type="button" className="w-3 h-3 rounded-full bg-gray-300" aria-label={`Slide ${index + 1}`} onClick={() => setActiveIndex(index)}></button>
+          <button
+            key={index}
+            type="button"
+            className="w-3 h-3 rounded-full bg-gray-300"
+            aria-label={`Slide ${index + 1}`}
+            onClick={() => setActiveIndex(index)}
+          ></button>
         ))}
       </div>
-      <button type="button" className="absolute top-[60%] -translate-y-1/2 left-4 z-30 flex items-center justify-center w-7 h-7 md:w-10 md:h-10 bg-white/30 rounded-full md:left-8 lg:left-12 xl:left-16 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none" onClick={goToPrev} data-carousel-prev>
+      <button
+        type="button"
+        className="absolute top-[60%] -translate-y-1/2 left-4 z-30 flex items-center justify-center w-7 h-7 md:w-10 md:h-10 bg-white/30 rounded-full md:left-8 lg:left-12 xl:left-16 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none"
+        onClick={goToPrev}
+        data-carousel-prev
+      >
         <span className="inline-flex items-center justify-center w-full h-full text-white">
           {/* SVG for Previous */}
-          <svg className="w-4 h-4 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            className="w-4 h-4 md:h-6 md:w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
           </svg>
         </span>
       </button>
 
-      <button type="button" className="absolute top-[60%] -translate-y-1/2 right-4 z-30 flex items-center justify-center w-7 h-7 md:w-10 md:h-10 bg-white/30 rounded-full md:right-8 lg:right-12 xl:right-16 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none" onClick={goToNext} data-carousel-next>
+      <button
+        type="button"
+        className="absolute top-[60%] -translate-y-1/2 right-4 z-30 flex items-center justify-center w-7 h-7 md:w-10 md:h-10 bg-white/30 rounded-full md:right-8 lg:right-12 xl:right-16 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none"
+        onClick={goToNext}
+        data-carousel-next
+      >
         <span className="inline-flex items-center justify-center w-full h-full text-white">
           {/* SVG for Next */}
-          <svg className="w-4 h-4 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            className="w-4 h-4 md:h-6 md:w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
           </svg>
         </span>
