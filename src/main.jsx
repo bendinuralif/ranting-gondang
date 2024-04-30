@@ -15,6 +15,7 @@ import Login from './page/login.jsx';
 import Siswa from './components/Siswa.jsx';
 import Rayon from './components/Rayon.jsx';
 import SubRayon from './components/Subrayon.jsx';
+import Pusdiklat from './components/Pusdiklat.jsx';
 
 const router = createBrowserRouter([
   {
@@ -65,6 +66,14 @@ const router = createBrowserRouter([
     path: "/subrayon",
     element: <SubRayon />,
   },
+  {
+    path: "/pusdiklat",
+    element: <Pusdiklat />,
+  },
+  // {
+  //   path: "/uploadexcel",
+  //   element: <UploadExcel />,
+  // },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
