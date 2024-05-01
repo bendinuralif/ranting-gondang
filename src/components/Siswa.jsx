@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '../page/Layout';
-import { retrieveData, uploadData } from "../lib/firebase/service"; 
+import React, { useState, useEffect } from "react";
+import Layout from "../page/Layout";
+import { retrieveData, uploadData } from "../lib/firebase/service";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
-import app from '../lib/firebase/init';
+import app from "../lib/firebase/init";
 
 const firestore = getFirestore(app);
 
 function Siswa() {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
-  const [uploadMessage, setUploadMessage] = useState('');
-  const [rowsPerPage, setRowsPerPage] = useState(10); 
-  const [currentPage, setCurrentPage] = useState(1); 
-  const [totalPages, setTotalPages] = useState(1); 
-  const [tahunOptions, setTahunOptions] = useState([]); 
-  const [selectedTahun, setSelectedTahun] = useState(2024); 
+  const [uploadMessage, setUploadMessage] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [tahunOptions, setTahunOptions] = useState([]);
+  const [selectedTahun, setSelectedTahun] = useState(2024);
+  const [paginatedData, setPaginatedData] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -31,37 +32,38 @@ function Siswa() {
   //     setSelectedTahun(tahunOptions[0]);
   //   }
   // }, [tahunOptions]);
-  
-  useEffect(() => {
-    if (selectedTahun) {
-      console.log(data)
-      const filteredData = paginatedData.filter(item => item.tahun === selectedTahun);
-      console.log(filteredData)
-      setData(filteredData);
-    }
-  }, [selectedTahun]);
-  
+
+  // useEffect(() => {
+  //   if (selectedTahun) {
+  //     console.log(data)
+  //     const filteredData = paginatedData.filter(item => item.tahun === selectedTahun);
+  //     console.log(filteredData)
+  //     setData(filteredData);
+  //   }
+  // }, [selectedTahun]);
 
   const fetchData = async () => {
     try {
-      const res = await retrieveData('Siswa');
-      const availableYears = Array.from(new Set(res.map(item => item.tahun)));
+      const res = await retrieveData("Siswa");
+      const availableYears = Array.from(new Set(res.map((item) => item.tahun)));
       setTahunOptions(availableYears);
-      
+
       let filteredData = res;
       if (selectedTahun) {
-        filteredData = res.filter(item => item.tahun === selectedTahun);
+        filteredData = res.filter((item) => item.tahun == selectedTahun);
       }
-      
-      const filteredAndSortedData = filteredData.filter(item => typeof item.no === 'string' || typeof item.no === 'number');
+
+      const filteredAndSortedData = filteredData.filter(
+        (item) => typeof item.no === "string" || typeof item.no === "number"
+      );
       const sortedData = filteredAndSortedData.sort((a, b) => {
-        if (typeof a.no === 'string' && typeof b.no === 'string') {
+        if (typeof a.no === "string" && typeof b.no === "string") {
           return a.no.localeCompare(b.no);
         } else {
           return a.no - b.no;
         }
       });
-      
+
       setData(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -80,22 +82,22 @@ function Siswa() {
         reader.onload = async (e) => {
           const json = JSON.parse(e.target.result);
           for (const item of json) {
-            await addDoc(collection(firestore, 'Siswa'), item);
+            await addDoc(collection(firestore, "Siswa"), item);
           }
-          console.log('Data uploaded successfully!');
+          console.log("Data uploaded successfully!");
           fetchData();
-          setUploadMessage('Upload berhasil!');
+          setUploadMessage("Upload berhasil!");
           setTimeout(() => {
-            setUploadMessage('');
+            setUploadMessage("");
           }, 3000);
         };
         reader.readAsText(file);
       } else {
-        console.error('Please select a file to upload.');
+        console.error("Please select a file to upload.");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      setUploadMessage('Upload gagal.');
+      setUploadMessage("Upload gagal.");
     }
   };
 
@@ -105,22 +107,23 @@ function Siswa() {
   };
 
   const handleNextPage = () => {
-    setCurrentPage(prevPage => prevPage + 1);
+    setCurrentPage((prevPage) => prevPage + 1);
   };
 
   const handlePrevPage = () => {
-    setCurrentPage(prevPage => prevPage - 1);
+    setCurrentPage((prevPage) => prevPage - 1);
   };
 
   const handleChangeTahun = (e) => {
     const selectedYear = e.target.value;
-    console.log(selectedYear)
     setSelectedTahun(selectedYear);
   };
 
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const paginatedData = data.slice(startIndex, endIndex);
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    setPaginatedData(data.slice(startIndex, endIndex));
+  }, [data, currentPage, rowsPerPage, selectedTahun]);
 
   return (
     <Layout>
@@ -136,37 +139,65 @@ function Siswa() {
         <div className="px-2 block mx-auto max-w-7xl mt-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
           <div className="relative overflow-x-auto mt-4">
             <div className="flex justify-end items-center px-3 pb-3">
-              <label htmlFor="tahun" className="mr-2">Pilih Tahun:</label>
-              <select id="tahun" onChange={handleChangeTahun} value={selectedTahun} className="border rounded px-3 py-1">
-                {tahunOptions.map(year => (
-                  <option key={year} value={year}>{year}</option>
+              <label htmlFor="tahun" className="mr-2">
+                Pilih Tahun:
+              </label>
+              <select
+                id="tahun"
+                onChange={handleChangeTahun}
+                value={selectedTahun}
+                className="border rounded px-3 py-1"
+              >
+                {tahunOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
                 ))}
               </select>
             </div>
-            
+
             <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
               <thead className="text-xs md:text-sm text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-red-00">
                 <tr>
-                  <th scope="col" className="px-2 py-2">No</th>
-                  <th scope="col" className="px-2 py-2">Nama</th>
-                  <th scope="col" className="px-2 py-2">Jenis Kelamin</th>
-                  <th scope="col" className="px-2 py-2">Rayon</th>
+                  <th scope="col" className="px-2 py-2">
+                    No
+                  </th>
+                  <th scope="col" className="px-2 py-2">
+                    Nama
+                  </th>
+                  <th scope="col" className="px-2 py-2">
+                    Jenis Kelamin
+                  </th>
+                  <th scope="col" className="px-2 py-2">
+                    Rayon
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedData.map((item, index) => (
-                  <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                  <tr
+                    key={index}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  >
                     <td className="px-2 py-2">{item.no}</td>
                     <td className="px-2 py-2">{item.nama}</td>
                     <td className="px-2 py-2">{item.jeniskelamin}</td>
                     <td className="px-2 py-2">{item.rayon}</td>
+                    {/* <td className="px-2 py-2">{item.tahun}</td> */}
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className='flex justify-end items-center px-3'>
-              <label htmlFor="rowsPerPage" className="mr-2">Rows per page:</label>
-              <select id="rowsPerPage" onChange={handleChangeRowsPerPage} value={rowsPerPage} className="border rounded px-3 py-1">
+            <div className="flex justify-end items-center px-3">
+              <label htmlFor="rowsPerPage" className="mr-2">
+                Rows per page:
+              </label>
+              <select
+                id="rowsPerPage"
+                onChange={handleChangeRowsPerPage}
+                value={rowsPerPage}
+                className="border rounded px-3 py-1"
+              >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
                 <option value={50}>50</option>
@@ -176,25 +207,53 @@ function Siswa() {
           </div>
           <div className="flex justify-end items-start  p-4">
             <div>
-              <button 
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${currentPage === 1 ? 'cursor-not-allowed' : 'bg-red-500 text-white'}`}
+              <button
+                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
+                  currentPage === 1
+                    ? "cursor-not-allowed"
+                    : "bg-red-500 text-white"
+                }`}
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 19l-7-7 7-7"
+                  />
                 </svg>
               </button>
               <span className="mx-2 text-sm text-gray-600">
                 Page {currentPage} of {totalPages}
               </span>
-              <button 
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${currentPage === totalPages ? 'cursor-not-allowed' : 'bg-red-500 text-white'}`}
+              <button
+                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
+                  currentPage === totalPages
+                    ? "cursor-not-allowed"
+                    : "bg-red-500 text-white"
+                }`}
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
               >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </button>
             </div>
@@ -203,10 +262,15 @@ function Siswa() {
       </div>
       <div className="flex justify-center items-center mt-5">
         <input type="file" accept=".json" onChange={handleFileChange} />
-        <button className="ml-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleUpload}>
+        <button
+          className="ml-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={handleUpload}
+        >
           Upload JSON
         </button>
-        {uploadMessage && <p className="ml-3 text-green-500">{uploadMessage}</p>}
+        {uploadMessage && (
+          <p className="ml-3 text-green-500">{uploadMessage}</p>
+        )}
       </div>
     </Layout>
   );
