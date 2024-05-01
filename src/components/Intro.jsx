@@ -55,12 +55,25 @@ const Intro = () => {
 
     const fetchSiswaCount = async () => {
       try {
+        const latestYear = new Date().getFullYear();
         const siswaData = await retrieveData('Siswa');
-        setSiswaCount(siswaData.length);
+        console.log("Siswa Data:", siswaData); // Tambahkan ini untuk memeriksa data siswa
+        const siswaDataLatestYear = siswaData.filter(data => {
+          // Periksa apakah properti tahun ada dan valid
+          if (data.tahun && !isNaN(data.tahun)) {
+            return parseInt(data.tahun) === latestYear;
+          } else {
+            return false; // Jika tahun tidak ada atau tidak valid, abaikan entri ini
+          }
+        });
+        console.log("Siswa Data Latest Year:", siswaDataLatestYear); // Tambahkan ini untuk memeriksa data siswa untuk tahun terbaru
+        setSiswaCount(siswaDataLatestYear.length);
       } catch (error) {
         console.error("Error fetching siswa count:", error);
       }
     };
+    
+    
 
     fetchSubRayonCount();
     fetchRayonCount();
