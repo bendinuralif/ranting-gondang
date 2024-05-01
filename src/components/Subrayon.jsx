@@ -18,7 +18,8 @@ function SubRayon() {
   const fetchData = async () => {
     try {
       const res = await retrieveData('SubRayon');
-      setData(res);
+      const sortedData = res.sort((a, b) => a.rayon.localeCompare(b.rayon));
+    setData(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }

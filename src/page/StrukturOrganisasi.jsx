@@ -9,6 +9,8 @@ function StrukturOrganisasi() {
     const fetchData = async () => {
       try {
         const res = await retrieveData('StrukturOrganisasi');
+        // Urutkan data berdasarkan nomor sebelum disimpan ke state
+        res.sort((a, b) => a.no - b.no);
         setData(res);
         console.log(res); // Cetak data yang diterima dari Firebase
       } catch (error) {
@@ -52,7 +54,7 @@ function StrukturOrganisasi() {
               <tbody>
                 {data.map((item, index) => (
                   <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <td className="px-2 py-2">{index + 1}</td>
+                    <td className="px-2 py-2">{item.no}</td>
                     <td className="px-2 py-2">{item.nama}</td>
                     <td className="px-2 py-2">{item.jabatan}</td>
                   </tr>
