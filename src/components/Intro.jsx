@@ -57,7 +57,7 @@ const Intro = () => {
       <a href='/siswa' className='w-28 sm:w-40 md:w-48 h-28 sm:h-40 md:h-48 bg-white border-2 border-[red] flex flex-col justify-center gap-2 sm:gap-3 items-center text-center' style={{ borderRadius: 10 }}>
   <AnimatedNumber value={siswaCount} />
   <p className='text-sm sm:text-xl md:text-2xl font-semibold'>SISWA</p>
-  <p className='text-sm sm:text-xl md:text-2xl font-semibold' style={{ marginTop: '-5px' }}>Tahun {latestYear}</p>
+  <p className='text-sm sm:text-xl md:text-2xl font-semibold' style={{ marginTop: '-15px' }}>Tahun {latestYear}</p>
 </a>
 
         <a href='/subrayon' className='w-28 sm:w-40 md:w-48 h-28 sm:h-40 md:h-48 bg-white border-2 border-[red] flex flex-col justify-center gap-3 sm:gap-5 items-center text-center' style={{ borderRadius: 10 }}>
