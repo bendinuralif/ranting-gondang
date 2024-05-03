@@ -14,45 +14,31 @@ function Siswa() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [tahunOptions, setTahunOptions] = useState([]);
-  const [selectedTahun, setSelectedTahun] = useState(2024);
-  const [paginatedData, setPaginatedData] = useState([]);
+  const [selectedTahun, setSelectedTahun] = useState();
+  const [paginatedData, setPaginatedData] = useState([]); // Define paginatedData state
 
   useEffect(() => {
     fetchData();
   }, [selectedTahun]);
+  
 
   useEffect(() => {
     const totalPagesCount = Math.ceil(data.length / rowsPerPage);
     setTotalPages(totalPagesCount);
   }, [data, rowsPerPage]);
 
-  // useEffect(() => {
-  //   console.log(tahunOptions)
-  //   if (tahunOptions.length > 0) {
-  //     setSelectedTahun(tahunOptions[0]);
-  //   }
-  // }, [tahunOptions]);
-
-  // useEffect(() => {
-  //   if (selectedTahun) {
-  //     console.log(data)
-  //     const filteredData = paginatedData.filter(item => item.tahun === selectedTahun);
-  //     console.log(filteredData)
-  //     setData(filteredData);
-  //   }
-  // }, [selectedTahun]);
-
   const fetchData = async () => {
     try {
       const res = await retrieveData("Siswa");
-      const availableYears = Array.from(new Set(res.map((item) => item.tahun)));
+      const availableYears = Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a);
       setTahunOptions(availableYears);
-
-      let filteredData = res;
-      if (selectedTahun) {
-        filteredData = res.filter((item) => item.tahun == selectedTahun);
+  
+      if (!selectedTahun && availableYears.length > 0) {
+        setSelectedTahun(availableYears[0]);
       }
-
+  
+      const filteredData = selectedTahun ? res.filter((item) => item.tahun == selectedTahun) : res;
+  
       const filteredAndSortedData = filteredData.filter(
         (item) => typeof item.no === "string" || typeof item.no === "number"
       );
@@ -63,12 +49,13 @@ function Siswa() {
           return a.no - b.no;
         }
       });
-
+  
       setData(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -183,7 +170,6 @@ function Siswa() {
                     <td className="px-2 py-2">{item.nama}</td>
                     <td className="px-2 py-2">{item.jeniskelamin}</td>
                     <td className="px-2 py-2">{item.rayon}</td>
-                    {/* <td className="px-2 py-2">{item.tahun}</td> */}
                   </tr>
                 ))}
               </tbody>

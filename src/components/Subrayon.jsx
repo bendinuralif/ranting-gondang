@@ -99,13 +99,13 @@ function SubRayon() {
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center mt-5">
+      {/* <div className="flex justify-center items-center mt-5">
         <input type="file" accept=".json" onChange={handleFileChange} />
         <button className="ml-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleUpload}>
           Upload JSON
         </button>
         {uploadMessage && <p className="ml-3 text-green-500">{uploadMessage}</p>}
-      </div>
+      </div> */}
     </Layout>
   );
 }

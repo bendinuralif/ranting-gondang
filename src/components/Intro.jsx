@@ -24,70 +24,42 @@ const Intro = () => {
   const [rayonCount, setRayonCount] = useState(0);
   const [pusdiklatCount, setPusdiklatCount] = useState(0);
   const [siswaCount, setSiswaCount] = useState(0); // State untuk menyimpan jumlah siswa
+  const [latestYear, setLatestYear] = useState(0); // State untuk menyimpan tahun terbaru
 
   useEffect(() => {
-    const fetchSubRayonCount = async () => {
+    const fetchCounts = async () => {
       try {
         const subRayonData = await retrieveData('SubRayon');
         setSubRayonCount(subRayonData.length);
-      } catch (error) {
-        console.error("Error fetching sub rayon count:", error);
-      }
-    };
 
-    const fetchRayonCount = async () => {
-      try {
         const rayonData = await retrieveData('Rayon');
         setRayonCount(rayonData.length);
-      } catch (error) {
-        console.error("Error fetching rayon count:", error);
-      }
-    };
 
-    const fetchPusdiklatCount = async () => {
-      try {
         const pusdiklatData = await retrieveData('Pusdiklat');
         setPusdiklatCount(pusdiklatData.length);
-      } catch (error) {
-        console.error("Error fetching pusdiklat count:", error);
-      }
-    };
 
-    const fetchSiswaCount = async () => {
-      try {
-        const latestYear = new Date().getFullYear();
         const siswaData = await retrieveData('Siswa');
-        console.log("Siswa Data:", siswaData); // Tambahkan ini untuk memeriksa data siswa
-        const siswaDataLatestYear = siswaData.filter(data => {
-          // Periksa apakah properti tahun ada dan valid
-          if (data.tahun && !isNaN(data.tahun)) {
-            return parseInt(data.tahun) === latestYear;
-          } else {
-            return false; // Jika tahun tidak ada atau tidak valid, abaikan entri ini
-          }
-        });
-        console.log("Siswa Data Latest Year:", siswaDataLatestYear); // Tambahkan ini untuk memeriksa data siswa untuk tahun terbaru
-        setSiswaCount(siswaDataLatestYear.length);
+        const availableYears = Array.from(new Set(siswaData.map(item => item.tahun))).sort((a, b) => b - a);
+        setLatestYear(availableYears[0]); // Atur tahun terbaru
+        const latestYearSiswaData = siswaData.filter(item => item.tahun === availableYears[0]);
+        setSiswaCount(latestYearSiswaData.length);
       } catch (error) {
-        console.error("Error fetching siswa count:", error);
+        console.error("Error fetching data:", error);
       }
     };
-    
-    
 
-    fetchSubRayonCount();
-    fetchRayonCount();
-    fetchPusdiklatCount();
-    fetchSiswaCount(); // Panggil fungsi untuk mengambil jumlah siswa
+    fetchCounts();
   }, []);
 
   return (
     <>
       <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-5 justify-items-center mx-8 sm:mx-24 md:mx-28 lg:mx-48 mb-10'>
-        <a href='/siswa' className='w-28 sm:w-40 md:w-48 h-28 sm:h-40 md:h-48 bg-white border-2 border-[red] flex flex-col justify-center gap-3 sm:gap-5 items-center text-center' style={{ borderRadius: 10 }}>
-          <AnimatedNumber value={siswaCount} />
-          <p className='text-sm sm:text-xl md:text-2xl font-semibold'>SISWA</p>
-        </a>
+      <a href='/siswa' className='w-28 sm:w-40 md:w-48 h-28 sm:h-40 md:h-48 bg-white border-2 border-[red] flex flex-col justify-center gap-2 sm:gap-3 items-center text-center' style={{ borderRadius: 10 }}>
+  <AnimatedNumber value={siswaCount} />
+  <p className='text-sm sm:text-xl md:text-2xl font-semibold'>SISWA</p>
+  <p className='text-sm sm:text-xl md:text-2xl font-semibold' style={{ marginTop: '-5px' }}>Tahun {latestYear}</p>
+</a>
+
         <a href='/subrayon' className='w-28 sm:w-40 md:w-48 h-28 sm:h-40 md:h-48 bg-white border-2 border-[red] flex flex-col justify-center gap-3 sm:gap-5 items-center text-center' style={{ borderRadius: 10 }}>
           <AnimatedNumber value={subRayonCount} />
           <p className='text-sm sm:text-xl md:text-2xl font-semibold'>SUB RAYON</p>
@@ -104,5 +76,6 @@ const Intro = () => {
     </>
   );
 };
+
 
 export default Intro;
