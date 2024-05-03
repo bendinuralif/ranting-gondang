@@ -1,6 +1,7 @@
 import Layout from "./Layout";
-import galeri1 from "../assets/img/galeri-1.jpg";
-import galeri2 from "../assets/img/galeri-2.jpg";
+import galeri1 from "../assets/img/sejarah-1.jpg";
+import galeri2 from "../assets/img/sejarah-2.png";
+import galeri3 from "../assets/img/sejarah-3.jpg";
 import React, { useState, useEffect } from "react";
 import { retrieveData, uploadData } from "../lib/firebase/service";
 import { collection, addDoc, getFirestore } from "firebase/firestore";
@@ -45,8 +46,11 @@ function SejarahSingkat() {
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center m-5 ">
           <div className="md:w-1/2 flex justify-center md:items-start">
-            <div className="rounded-lg bg-white px-4 shadow-md">
+            <div className="rounded-lg bg-white p-4 shadow-md">
               <img src={galeri1} alt="" />
+              <div className="text-[0.6rem] md:text-[1.2rem] text-center mt-1 px-7 italic">
+            Kangmas Ir. Edy Asmanto dan Kangmas DR. Ir. M. Taufiq SH., MSc.
+          </div>
             </div>
           </div>
           <div className="md:w-1/2">
@@ -127,15 +131,21 @@ function SejarahSingkat() {
           <div className="md:w-1/2 flex justify-center items-center">
             <div className="rounded-lg bg-white p-4 shadow-md">
               <img src={galeri2} alt="" />
+              <div className="text-[0.6rem] md:text-[1.2rem] text-center mt-1 px-7 italic">
+            Foto Bersama Tes Sabuk Jambon ke Hijau tahun 2024
+          </div>
             </div>
           </div>
         </div>
 
         {/* Bagian ketiga */}
-        <div className="flex flex-col md:flex-row justify-between items-center m-5 md:m-5 mt-20">
+        <div className="flex flex-col md:flex-row justify-between items-center m-5 md:m-5 mt-10">
           <div className="md:w-1/2 flex justify-center items-center">
             <div className="rounded-lg bg-white p-4 shadow-md">
-              <img src={galeri1} alt="" />
+              <img src={galeri3} alt="" />
+              <div className="text-[0.6rem] md:text-[1.2rem] text-center mt-1 px-7 italic">
+              Padepokan Persaudaraan Setia Hati Terate Ranting Gondang
+          </div>
             </div>
           </div>
           <div className="md:w-1/2">

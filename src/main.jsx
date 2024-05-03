@@ -16,6 +16,8 @@ import Siswa from './components/Siswa.jsx';
 import Rayon from './components/Rayon.jsx';
 import SubRayon from './components/Subrayon.jsx';
 import Pusdiklat from './components/Pusdiklat.jsx';
+import Filosofi from './page/Filosofi.jsx';
+import Falsafah from './page/Falsafah.jsx';
 
 const router = createBrowserRouter([
   {
@@ -49,6 +51,14 @@ const router = createBrowserRouter([
   {
     path: "/tujuan",
     element: <Tujuan />,
+  },
+  {
+    path: "/filosofi",
+    element: <Filosofi />,
+  },
+  {
+    path: "/falsafah",
+    element: <Falsafah />,
   },
   {
     path: "/login",

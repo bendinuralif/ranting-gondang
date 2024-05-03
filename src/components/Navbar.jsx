@@ -45,6 +45,8 @@ function Navbar() {
                   <li><a href="sejarah-singkat" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Sejarah Singkat</a></li>
                   <li><a href="struktur-organisasi" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Struktur Organisasi</a></li>
                   <li><a href="tujuan" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Tujuan</a></li>
+                  <li><a href="filosofi" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Filosofi</a></li>
+                  <li><a href="falsafah" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Falsafah</a></li>
                   <li><a href="login" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Login</a></li>
                 </ul>
               </div>
