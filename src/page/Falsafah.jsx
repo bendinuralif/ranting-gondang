@@ -12,11 +12,11 @@ function Falsafah() {
             </div>
           </div>
           <div className="flex justify-center items-center flex-col px-4 md:px-20">
-            <img className="mt-5 md:px-20" src={img} alt="" />
-            <div className="text-[0.7rem] md:text-[1.2rem] text-center mt-1 px-7 italic">
+            <img className="mt-5 md:px-20" src={img} alt="" width="1000" height="150" />
+            <div className="text-[0.7rem] md:text-[1.1rem] text-center mt-1 px-7 italic">
               Pengikatan yang di gelar sebelum pengesahan warga baru
             </div>
-            <div className="pt-10 pr-5 md:px-20 mb-10">
+            <div className="pt-10 px-5 md:px-20 mb-10">
               <div className="relative overflow-x-auto text-sm md:text-xl text-justify">
                 <p>
                   Selain belajar pencak silat, warga atau anggota PSHT dibekali
