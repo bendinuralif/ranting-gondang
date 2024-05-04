@@ -18,6 +18,7 @@ import SubRayon from './components/Subrayon.jsx';
 import Pusdiklat from './components/Pusdiklat.jsx';
 import Filosofi from './page/Filosofi.jsx';
 import Falsafah from './page/Falsafah.jsx';
+import Dashboard from './admin/page/dashboard.jsx';
 
 const router = createBrowserRouter([
   {
@@ -79,6 +80,10 @@ const router = createBrowserRouter([
   {
     path: "/pusdiklat",
     element: <Pusdiklat />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
   // {
   //   path: "/uploadexcel",

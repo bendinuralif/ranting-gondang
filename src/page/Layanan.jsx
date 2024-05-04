@@ -70,7 +70,7 @@ function Layanan() {
         </div>
         <div className="flex justify-center pt-5 pb-10 md:pb-20">
           <div className="max-w-4xl px-6  rounded-lg">
-            <p className="text-sm md:text-lg text-gray-800">
+            <p className="text-sm md:text-lg text-black text-justify ">
               "Selamat datang di Layanan Persaudaraan Setia Hati Terate (PSHT)
               Ranting Gondang. Kami hadir untuk membantu Anda berbagi pengaduan,
               saran, atau pengalaman Anda dengan kami. Tim kami selalu siap

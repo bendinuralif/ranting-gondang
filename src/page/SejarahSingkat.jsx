@@ -156,7 +156,7 @@ function SejarahSingkat() {
             <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600 mt-4 mb-10 pl-5 pr-5">
               <thead className="text-xs md:text-sm text-black uppercase bg-gray-300 dark:bg-gray-700 dark:text-red-00">
                 <tr>
-                  <th scope="col" className="px-9 py-2">
+                  <th scope="col" className="pl-9 py-2">
                     No
                   </th>
                   <th scope="col" className="px-2 py-2">
@@ -173,7 +173,7 @@ function SejarahSingkat() {
                     key={index}
                     className={`bg-${index % 2 === 0 ? 'gray-100' : 'white'} border-b dark:bg-gray-800 dark:border-gray-700`}
                   >
-                    <td className="px-10 py-2">{index + 1}</td>
+                    <td className="pl-10 py-2">{index + 1}</td>
                     <td className="px-2 py-2">{item.nama}</td>
                     <td className="px-2 py-2">{item.tahun}</td>
                   </tr>
