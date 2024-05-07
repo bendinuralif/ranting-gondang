@@ -3,11 +3,11 @@ import LayoutAdmin from "./LayoutAdmin";
 
 function Dashboard () {
     return(
-        <LayoutAdmin>
         <div>
-            nxwxn
-        </div>
+        <LayoutAdmin>
+            <div className="div">Selamat Datang</div>
         </LayoutAdmin>
+        </div>
     )
 }
 

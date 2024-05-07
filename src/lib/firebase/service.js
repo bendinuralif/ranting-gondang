@@ -40,4 +40,21 @@ import {
     }
   }
 
+  export async function AdminLogin(niw, password) {
+    const q = query(
+      collection(firestore, "user"),
+      where("niw", "==", niw)
+    );
+  
+    const snapshot = await getDocs(q);
+    const user = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  console.log  (user[0].niw)
+  if (user[0].password===password)
+    {return user[0]}
+  return false
+  }
+
   
