@@ -21,6 +21,8 @@ import Falsafah from './page/Falsafah.jsx';
 import Dashboard from './admin/page/dashboard.jsx';
 import TambahSiswa from './admin/page/Siswa/Tambah.jsx';
 import DetailSiswa from './admin/page/Siswa/Detail.jsx';
+import DetailSubRayon from './admin/page/SubRayon/Detail.jsx';
+import TambahSubRayon from './admin/page/SubRayon/Tambah.jsx';
 
 const router = createBrowserRouter([
   {
@@ -94,6 +96,14 @@ const router = createBrowserRouter([
   {
     path: "/detailsiswa",
     element: <DetailSiswa />,
+  },
+  {
+    path: "/detailsubrayon",
+    element: <DetailSubRayon />,
+  },
+  {
+    path: "/tambahsubrayon",
+    element: <TambahSubRayon />,
   },
 
   // {

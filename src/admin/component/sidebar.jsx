@@ -29,8 +29,8 @@ function CustomSidebar({isOpen}) {
               <FlowbiteSidebar.Item href="/tambahsiswa" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Sub Rayon" className="hover:bg-red-700 transition-colors duration-300">
-              <FlowbiteSidebar.Item href="#" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="#" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detailsubrayon" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambahsubrayon" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Pusdiklat" className="hover:bg-red-700 transition-colors duration-300">
               <FlowbiteSidebar.Item href="#" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
