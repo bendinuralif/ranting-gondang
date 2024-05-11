@@ -22,7 +22,7 @@ function Navbar() {
       <div className="max-w-screen-xl mx-auto flex flex-wrap items-center justify-between p-4">
         <a href="/" className="flex items-center space-x-3">
           <img src={logo} alt="Logo" className="h-12" />
-          <span className="self-center text-l md:text-xl font-semibold whitespace-nowrap text-white">RANTING GONDANG</span>
+          <span className="self-center text-l md:text-xl font-semibold whitespace-nowrap text-white">PSHT RANTING GONDANG</span>
         </a>
         <button onClick={handleNavbar} data-collapse-toggle="navbar-dropdown" type="button" className="inline-flex items-center p-2 text-sm text-gray-400 rounded-lg md:hidden hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-gray-700" aria-controls="navbar-dropdown" aria-expanded="false">
           <span className="sr-only">Open main menu</span>

@@ -19,6 +19,8 @@ import Pusdiklat from './components/Pusdiklat.jsx';
 import Filosofi from './page/Filosofi.jsx';
 import Falsafah from './page/Falsafah.jsx';
 import Dashboard from './admin/page/dashboard.jsx';
+import TambahSiswa from './admin/page/Siswa/Tambah.jsx';
+import DetailSiswa from './admin/page/Siswa/Detail.jsx';
 
 const router = createBrowserRouter([
   {
@@ -85,6 +87,15 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: <Dashboard />,
   },
+  {
+    path: "/tambahsiswa",
+    element: <TambahSiswa />,
+  },
+  {
+    path: "/detailsiswa",
+    element: <DetailSiswa />,
+  },
+
   // {
   //   path: "/uploadexcel",
   //   element: <UploadExcel />,

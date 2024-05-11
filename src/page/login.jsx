@@ -1,33 +1,37 @@
 import React, { useState } from 'react';
 import galeri1 from '../assets/img/galeri-1.jpg'; // Ensure the path is correct
-import { AdminLogin } from '../lib/firebase/service'
+import { AdminLogin } from '../lib/firebase/service';
 
 const Login = () => {
   const [niw, setNiw] = useState('');
   const [password, setPassword] = useState('');
   const [login, setLogin] = useState('');
+  const [error, setError] = useState(null); // State for holding error message
 
   const handleNiwChange = (event) => {
     setNiw(event.target.value);
-    
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
-    
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    setLogin (true)
-    const user = await AdminLogin(niw, password)
-    console.log (user)
-    if (user){
-      sessionStorage.setItem('user', JSON.stringify(user));
-      window.location.href = '/dashboard';
+    e.preventDefault();
+    setLogin(true);
+    try {
+      const user = await AdminLogin(niw, password);
+      console.log(user);
+      if (user) {
+        sessionStorage.setItem('user', JSON.stringify(user));
+        window.location.href = '/dashboard';
+      }
+    } catch (error) {
+      console.error(error);
+      setError('NIW or password is incorrect. Please try again.'); // Set error message
     }
-  }
-  
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Left side with the form */}
@@ -36,15 +40,20 @@ const Login = () => {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Selamat Datang Di Admin PSHT Ranting Gondang!
           </h2>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
           <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <input type="hidden" name="remember" defaultValue="true" />
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="email-address" className="sr-only">
-                  Email address
+                <label htmlFor="niw-address" className="sr-only">
+                  NIW address
                 </label>
                 <input
-                onChange={handleNiwChange}
+                  onChange={handleNiwChange}
                   id="niw-address"
                   name="niw"
                   type="text"
@@ -52,7 +61,7 @@ const Login = () => {
                   autoComplete="niw"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="niw address"
+                  placeholder="NIW address"
                 />
               </div>
               <div>
@@ -60,7 +69,7 @@ const Login = () => {
                   Password
                 </label>
                 <input
-                onChange={handlePasswordChange}
+                  onChange={handlePasswordChange}
                   id="password"
                   name="password"
                   type="password"
@@ -85,8 +94,6 @@ const Login = () => {
                   Remember me
                 </label>
               </div>
-
-
             </div>
 
             <div>
@@ -111,9 +118,7 @@ const Login = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-black opacity-50"></div>
         <div className="absolute bottom-10 left-10">
           <h3 className="text-4xl font-bold text-white">Get Started!</h3>
-          <p className="text-xl text-white">
-            Choose Your Chatroom
-          </p>
+          <p className="text-xl text-white">Choose Your Chatroom</p>
         </div>
       </div>
     </div>

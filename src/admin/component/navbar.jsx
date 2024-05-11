@@ -7,12 +7,13 @@ import logo from '../assets/img/Logo.png';
 export function CustomNavbar({toggleSidebar}) {
   
   return (
-    <Navbar fluid rounded>
+    <Navbar fluid rounded className="bg-gray-800">
       <Navbar.Toggle onClick={toggleSidebar} />
       <Navbar.Brand href="/">
         <a className="flex items-center  md:pl-5" href="/">
           <img src={logo} alt="Logo" className="h-12" />
-          <span className="self-center text-l md:text-xl font-semibold whitespace-nowrap text-black">RANTING GONDANG</span>
+          <span className="self-center text-l md:text-xl font-semibold whitespace-nowrap text-white">
+            PSHT RANTING GONDANG</span>
         </a>
       </Navbar.Brand>
       <div className="flex md:order-2 md:pr-10">
