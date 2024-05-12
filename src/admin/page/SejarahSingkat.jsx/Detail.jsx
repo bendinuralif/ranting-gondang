@@ -5,7 +5,7 @@ import { collection, addDoc, getFirestore, deleteDoc, doc } from "firebase/fires
 import app from "../../../lib/firebase/init";
 import { updateDoc } from "firebase/firestore";
 
-function DetailPusdiklat() {
+function DetailSejarahSingkat() {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
@@ -18,8 +18,9 @@ function DetailPusdiklat() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [selectedItem, setSelectedItem] = useState({
+    no: "",
     nama: "",
-    pusdiklat: "",
+    tahun: "", // Mengubah jabatan menjadi tahun
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -43,12 +44,14 @@ function DetailPusdiklat() {
   const fetchData = async () => {
     const db = getFirestore(app);
     try {
-      const res = await retrieveData("Pusdiklat", db);
+      const res = await retrieveData("Sejarah", db);
+      res.sort((a, b) => a.no - b.no); // Urutkan data berdasarkan nomor
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -63,7 +66,7 @@ function DetailPusdiklat() {
           const json = JSON.parse(e.target.result);
           const db = getFirestore(app);
           for (const item of json) {
-            await addDoc(collection(db, "Pusdiklat"), item);
+            await addDoc(collection(db, "Sejarah"), item);
           }
           console.log("Data uploaded successfully!");
           fetchData();
@@ -115,7 +118,7 @@ function DetailPusdiklat() {
   const confirmDelete = async () => {
     try {
       const db = getFirestore(app);
-      await deleteDoc(doc(db, "Pusdiklat", selectedItemToDelete.id));
+      await deleteDoc(doc(db, "Sejarah", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
       fetchData();
       setSelectedItemToDelete(null);
@@ -128,12 +131,13 @@ function DetailPusdiklat() {
     e.preventDefault();
     try {
       const db = getFirestore(app);
-      const { sub, pusdiklat } = selectedItem;
+      const { no, nama, tahun } = selectedItem; // Mengubah jabatan menjadi tahun
       const itemId = selectedItem.id;
-      const itemRef = doc(db, "Pusdiklat", itemId);
+      const itemRef = doc(db, "Sejarah", itemId);
       await updateDoc(itemRef, {
-        sub: sub,
-        pusdiklat: pusdiklat,
+        no: no,
+        nama: nama,
+        tahun: tahun, // Mengubah jabatan menjadi tahun
       });
       console.log("Item updated successfully!");
       setEditModalOpen(false);
@@ -146,8 +150,8 @@ function DetailPusdiklat() {
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Pusdiklat</h2>
-        <div className="overflow-x-auto">
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Ketua Tanting</h2>
+        <div className="overflow-x-auto ">
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
@@ -159,7 +163,7 @@ function DetailPusdiklat() {
                   Nama
                 </th>
                 <th scope="col" className="px-2 py-3">
-                  Pusdiklat
+                  Tahun {/* Mengubah label Jabatan menjadi Tahun */}
                 </th>
                 <th scope="col" className="px-2 py-3">
                   Edit
@@ -173,9 +177,9 @@ function DetailPusdiklat() {
               {paginatedData.map((item, index) => (
                 <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-4 py-2"></td>
-                  <td className="px-2 py-2">{index + 1}</td>
+                  <td className="px-2 py-2">{item.no}</td>
                   <td className="px-2 py-2">{item.nama}</td>
-                  <td className="px-2 py-2">{item.pusdiklat}</td>
+                  <td className="px-2 py-2">{item.tahun}</td> {/* Mengubah jabatan menjadi tahun */}
                   <td className="px-2 py-2">
                     <button
                       onClick={() => handleEdit(item)}
@@ -257,6 +261,27 @@ function DetailPusdiklat() {
               <div className="grid gap-6 mb-6 md:grid-cols-1">
                 <div>
                   <label
+                    htmlFor="no"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    No
+                  </label>
+                  <input
+                    type="text"
+                    id="no"
+                    value={selectedItem.no}
+                    onChange={(e) =>
+                      setSelectedItem({ ...selectedItem, no: e.target.value })
+                    }
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Masukan No"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid gap-6 mb-6 md:grid-cols-1">
+                <div>
+                  <label
                     htmlFor="nama"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
@@ -270,7 +295,7 @@ function DetailPusdiklat() {
                       setSelectedItem({ ...selectedItem, nama: e.target.value })
                     }
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Masukan nama"
+                    placeholder="Masukan Nama"
                     required
                   />
                 </div>
@@ -278,20 +303,20 @@ function DetailPusdiklat() {
               <div className="grid gap-6 mb-6 md:grid-cols-1">
                 <div>
                   <label
-                    htmlFor="pusdiklat"
+                    htmlFor="tahun"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Pusdiklat
+                    Tahun
                   </label>
                   <input
                     type="text"
-                    id="pusdiklat"
-                    value={selectedItem.pusdiklat}
+                    id="tahun"
+                    value={selectedItem.tahun}
                     onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, pusdiklat: e.target.value })
+                      setSelectedItem({ ...selectedItem, tahun: e.target.value })
                     }
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Masukan pusdiklat"
+                    placeholder="Masukan Tahun"
                     required
                   />
                 </div>
@@ -390,4 +415,4 @@ function DetailPusdiklat() {
   );
 }
 
-export default DetailPusdiklat;
+export default DetailSejarahSingkat;

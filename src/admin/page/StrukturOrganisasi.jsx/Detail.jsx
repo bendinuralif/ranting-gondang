@@ -45,11 +45,13 @@ function DetailStrukturOrganisasi() {
     const db = getFirestore(app);
     try {
       const res = await retrieveData("StrukturOrganisasi", db);
+      res.sort((a, b) => a.no - b.no); // Urutkan data berdasarkan nomor
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
+  
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -380,7 +382,7 @@ function DetailStrukturOrganisasi() {
             <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
               <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
               <div className="mt-2">
-                <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.no}</span>"?</p>
+                <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.nama}</span>"?</p>
               </div>
             </div>
           </div>

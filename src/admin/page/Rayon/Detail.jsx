@@ -146,7 +146,7 @@ function DetailRayon() {
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Sub rayon</h2> {/* Mengganti 'Rayon' menjadi 'rayon' */}
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Rayon</h2> {/* Mengganti 'Rayon' menjadi 'rayon' */}
         <div className="overflow-x-auto">
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

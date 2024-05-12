@@ -20,35 +20,38 @@ function CustomSidebar({isOpen}) {
             <FlowbiteSidebar.Item href="/dashboard" icon={HiChartPie} className="hover:bg-red-700 transition-colors duration-300">
               Dashboard
             </FlowbiteSidebar.Item>
-            <FlowbiteSidebar.Item href="/layananadmin" icon={HiInbox} className="hover:bg-red-700 transition-colors duration-300">
+            <FlowbiteSidebar.Item href="/layanan-admin" icon={HiInbox} className="hover:bg-red-700 transition-colors duration-300">
               Layanan
             </FlowbiteSidebar.Item>
             
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Siswa" className="hover:bg-red-700 transition-colors duration-300">
-              <FlowbiteSidebar.Item href="/detailsiswa" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="/tambahsiswa" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-siswa" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-siswa" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Sub Rayon" className="hover:bg-red-700 transition-colors duration-300">
-              <FlowbiteSidebar.Item href="/detailsubrayon" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="/tambahsubrayon" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-subrayon" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-subrayon" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Pusdiklat" className="hover:bg-red-700 transition-colors duration-300">
-              <FlowbiteSidebar.Item href="/detailpusdiklat" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="/tambahpusdiklat" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-pusdiklat" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-pusdiklat" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Rayon" className="hover:bg-red-700 transition-colors duration-300">
-              <FlowbiteSidebar.Item href="/detailrayon" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="/tambahrayon" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-rayon" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-rayon" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Ketua Ranting" className="hover:bg-red-700 transition-colors duration-300">
-              <FlowbiteSidebar.Item href="#" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="#" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-sejarah-singkat" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-sejarah-singkat" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Struktur Organisasi" className="hover:bg-red-700 transition-colors duration-300">
-              <FlowbiteSidebar.Item href="/detailstruktur-organisasi" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="/tambahstruktur-organisasi" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-struktur-organisasi" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-struktur-organisasi" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
-            
+            <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Galeri" className="hover:bg-red-700 transition-colors duration-300">
+              <FlowbiteSidebar.Item href="/detail-galeri" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-galeri" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+            </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Item href="#" icon={HiArrowSmRight} className="hover:bg-red-700 transition-colors duration-300">
               Sign In
             </FlowbiteSidebar.Item>

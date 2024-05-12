@@ -121,11 +121,13 @@ function LayananAdmin() {
     }
   };
 
-  const handleDelete = async (item) => {
+  const confirmDelete = async (itemToDelete) => {
     try {
+      // Delete item from the database
       const db = getFirestore(app);
-      await deleteDoc(doc(db, "Layanan", item.id));
+      await deleteDoc(doc(db, "Layanan", itemToDelete.id));
       console.log("Item deleted successfully!");
+      // Fetch data again after the item is deleted
       fetchData();
     } catch (error) {
       console.error("Error deleting item:", error);

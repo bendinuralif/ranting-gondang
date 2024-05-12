@@ -30,6 +30,10 @@ import TambahRayon from './admin/page/Rayon/Tambah.jsx';
 import DetailRayon from './admin/page/Rayon/Detail.jsx';
 import DetailStrukturOrganisasi from './admin/page/StrukturOrganisasi.jsx/Detail.jsx';
 import TambahStrukturOrganisasi from './admin/page/StrukturOrganisasi.jsx/Tambah.jsx';
+import DetailSejarahSingkat from './admin/page/SejarahSingkat.jsx/Detail.jsx';
+import TambahSejarahSingkat from './admin/page/SejarahSingkat.jsx/Tambah.jsx';
+import TambahGaleri from './admin/page/Galeri.jsx/Tambah.jsx';
+import DetailGaleri from './admin/page/Galeri.jsx/Detail.jsx';
 
 const router = createBrowserRouter([
   {
@@ -97,48 +101,64 @@ const router = createBrowserRouter([
     element: <Dashboard />,
   },
   {
-    path: "/tambahsiswa",
+    path: "/tambah-siswa",
     element: <TambahSiswa />,
   },
   {
-    path: "/detailsiswa",
+    path: "/detail-siswa",
     element: <DetailSiswa />,
   },
   {
-    path: "/detailsubrayon",
+    path: "/detail-subrayon",
     element: <DetailSubRayon />,
   },
   {
-    path: "/tambahsubrayon",
+    path: "/tambah-subrayon",
     element: <TambahSubRayon />,
   },
   {
-    path: "/layananadmin",
+    path: "/layanan-admin",
     element: <LayananAdmin />,
   },
   {
-    path: "/detailpusdiklat",
+    path: "/detail-pusdiklat",
     element: <DetailPusdiklat />,
   },
   {
-    path: "/tambahpusdiklat",
+    path: "/tambah-pusdiklat",
     element: <TambahPusdiklat />,
   },
   {
-    path: "/detailrayon",
+    path: "/detail-rayon",
     element: <DetailRayon />,
   },
   {
-    path: "/tambahrayon",
+    path: "/tambah-rayon",
     element: <TambahRayon />,
   },
   {
-    path: "/detailstruktur-organisasi",
+    path: "/detail-struktur-organisasi",
     element: <DetailStrukturOrganisasi />,
   },
   {
-    path: "/tambahstruktur-organisasi",
+    path: "/tambah-struktur-organisasi",
     element: <TambahStrukturOrganisasi />,
+  },
+  {
+    path: "/detail-sejarah-singkat",
+    element: <DetailSejarahSingkat />,
+  },
+  {
+    path: "/tambah-sejarah-singkat",
+    element: <TambahSejarahSingkat />,
+  },
+  {
+    path: "/tambah-galeri",
+    element: <TambahGaleri />,
+  },
+  {
+    path: "/detail-galeri",
+    element: <DetailGaleri />,
   },
   // {
   //   path: "/uploadexcel",
