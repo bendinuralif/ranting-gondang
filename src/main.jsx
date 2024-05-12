@@ -28,6 +28,8 @@ import DetailPusdiklat from './admin/page/Pusdiklat/Detail.jsx';
 import TambahPusdiklat from './admin/page/Pusdiklat/Tmabah.jsx';
 import TambahRayon from './admin/page/Rayon/Tambah.jsx';
 import DetailRayon from './admin/page/Rayon/Detail.jsx';
+import DetailStrukturOrganisasi from './admin/page/StrukturOrganisasi.jsx/Detail.jsx';
+import TambahStrukturOrganisasi from './admin/page/StrukturOrganisasi.jsx/Tambah.jsx';
 
 const router = createBrowserRouter([
   {
@@ -129,6 +131,14 @@ const router = createBrowserRouter([
   {
     path: "/tambahrayon",
     element: <TambahRayon />,
+  },
+  {
+    path: "/detailstruktur-organisasi",
+    element: <DetailStrukturOrganisasi />,
+  },
+  {
+    path: "/tambahstruktur-organisasi",
+    element: <TambahStrukturOrganisasi />,
   },
   // {
   //   path: "/uploadexcel",
