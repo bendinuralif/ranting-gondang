@@ -24,6 +24,10 @@ import DetailSiswa from './admin/page/Siswa/Detail.jsx';
 import DetailSubRayon from './admin/page/SubRayon/Detail.jsx';
 import TambahSubRayon from './admin/page/SubRayon/Tambah.jsx';
 import LayananAdmin from './admin/page/Layanan.jsx';
+import DetailPusdiklat from './admin/page/Pusdiklat/Detail.jsx';
+import TambahPusdiklat from './admin/page/Pusdiklat/Tmabah.jsx';
+import TambahRayon from './admin/page/Rayon/Tambah.jsx';
+import DetailRayon from './admin/page/Rayon/Detail.jsx';
 
 const router = createBrowserRouter([
   {
@@ -110,7 +114,22 @@ const router = createBrowserRouter([
     path: "/layananadmin",
     element: <LayananAdmin />,
   },
-
+  {
+    path: "/detailpusdiklat",
+    element: <DetailPusdiklat />,
+  },
+  {
+    path: "/tambahpusdiklat",
+    element: <TambahPusdiklat />,
+  },
+  {
+    path: "/detailrayon",
+    element: <DetailRayon />,
+  },
+  {
+    path: "/tambahrayon",
+    element: <TambahRayon />,
+  },
   // {
   //   path: "/uploadexcel",
   //   element: <UploadExcel />,
