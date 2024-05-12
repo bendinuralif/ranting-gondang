@@ -23,7 +23,7 @@ function TambahSiswa() {
         no,
         jeniskelamin,
         rayon,
-        tahun
+        tahun: parseInt(tahun) // Konversi tahun ke tipe data angka
       });
       console.log("Document written with ID: ", docRef.id);
       // Reset form fields after successful submission
@@ -163,24 +163,23 @@ function TambahSiswa() {
 
       {/* Error Modal */}
       {showErrorModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div className="bg-white rounded-lg overflow-hidden shadow-xl max-w-sm w-full">
-      <div className="p-6">
-        <h2 className="text-lg font-semibold mb-4 text-center text-red-600">Upload gagal!</h2>
-        <p className="text-sm text-gray-700">{errorMessage}</p>
-      </div>
-      <div className="bg-gray-100 p-4 flex justify-center">
-        <button
-          className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm ml-2 px-10 py-2.5"
-          onClick={() => setShowErrorModal(false)}
-        >
-          Tutup
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white rounded-lg overflow-hidden shadow-xl max-w-sm w-full">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4 text-center text-red-600">Upload gagal!</h2>
+              <p className="text-sm text-gray-700">{errorMessage}</p>
+            </div>
+            <div className="bg-gray-100 p-4 flex justify-center">
+              <button
+                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm ml-2 px-10 py-2.5"
+                onClick={() => setShowErrorModal(false)}
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </LayoutAdmin>
   );
 }
