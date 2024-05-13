@@ -24,6 +24,8 @@ function DetailGaleri() {
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editedItem, setEditedItem] = useState({});
 
   useEffect(() => {
     fetchData();
@@ -50,11 +52,6 @@ function DetailGaleri() {
       console.error("Error fetching data:", error);
     }
   };
-  const handleEditFileChange = (e) => {
-    const uploadedFile = e.target.files[0];
-    setEditFile(uploadedFile);
-  };
-  
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -104,12 +101,11 @@ function DetailGaleri() {
   };
 
   const handleEdit = (item) => {
-  setSelectedItem(item);
-  setSelectedImage(item.downloadURL); // Jika ingin menampilkan gambar saat ini saat melakukan edit
-  setEditFile(null); // Reset file gambar yang dipilih sebelumnya
-  setEditModalOpen(true);
-};
-
+    // Memperbarui editedItem dengan item yang akan diedit
+    setEditedItem(item);
+    setShowEditModal(true); // Menampilkan modal pengeditan
+  };
+  
 
   const handleDelete = (item) => {
     setSelectedItemToDelete(item);
@@ -134,25 +130,44 @@ function DetailGaleri() {
     setDeleteConfirmationModalOpen(false);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitEdit = async (e) => {
     e.preventDefault();
     try {
       const db = getFirestore(app);
-      const { no, nama, tahun } = selectedItem;
-      const itemId = selectedItem.id;
+      const itemId = editedItem.id;
       const itemRef = doc(db, "Galeri", itemId);
-      await updateDoc(itemRef, {
-        no: no,
-        nama: nama,
-        tahun: tahun,
-      });
+  
+      // Jika pengguna memilih gambar baru
+      if (editedItem.newImage) {
+        // Unggah gambar baru ke penyimpanan Firebase
+        const storage = getStorage(app);
+        const storageRef = ref(storage, `images/${editedItem.newImage.name}`);
+        await uploadBytes(storageRef, editedItem.newImage);
+        const downloadURL = await getDownloadURL(storageRef);
+  
+        // Gunakan URL download baru untuk mengatur gambar dalam editedItem
+        editedItem.gambar = downloadURL;
+      }
+  
+      // Hapus properti newImage agar tidak disimpan di Firestore
+      delete editedItem.newImage;
+  
+      // Simpan editedItem ke Firestore
+      await updateDoc(itemRef, editedItem);
       console.log("Item updated successfully!");
-      setEditModalOpen(false);
+      setShowEditModal(false);
       fetchData();
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 3000);
     } catch (error) {
       console.error("Error updating item:", error);
+      // Tambahkan logika untuk menampilkan pesan error jika perlu
     }
   };
+  
+  
 
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -219,7 +234,6 @@ function DetailGaleri() {
               ))}
             </tbody>
           </table>
-          {/* Pagination code */}
           <div className="flex justify-between items-center mt-4">
             <div>
               <span className="mr-2">Rows per page:</span>
@@ -253,56 +267,97 @@ function DetailGaleri() {
           </div>
         </div>
       </div>
-      {/* Modal and delete confirmation code */}
-      {deleteConfirmationModalOpen && (
+      {showEditModal && (
         <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div
-              className="inline-block align-bottom bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
               role="dialog" aria-modal="true" aria-labelledby="modal-headline"
             >
               <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
-                    <svg className="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                      Hapus item
-                    </h3>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500 dark:text-gray-300">
-                        Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dikembalikan.
-                      </p>
+                <form onSubmit={handleSubmitEdit}>
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
+                        Edit Item
+                      </h3>
+                      <div className="mt-2">
+                        <label htmlFor="editNama" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Nama
+                        </label>
+                        <input
+  type="text"
+  id="editNama"
+  name="editNama"
+  value={editedItem.nama} // Pastikan nama diambil dari editedItem
+  onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
+  required
+  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+/>
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="editTahun" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Tahun
+                        </label>
+                        <input
+  type="text"
+  id="editTahun"
+  name="editTahun"
+  value={editedItem.tahun} // Pastikan tahun diambil dari editedItem
+  onChange={(e) => setEditedItem({ ...editedItem, tahun: e.target.value })}
+  required
+  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+/>
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="editGambar" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Gambar Baru
+                        </label>
+                        <input
+                          type="file"
+                          id="editGambar"
+                          name="editGambar"
+                          onChange={(e) => setEditedItem({ ...editedItem, newImage: e.target.files[0] })}
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Gambar Saat Ini
+                        </label>
+                        <img
+                          src={editedItem.downloadURL}
+                          alt={editedItem.nama}
+                          className="h-20 w-20 mt-1 rounded-full cursor-pointer"
+                          onClick={() => handleImageClick(editedItem.downloadURL)}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  onClick={confirmDelete}
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Hapus
-                </button>
-                <button
-                  onClick={handleCancelDelete}
-                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  Batal
-                </button>
+                  <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button
+                      type="submit"
+                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    >
+                      Simpan
+                    </button>
+                    <button
+                      onClick={() => setShowEditModal(false)}
+                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
         </div>
       )}
-      {/* Image modal */}
       {showImageModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -315,7 +370,6 @@ function DetailGaleri() {
                 <img src={selectedImage} alt="Selected Image" className="max-w-full h-auto mx-auto" />
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-
                 <button
                   onClick={() => setShowImageModal(false)}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
