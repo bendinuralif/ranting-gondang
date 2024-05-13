@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import LayoutAdmin from "../LayoutAdmin";
 import { addDoc, collection } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Tambahkan impor getDownloadURL
 import app from "../../../lib/firebase/init";
 
 function TambahGaleri() {
   const [uploadGambar, setUploadGambar] = useState("");
+  const [previewImage, setPreviewImage] = useState(""); // State untuk menyimpan URL priview gambar
   const [nama, setNama] = useState("");
   const [tahun, setTahun] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -16,16 +18,27 @@ function TambahGaleri() {
     e.preventDefault();
     const db = getFirestore(app);
     try {
+      // Upload gambar ke Firebase Storage
+      const storage = getStorage(app);
+      const storageRef = ref(storage, 'images/' + uploadGambar.name);
+      await uploadBytes(storageRef, uploadGambar);
+
+      // Ambil URL gambar yang diunggah
+      const downloadURL = await getDownloadURL(storageRef);
+
+      // Simpan data di Firestore
       const docRef = await addDoc(collection(db, "Galeri"), {
-        uploadGambar,
         nama,
-        tahun
+        tahun,
+        downloadURL // Simpan URL gambar
       });
+      
       console.log("Document written with ID: ", docRef.id);
       // Reset form fields after successful submission
       setUploadGambar("");
       setNama("");
       setTahun("");
+      setPreviewImage(""); // Reset preview image
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -39,6 +52,14 @@ function TambahGaleri() {
     // Memastikan input tahun hanya berisi angka
     if (!isNaN(inputTahun)) {
       setTahun(inputTahun);
+    }
+  };
+
+  const handleUploadGambarChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setUploadGambar(selectedFile);
+      setPreviewImage(URL.createObjectURL(selectedFile)); // Buat URL priview gambar
     }
   };
 
@@ -60,12 +81,17 @@ function TambahGaleri() {
               <input
                 type="file"
                 id="uploadGambar"
-                value={uploadGambar}
-                onChange={(e) => setUploadGambar(e.target.value)}
+                onChange={handleUploadGambarChange} // Ubah fungsi pemrosesan gambar
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
               />
             </div>
+            {/* Priview gambar */}
+            {previewImage && (
+              <div className="mt-2">
+                <img src={previewImage} alt="Preview" className="w-full h-auto max-h-60 object-cover rounded-lg" />
+              </div>
+            )}
           </div>
           
           <div className="grid gap-6 mb-6 md:grid-cols-1">

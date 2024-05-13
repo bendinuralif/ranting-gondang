@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { retrieveData, uploadData } from "../../../lib/firebase/service";
-import { collection, addDoc, getFirestore, deleteDoc, doc } from "firebase/firestore";
+import { addDoc, collection, getFirestore, deleteDoc, updateDoc, getDocs, doc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../../lib/firebase/init";
-import { updateDoc } from "firebase/firestore";
 
 function DetailGaleri() {
   const [data, setData] = useState([]);
@@ -12,19 +11,19 @@ function DetailGaleri() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedTahun, setSelectedTahun] = useState("");
   const [paginatedData, setPaginatedData] = useState([]);
-  const [checkedItems, setCheckedItems] = useState({});
-  const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [selectedItem, setSelectedItem] = useState({
     gambar: "",
     nama: "",
-    tahun: "", // Mengubah jabatan menjadi tahun
+    tahun: "",
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -44,39 +43,32 @@ function DetailGaleri() {
   const fetchData = async () => {
     const db = getFirestore(app);
     try {
-      const res = await retrieveData("Galeri", db);
-      res.sort((a, b) => a.no - b.no); // Urutkan data berdasarkan nomor
+      const querySnapshot = await getDocs(collection(db, "Galeri"));
+      const res = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
     setFile(uploadedFile);
   };
 
-  const handleUpload = async () => {
+  const handleUploadGambar = async () => {
     try {
       if (file) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          const json = JSON.parse(e.target.result);
-          const db = getFirestore(app);
-          for (const item of json) {
-            await addDoc(collection(db, "Galeri"), item);
-          }
-          console.log("Data uploaded successfully!");
-          fetchData();
-          setUploadMessage("Upload berhasil!");
-          setShowSuccessModal(true);
-          setTimeout(() => {
-            setShowSuccessModal(false);
-          }, 3000);
-        };
-        reader.readAsText(file);
+        const storage = getStorage(app);
+        const storageRef = ref(storage, `images/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+        setUploadMessage("Upload berhasil!");
+        setShowSuccessModal(true);
+        setTimeout(() => {
+          setShowSuccessModal(false);
+        }, 3000);
+        return downloadURL;
       } else {
         console.error("Please select a file to upload.");
       }
@@ -85,6 +77,14 @@ function DetailGaleri() {
       setErrorMessage("Upload gagal.");
       setShowErrorModal(true);
     }
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
   };
 
   const handleChangeRowsPerPage = (e) => {
@@ -98,14 +98,6 @@ function DetailGaleri() {
     }
   };
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
-
   const handleEdit = (item) => {
     setSelectedItem(item);
     setEditModalOpen(true);
@@ -113,6 +105,7 @@ function DetailGaleri() {
 
   const handleDelete = (item) => {
     setSelectedItemToDelete(item);
+    setDeleteConfirmationModalOpen(true);
   };
 
   const confirmDelete = async () => {
@@ -122,22 +115,28 @@ function DetailGaleri() {
       console.log("Item deleted successfully!");
       fetchData();
       setSelectedItemToDelete(null);
+      setDeleteConfirmationModalOpen(false);
     } catch (error) {
       console.error("Error deleting item:", error);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setSelectedItemToDelete(null);
+    setDeleteConfirmationModalOpen(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const db = getFirestore(app);
-      const { no, nama, tahun } = selectedItem; // Mengubah jabatan menjadi tahun
+      const { no, nama, tahun } = selectedItem;
       const itemId = selectedItem.id;
       const itemRef = doc(db, "Galeri", itemId);
       await updateDoc(itemRef, {
         no: no,
         nama: nama,
-        tahun: tahun, // Mengubah jabatan menjadi tahun
+        tahun: tahun,
       });
       console.log("Item updated successfully!");
       setEditModalOpen(false);
@@ -147,11 +146,16 @@ function DetailGaleri() {
     }
   };
 
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setShowImageModal(true);
+  };
+
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Ketua Tanting</h2>
-        <div className="overflow-x-auto ">
+        <div className="overflow-x-auto">
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
@@ -163,7 +167,7 @@ function DetailGaleri() {
                   Nama
                 </th>
                 <th scope="col" className="px-2 py-3">
-                  Tahun {/* Mengubah label Jabatan menjadi Tahun */}
+                  Tahun
                 </th>
                 <th scope="col" className="px-2 py-3">
                   Edit
@@ -177,9 +181,16 @@ function DetailGaleri() {
               {paginatedData.map((item, index) => (
                 <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-4 py-2"></td>
-                  <td className="px-2 py-2">{item.gambar}</td> {/* Changed 'no' to 'gambar' */}
+                  <td className="px-2 py-2">
+                    <img
+                      src={item.downloadURL}
+                      alt={item.nama}
+                      className="h-10 w-10 rounded-full cursor-pointer"
+                      onClick={() => handleImageClick(item.downloadURL)}
+                    />
+                  </td>
                   <td className="px-2 py-2">{item.nama}</td>
-                  <td className="px-2 py-2">{item.tahun}</td> {/* Mengubah jabatan menjadi tahun */}
+                  <td className="px-2 py-2">{item.tahun}</td>
                   <td className="px-2 py-2">
                     <button
                       onClick={() => handleEdit(item)}
@@ -200,43 +211,33 @@ function DetailGaleri() {
               ))}
             </tbody>
           </table>
-          <div className="flex justify-end items-center px-3">
-            <label htmlFor="rowsPerPage" className="mr-2">
-              Baris per halaman:
-            </label>
-            <select
-              id="rowsPerPage"
-              onChange={handleChangeRowsPerPage}
-              value={rowsPerPage}
-              className="border rounded px-3 py-1"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={"All"}>Semua</option>
-            </select>
-          </div>
-          <div className="flex justify-end items-start p-4">
+          {/* Pagination code */}
+          <div className="flex justify-between items-center mt-4">
+            <div>
+              <span className="mr-2">Rows per page:</span>
+              <select
+                value={rowsPerPage}
+                onChange={handleChangeRowsPerPage}
+                className="px-2 py-1 border border-gray-300 rounded-md"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="All">All</option>
+              </select>
+            </div>
             <div>
               <button
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === 1 ? "cursor-not-allowed" : "bg-red-500 text-white"
-                }`}
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
+                className="px-2 py-1 mr-2 border border-gray-300 rounded-md"
               >
                 Prev
               </button>
-              <span className="mx-2 text-sm text-gray-600">
-                Page {currentPage} of {totalPages}
-              </span>
               <button
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === totalPages ? "cursor-not-allowed" : "bg-red-500 text-white"
-                }`}
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
+                className="px-2 py-1 border border-gray-300 rounded-md"
               >
                 Next
               </button>
@@ -244,173 +245,80 @@ function DetailGaleri() {
           </div>
         </div>
       </div>
-      {editModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
-              <button
-                className="text-black font-semibold"
-                onClick={() => setEditModalOpen(false)}
-                style={{ alignSelf: "flex-start" }}
-              >
-                X
-              </button>
+      {/* Modal and delete confirmation code */}
+      {deleteConfirmationModalOpen && (
+        <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-6 mb-6 md:grid-cols-1">
-                <div>
-                  <label
-                    htmlFor="no"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    No
-                  </label>
-                  <input
-                    type="text"
-                    id="no"
-                    value={selectedItem.gambar}
-                    onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, gambar: e.target.value })
-                    }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Masukan No"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="grid gap-6 mb-6 md:grid-cols-1">
-                <div>
-                  <label
-                    htmlFor="nama"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Nama
-                  </label>
-                  <input
-                    type="text"
-                    id="nama"
-                    value={selectedItem.nama}
-                    onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, nama: e.target.value })
-                    }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Masukan Nama"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="grid gap-6 mb-6 md:grid-cols-1">
-                <div>
-                  <label
-                    htmlFor="tahun"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Tahun
-                  </label>
-                  <input
-                    type="text"
-                    id="tahun"
-                    value={selectedItem.tahun}
-                    onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, tahun: e.target.value })
-                    }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Masukan Tahun"
-                    required
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Submit
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-      {showSuccessModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg">
-            <h2 className="text-lg font-semibold mb-4">Upload berhasil!</h2>
-            <button
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm ml-2 px-10 py-2.5 "
-              onClick={() => setShowSuccessModal(false)}
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div
+              className="inline-block align-bottom bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              role="dialog" aria-modal="true" aria-labelledby="modal-headline"
             >
-              Tutup
-            </button>
-          </div>
-        </div>
-      )}
-      {showErrorModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white rounded-lg overflow-hidden shadow-xl max-w-sm w-full">
-            <div className="p-6">
-              <h2 className="text-lg font-semibold mb-4 text-center text-red-600">Upload gagal!</h2>
-              <p className="text-sm text-gray-700">{errorMessage}</p>
-            </div>
-            <div className="bg-gray-100 p-4 flex justify-center">
-              <button
-                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm ml-2 px-10 py-2.5"
-                onClick={() => setShowErrorModal(false)}
-              >
-                Tutup
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      {selectedItemToDelete && (
-  <div className="fixed z-10 inset-0 overflow-y-auto">
-    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-      </div>
-
-      <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-      <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div className="sm:flex sm:items-start">
-            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-              <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </div>
-            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
-              <div className="mt-2">
-                <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.nama}</span>"?</p>
+              <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg className="h-6 w-6 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
+                      Hapus item
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-300">
+                        Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dikembalikan.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  onClick={confirmDelete}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Hapus
+                </button>
+                <button
+                  onClick={handleCancelDelete}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Batal
+                </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button
-            onClick={() => {
-              confirmDelete(selectedItemToDelete);
-              setSelectedItemToDelete(null);
-            }}
-            type="button"
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Ya
-          </button>
-          <button
-            onClick={() => setSelectedItemToDelete(null)}
-            type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Tidak
-          </button>
+      )}
+      {/* Image modal */}
+      {showImageModal && (
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <img src={selectedImage} alt="Selected Image" className="max-w-full h-auto mx-auto" />
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                
+                <button
+                  onClick={() => setShowImageModal(false)}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Tutup
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </LayoutAdmin>
   );
 }
