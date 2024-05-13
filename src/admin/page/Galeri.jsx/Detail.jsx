@@ -206,7 +206,7 @@ function DetailGaleri() {
                   <td className="px-4 py-2"></td>
                   <td className="px-2 py-2">
                     <img
-                      src={item.downloadURL}
+                      src={item.uploadGambar}
                       alt={item.nama}
                       className="h-10 w-10 rounded-full cursor-pointer"
                       onClick={() => handleImageClick(item.downloadURL)}
