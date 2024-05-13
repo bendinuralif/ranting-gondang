@@ -59,7 +59,7 @@ function TambahGaleri() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setUploadGambar(selectedFile);
-      setPreviewImage(URL.createObjectURL(selectedFile)); // Buat URL priview gambar
+      setPreviewImage(URL.createObjectURL(selectedFile)); 
     }
   };
 

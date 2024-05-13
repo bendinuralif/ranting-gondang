@@ -50,6 +50,11 @@ function DetailGaleri() {
       console.error("Error fetching data:", error);
     }
   };
+  const handleEditFileChange = (e) => {
+    const uploadedFile = e.target.files[0];
+    setEditFile(uploadedFile);
+  };
+  
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -99,9 +104,12 @@ function DetailGaleri() {
   };
 
   const handleEdit = (item) => {
-    setSelectedItem(item);
-    setEditModalOpen(true);
-  };
+  setSelectedItem(item);
+  setSelectedImage(item.downloadURL); // Jika ingin menampilkan gambar saat ini saat melakukan edit
+  setEditFile(null); // Reset file gambar yang dipilih sebelumnya
+  setEditModalOpen(true);
+};
+
 
   const handleDelete = (item) => {
     setSelectedItemToDelete(item);
@@ -307,7 +315,7 @@ function DetailGaleri() {
                 <img src={selectedImage} alt="Selected Image" className="max-w-full h-auto mx-auto" />
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                
+
                 <button
                   onClick={() => setShowImageModal(false)}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
