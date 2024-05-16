@@ -96,25 +96,10 @@ function SejarahSingkat() {
               SEJARAH RANTING GONDANG
             </div>
             <p className="text-sm mb-3 p-5 font-normal text-gray-700 dark:text-gray-400 md:text-lg text-justify">
-              Didirikan di Madiun pada tahun 1922 oleh Ki Hajar Hardjo Oetomo
-              (1888 – 1952), seorang pahlawan Perintis Kemerdekaan RI, PSHT
-              semula bernama Setia Hati Pemuda Sport Club (SH PSC) yang
-              berbentuk organisasi. Nama ini kemudian menjadi Persaudaraan Setia
-              Hati “Pemuda Sport Club” dan akhirnya diubah menjadi “Persaudaraan
-              Setia Hati Terate” dalam kongres pertama di Madiun, 25 Maret 1951.
+            PSHT Ranting Gondang, Cabang Sragen didirikan di gondang pada tahun 1983 oleh Kang Mas Karmo SPd, MPd, seorang perintis PSHT Ranting Gondang. Perkembangan PSHT Ranting Gondang tidak terlepas dari jasa beberapa tokoh yang turut membesarkan PSHT Ranting Gondang, diantaranya Kangmas Karmo, mas Kamto (Guru Kedawung), Kang mas Priynto, Mas Purwanto, Mas Kusno, Mas Tri Bintoro Gatot, Kang mas Ginoto. Beliau-beliaulah yang merintis perkembangan  PSHT Ranting Gondang. Berkat jasa beliau semua, PSHT Ranting Gondang dapat berkembang sangat pesat sampai saat ini.
               <br />
               <br />
-              Perkembangan PSHT tidak terlepas dari jasa beberapa tokoh yang
-              turut membesarkan PSHT, diantaranya Bpk. RM Soetomo Mangkudjojo;
-              Bpk. Santoso Kartoatmodjo; Bpk. Irsyad; Mas RM. Imam Koesoepangat
-              dan Mas KRT Tarmadji Budi Harsono, SE. Beliau-beliaulah yang
-              meletakkan berbagai dasar dan memperintis pengembangan PSHT yang
-              masih digunakan dan berlaku hingga saat ini. Berkat jasa mereka
-              semua, PSHT sejak lama sudah memiliki AD-ART, mendirikan sebuah
-              yayasan, mengembangkan PSHT dengan membentuk banyak cabang,
-              membangun padepokan sebagai pusat kegiatan PSHT, mendirikan
-              koperasi yang kini akan diperluas dengan melibatkan semua anggota
-              di seluruh cabang, dan makin dikenalnya PSHT melalui berbagai
+              Pada tahun 1983, latihan pertama dilakukan di tunggul yang didirikan oleh Mas Kamto lalun di lanjutkan oleh kangmas karmo dan mas kusno, namun berhenti setelah 6 bulan karena masalah perizinan. Kemudian, Kangmas Karmo membuka latihan resmi di SD N 3 Gondang dengan bantuan Kang Mas Priyanto dan warga dari Mantingan (Mas Marjuki, Mas Siswo). Jumlah siswa PSHT Ranting Gondang pada saat itu sekitar 150 orang yang latihannya dilakukan sore dan malam.
               kejuaraan.
               <br />
               <br />
