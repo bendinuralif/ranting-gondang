@@ -1,7 +1,7 @@
 import Layout from "./Layout";
-import galeri1 from "../assets/img/sejarah-1.jpg";
-import galeri2 from "../assets/img/sejarah-2.png";
-import galeri3 from "../assets/img/sejarah-3.jpg";
+// import galeri1 from "../assets/img/sejarah-1.jpg";
+// import galeri2 from "../assets/img/sejarah-2.png";
+// import galeri3 from "../assets/img/sejarah-3.jpg";
 import React, { useState, useEffect } from "react";
 import { retrieveData, uploadData } from "../lib/firebase/service";
 import { collection, addDoc, getFirestore } from "firebase/firestore";

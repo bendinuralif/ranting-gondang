@@ -101,11 +101,9 @@ function DetailGaleri() {
   };
 
   const handleEdit = (item) => {
-    // Memperbarui editedItem dengan item yang akan diedit
     setEditedItem(item);
-    setShowEditModal(true); // Menampilkan modal pengeditan
+    setShowEditModal(true);
   };
-  
 
   const handleDelete = (item) => {
     setSelectedItemToDelete(item);
@@ -136,38 +134,14 @@ function DetailGaleri() {
       const db = getFirestore(app);
       const itemId = editedItem.id;
       const itemRef = doc(db, "Galeri", itemId);
-  
-      // Jika pengguna memilih gambar baru
-      if (editedItem.newImage) {
-        // Unggah gambar baru ke penyimpanan Firebase
-        const storage = getStorage(app);
-        const storageRef = ref(storage, `images/${editedItem.newImage.name}`);
-        await uploadBytes(storageRef, editedItem.newImage);
-        const downloadURL = await getDownloadURL(storageRef);
-  
-        // Gunakan URL download baru untuk mengatur gambar dalam editedItem
-        editedItem.gambar = downloadURL;
-      }
-  
-      // Hapus properti newImage agar tidak disimpan di Firestore
-      delete editedItem.newImage;
-  
-      // Simpan editedItem ke Firestore
       await updateDoc(itemRef, editedItem);
       console.log("Item updated successfully!");
       setShowEditModal(false);
       fetchData();
-      setShowSuccessModal(true);
-      setTimeout(() => {
-        setShowSuccessModal(false);
-      }, 3000);
     } catch (error) {
       console.error("Error updating item:", error);
-      // Tambahkan logika untuk menampilkan pesan error jika perlu
     }
   };
-  
-  
 
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -206,7 +180,7 @@ function DetailGaleri() {
                   <td className="px-4 py-2"></td>
                   <td className="px-2 py-2">
                     <img
-                      src={item.uploadGambar}
+                      src={item.downloadURL}
                       alt={item.nama}
                       className="h-10 w-10 rounded-full cursor-pointer"
                       onClick={() => handleImageClick(item.downloadURL)}
@@ -290,28 +264,28 @@ function DetailGaleri() {
                           Nama
                         </label>
                         <input
-  type="text"
-  id="editNama"
-  name="editNama"
-  value={editedItem.nama} // Pastikan nama diambil dari editedItem
-  onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
-  required
-  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
-/>
+                          type="text"
+                          id="editNama"
+                          name="editNama"
+                          value={editedItem.nama}
+                          onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
                       </div>
                       <div className="mt-2">
                         <label htmlFor="editTahun" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Tahun
                         </label>
                         <input
-  type="text"
-  id="editTahun"
-  name="editTahun"
-  value={editedItem.tahun} // Pastikan tahun diambil dari editedItem
-  onChange={(e) => setEditedItem({ ...editedItem, tahun: e.target.value })}
-  required
-  className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
-/>
+                          type="text"
+                          id="editTahun"
+                          name="editTahun"
+                          value={editedItem.tahun}
+                          onChange={(e) => setEditedItem({ ...editedItem, tahun: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
                       </div>
                       <div className="mt-2">
                         <label htmlFor="editGambar" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
