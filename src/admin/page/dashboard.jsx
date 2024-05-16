@@ -9,8 +9,22 @@ const MAIN_COLLECTION = "__YOUR_FIRESTORE_ROOT_COLLECTION__";
 
 function Dashboard() {
     const [statistics, setStatistics] = useState([]);
+    const [session, setSession] = useState(null); // Menyimpan informasi sesi
 
     useEffect(() => {
+        // Logika untuk memeriksa sesi pengguna
+        const checkSession = () => {
+            const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+            if (userSession) {
+                setSession(userSession); // Set sesi jika ada
+            } else {
+                // Redirect ke halaman login jika tidak ada sesi
+                window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+            }
+        };
+
+        checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+
         const fetchData = async () => {
             const db = getFirestore(app);
             try {
