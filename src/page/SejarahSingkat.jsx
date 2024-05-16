@@ -93,7 +93,7 @@ function SejarahSingkat() {
         <div className="flex flex-col md:flex-row justify-between items-center m-5 md:m-5 mt-10">
           <div className="md:w-1/2">
             <div className="font-inter text-[1.2rem] md:text-4xl font-bold pt-10 md:pt-20 pl-4 text-center md:text-justify">
-              SEJARAH RANTING GONDANG
+              SEJARAH PSHT RANTING GONDANG
             </div>
             <p className="text-sm mb-3 p-5 font-normal text-gray-700 dark:text-gray-400 md:text-lg text-justify">
             PSHT Ranting Gondang, Cabang Sragen didirikan di gondang pada tahun 1983 oleh Kang Mas Karmo SPd, MPd, seorang perintis PSHT Ranting Gondang. Perkembangan PSHT Ranting Gondang tidak terlepas dari jasa beberapa tokoh yang turut membesarkan PSHT Ranting Gondang, diantaranya Kangmas Karmo, mas Kamto (Guru Kedawung), Kang mas Priynto, Mas Purwanto, Mas Kusno, Mas Tri Bintoro Gatot, Kang mas Ginoto. Beliau-beliaulah yang merintis perkembangan  PSHT Ranting Gondang. Berkat jasa beliau semua, PSHT Ranting Gondang dapat berkembang sangat pesat sampai saat ini.
@@ -103,14 +103,13 @@ function SejarahSingkat() {
               kejuaraan.
               <br />
               <br />
-              Kepengurusan yang baru di bawah pimpinan DR. Ir. M. Taufiq SH.,
-              MSc. selaku Ketua Umum untuk periode 2021 – 2026, telah menetapkan
-              rencana strategis yang digunakan sebagai pedoman bagi seluruh
-              pengurus di semua tingkatan. Dibandingkan dengan kepengurusan
-              sebelumnya, pada periode ini organisasi PSHT mengalami perubahan
-              struktur dan diperluas dengan menambah bidang Pengabdian
-              Masyarakat untuk lebih mengorganisir kegiatan-kegiatan PSHT yang
-              memberi dampak langsung dan positif terhadap masyarakat.
+              Pada tahun 1985, PSHT Ranting Gondang mengikuti pengesahan pertama di Stadion Wilis Madiun, dihadiri oleh peserta dari seluruh Indonesia. Sejumlah 5 warga baru dari PSHT Ranting Gondang disahkan, termasuk Mas Purwanto, dengan total anggota dari Cabang Sragen sebanyak 27 orang. Tahun berikutnya, yakni 1986, sebanyak 8 warga baru disahkan, termasuk Mas Tri Bintoro Gatot, dan mereka membuka latihan di tempat tinggal masing-masing, seperti Mas Sugino di Kaliwedi, Mas Trimo di Tegalrejo, Mas Sutarno dan Mas Joko di Jetis, dan Mas Anus di Tawang. Semenjak itu latihan di PSHT Ranting gondang mulai banyak.
+              <br />
+              <br />
+              Pada tahun 1998, PSHT Ranting Gondang mengalami banyak masalah sehingga ketua ranting digantikan oleh Kangmas Karmo untuk menenangkan situasi. Setelah suasana membaik pada tahun 2002, ketua ranting digantikan oleh Mas Gatot. Di bawah kepemimpinan Mas Gatot, PSHT Ranting Gondang berkembang pesat, dan pada tahun 2014, membangun Padepokan.
+              <br />
+              <br />
+              Pada periode 2021-2024, kepemimpinan PSHT Ranting Gondang dipegang oleh Mas Sumarno. Pada periode ini, terjadi perubahan struktur organisasi dan perluasan kegiatan dengan menambah bidang Pengabdian Masyarakat, untuk lebih mengorganisir kegiatan yang memberi dampak langsung dan positif kepada masyarakat.
             </p>
           </div>
           <div className="md:w-1/2 flex justify-center items-center">
@@ -134,7 +133,7 @@ function SejarahSingkat() {
             </div>
           </div>
           <div className="md:w-1/2">
-            <div className="font-inter text-lg md:text-3xl font-bold pb-5 md:pb-10 pt-10 md:pt-20 md:pl-10 text-center md:text-left">
+            <div className="font-inter text-lg md:text-3xl font-bold pb-5 md:pb-5 pt-5 md:pt-20 md:pl-10 text-center md:text-left">
               DAFTAR KETUA PSHT RANTING GONDANG
             </div>
 
