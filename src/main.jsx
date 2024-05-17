@@ -11,7 +11,6 @@ import Kontak from './page/Kontak.jsx';
 import SejarahSingkat from './page/SejarahSingkat.jsx';
 import StrukturOrganisasi from './page/StrukturOrganisasi.jsx';
 import Tujuan from './page/Tujuan.jsx';
-import Login from './page/login.jsx';
 import Siswa from './components/Siswa.jsx';
 import Rayon from './components/Rayon.jsx';
 import SubRayon from './components/Subrayon.jsx';
@@ -34,6 +33,9 @@ import DetailSejarahSingkat from './admin/page/SejarahSingkat.jsx/Detail.jsx';
 import TambahSejarahSingkat from './admin/page/SejarahSingkat.jsx/Tambah.jsx';
 import TambahGaleri from './admin/page/Galeri.jsx/Tambah.jsx';
 import DetailGaleri from './admin/page/Galeri.jsx/Detail.jsx';
+import Logout from './page/Logout.jsx';
+import Login from './page/login.jsx';
+
 
 const router = createBrowserRouter([
   {
@@ -79,6 +81,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/logout",
+    element: <Logout />,
   },
   {
     path: "/siswa",

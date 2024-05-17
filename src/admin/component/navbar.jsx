@@ -32,7 +32,7 @@ export function CustomNavbar({toggleSidebar}) {
           <Dropdown.Item>Settings</Dropdown.Item>
           <Dropdown.Item>Earnings</Dropdown.Item>
           <Dropdown.Divider />
-          <Dropdown.Item>Sign out</Dropdown.Item>
+          <Dropdown.Item as="a" href="/logout">Logout</Dropdown.Item>
         </Dropdown>
         
       </div>
