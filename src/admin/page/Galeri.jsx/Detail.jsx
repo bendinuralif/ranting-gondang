@@ -26,10 +26,11 @@ function DetailGaleri() {
   const [selectedImage, setSelectedImage] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [editedItem, setEditedItem] = useState({});
+  const [sortOrder, setSortOrder] = useState("asc"); // Add sort order state
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [sortOrder]);
 
   useEffect(() => {
     const totalPagesCount = Math.ceil(data.length / rowsPerPage);
@@ -47,6 +48,16 @@ function DetailGaleri() {
     try {
       const querySnapshot = await getDocs(collection(db, "Galeri"));
       const res = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Sort the data based on tahun
+      res.sort((a, b) => {
+        const yearA = parseInt(a.tahun, 10);
+        const yearB = parseInt(b.tahun, 10);
+        if (sortOrder === "asc") {
+          return yearA - yearB;
+        } else {
+          return yearB - yearA;
+        }
+      });
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -146,6 +157,10 @@ function DetailGaleri() {
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
     setShowImageModal(true);
+  };
+
+  const handleSortToggle = () => {
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
   return (
