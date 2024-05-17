@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../page/Layout";
-import { retrieveData, uploadData } from "../lib/firebase/service";
-import { collection, addDoc, getFirestore } from "firebase/firestore";
-import app from "../lib/firebase/init";
-
-const firestore = getFirestore(app);
+import { retrieveData } from "../lib/firebase/service";
 
 function Siswa() {
   const [data, setData] = useState([]);
-  const [file, setFile] = useState(null);
-  const [uploadMessage, setUploadMessage] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [tahunOptions, setTahunOptions] = useState([]);
   const [selectedTahun, setSelectedTahun] = useState();
-  const [paginatedData, setPaginatedData] = useState([]); // Define paginatedData state
+  const [paginatedData, setPaginatedData] = useState([]);
 
   useEffect(() => {
     fetchData();
   }, [selectedTahun]);
-  
 
   useEffect(() => {
     const totalPagesCount = Math.ceil(data.length / rowsPerPage);
@@ -53,38 +46,6 @@ function Siswa() {
       setData(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error);
-    }
-  };
-
-
-  const handleFileChange = (e) => {
-    const uploadedFile = e.target.files[0];
-    setFile(uploadedFile);
-  };
-
-  const handleUpload = async () => {
-    try {
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          const json = JSON.parse(e.target.result);
-          for (const item of json) {
-            await addDoc(collection(firestore, "Siswa"), item);
-          }
-          console.log("Data uploaded successfully!");
-          fetchData();
-          setUploadMessage("Upload berhasil!");
-          setTimeout(() => {
-            setUploadMessage("");
-          }, 3000);
-        };
-        reader.readAsText(file);
-      } else {
-        console.error("Please select a file to upload.");
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      setUploadMessage("Upload gagal.");
     }
   };
 
@@ -123,7 +84,7 @@ function Siswa() {
         </div>
       </div>
       <div className="justify-center items-center px-5">
-        <div className="px-2 block mx-auto max-w-7xl mt-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+        <div className="px-2 block mx-auto max-w-7xl mt-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
           <div className="relative overflow-x-auto mt-4">
             <div className="flex justify-end items-center px-3 pb-3">
               <label htmlFor="tahun" className="mr-2">
@@ -144,7 +105,7 @@ function Siswa() {
             </div>
 
             <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
-              <thead className="text-xs md:text-sm text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-red-00">
+              <thead className="text-xs md:text-sm text-black uppercase bg-gray-300 dark:bg-gray-700 dark:text-red-00">
                 <tr>
                   <th scope="col" className="px-2 py-2">
                     No
@@ -161,17 +122,18 @@ function Siswa() {
                 </tr>
               </thead>
               <tbody>
-                {paginatedData.map((item, index) => (
-                  <tr
-                    key={index}
-                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                  >
-                    <td className="px-2 py-2">{item.no}</td>
-                    <td className="px-2 py-2">{item.nama}</td>
-                    <td className="px-2 py-2">{item.jeniskelamin}</td>
-                    <td className="px-2 py-2">{item.rayon}</td>
-                  </tr>
-                ))}
+              {paginatedData.map((item, index) => (
+  <tr
+    key={index}
+    className={`bg-${index % 2 === 0 ? 'gray-100' : 'white'} border-b dark:bg-gray-800 dark:border-gray-700`}
+  >
+    <td className="px-2 py-2">{item.no}</td>
+    <td className="px-2 py-2">{item.nama}</td>
+    <td className="px-2 py-2">{item.jeniskelamin}</td>
+    <td className="px-2 py-2">{item.rayon}</td>
+  </tr>
+))}
+
               </tbody>
             </table>
             <div className="flex justify-end items-center px-3">
@@ -221,45 +183,33 @@ function Siswa() {
               </span>
               <button
                 className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === totalPages
-                    ? "cursor-not-allowed"
-                    : "bg-red-500 text-white"
-                }`}
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
+                  currentPage === totalPages                    ? "cursor-not-allowed"
+                  : "bg-red-500 text-white"
+              }`}
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center mt-5">
-        <input type="file" accept=".json" onChange={handleFileChange} />
-        <button
-          className="ml-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={handleUpload}
-        >
-          Upload JSON
-        </button>
-        {uploadMessage && (
-          <p className="ml-3 text-green-500">{uploadMessage}</p>
-        )}
-      </div>
-    </Layout>
-  );
+    </div>
+  </Layout>
+);
 }
 
 export default Siswa;
+

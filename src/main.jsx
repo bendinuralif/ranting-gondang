@@ -30,11 +30,11 @@ import DetailRayon from './admin/page/Rayon/Detail.jsx';
 import DetailStrukturOrganisasi from './admin/page/StrukturOrganisasi.jsx/Detail.jsx';
 import TambahStrukturOrganisasi from './admin/page/StrukturOrganisasi.jsx/Tambah.jsx';
 import DetailSejarahSingkat from './admin/page/SejarahSingkat.jsx/Detail.jsx';
-import TambahSejarahSingkat from './admin/page/SejarahSingkat.jsx/Tambah.jsx';
 import TambahGaleri from './admin/page/Galeri.jsx/Tambah.jsx';
 import DetailGaleri from './admin/page/Galeri.jsx/Detail.jsx';
 import Logout from './page/Logout.jsx';
 import Login from './page/login.jsx';
+import TambahKetuaRanting from './admin/page/SejarahSingkat.jsx/Tambah.jsx';
 
 
 const router = createBrowserRouter([
@@ -155,8 +155,8 @@ const router = createBrowserRouter([
     element: <DetailSejarahSingkat />,
   },
   {
-    path: "/tambah-sejarah-singkat",
-    element: <TambahSejarahSingkat />,
+    path: "/tambah-ketua-ranting",
+    element: <TambahKetuaRanting />,
   },
   {
     path: "/tambah-galeri",

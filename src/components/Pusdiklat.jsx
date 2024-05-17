@@ -37,7 +37,7 @@ function Pusdiklat() {
         >
           <div className="relative overflow-x-auto mt-4">
             <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
-              <thead className="text-xs md:text-sm text-black uppercase bg-gray-50 dark:bg-gray-700 dark:text-red-00">
+              <thead className="text-xs md:text-sm text-black uppercase bg-gray-300 dark:bg-gray-700 dark:text-red-00">
                 <tr>
                   <th scope="col" className="px-2 py-2">
                     No
@@ -52,7 +52,7 @@ function Pusdiklat() {
               </thead>
               <tbody>
                 {data.map((item, index) => (
-                  <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                  <tr key={index} className={`bg-${index % 2 === 0 ? 'gray-100' : 'white'} border-b dark:bg-gray-800 dark:border-gray-700`}>
                     <td className="px-2 py-2">{index + 1}</td>
                     <td className="px-2 py-2">{item.nama}</td>
                     <td className="px-2 py-2">{item.pusdiklat}</td>

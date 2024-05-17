@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Import useEffect dari React
 import LayoutAdmin from "../LayoutAdmin";
 import { addDoc, collection } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
@@ -10,6 +10,46 @@ function TambahPusdiklat() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [statistics, setStatistics] = useState([]);
+  const [session, setSession] = useState(null); // Menyimpan informasi sesi
+
+  useEffect(() => {
+      // Logika untuk memeriksa sesi pengguna
+      const checkSession = () => {
+          const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+          if (userSession) {
+              setSession(userSession); // Set sesi jika ada
+          } else {
+              // Redirect ke halaman login jika tidak ada sesi
+              window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+          }
+      };
+
+      checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+
+      const fetchData = async () => {
+          const db = getFirestore(app);
+          try {
+              const mainCollectionRef = collection(db, MAIN_COLLECTION);
+              const snapshot = await getDocs(mainCollectionRef);
+              
+              const promises = snapshot.docs.map(async (doc) => {
+                  const subCollectionRef = collection(db, doc.id);
+                  const subSnapshot = await getDocs(subCollectionRef);
+                  return { collection: doc.id, count: subSnapshot.size };
+              });
+
+              const stats = await Promise.all(promises);
+              setStatistics(stats);
+          } catch (error) {
+              console.error("Error fetching Firestore data:", error);
+              // Handle error here
+          }
+      };
+
+      fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -113,7 +153,7 @@ function TambahPusdiklat() {
       <div className="bg-gray-100 p-4 flex justify-center">
         <button
           className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm ml-2 px-10 py-2.5"
-          onClick={() => setShowErrorModal(false)}
+                      onClick={() => setShowErrorModal(false)}
         >
           Tutup
         </button>
@@ -121,7 +161,6 @@ function TambahPusdiklat() {
     </div>
   </div>
 )}
-
     </LayoutAdmin>
   );
 }

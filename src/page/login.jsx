@@ -5,7 +5,7 @@ import { AdminLogin } from '../lib/firebase/service';
 const Login = () => {
   const [niw, setNiw] = useState('');
   const [password, setPassword] = useState('');
-  const [login, setLogin] = useState('');
+  const [login, setLogin] = useState(false);
   const [error, setError] = useState(null); // State for holding error message
 
   const handleNiwChange = (event) => {
@@ -29,6 +29,7 @@ const Login = () => {
     } catch (error) {
       console.error(error);
       setError('NIW or password is incorrect. Please try again.'); // Set error message
+      setLogin(false); // Reset login state if there was an error
     }
   };
 
@@ -100,6 +101,7 @@ const Login = () => {
               <button
                 type="submit"
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                disabled={login} // Disable button while logging in
               >
                 Sign in
               </button>

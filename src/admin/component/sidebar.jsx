@@ -42,7 +42,7 @@ function CustomSidebar({isOpen}) {
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Ketua Ranting" className="hover:bg-red-700 transition-colors duration-300">
               <FlowbiteSidebar.Item href="/detail-sejarah-singkat" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
-              <FlowbiteSidebar.Item href="/tambah-sejarah-singkat" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-ketua-ranting" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Struktur Organisasi" className="hover:bg-red-700 transition-colors duration-300">
               <FlowbiteSidebar.Item href="/detail-struktur-organisasi" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>

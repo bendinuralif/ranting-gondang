@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
 import { addDoc, collection } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
@@ -11,6 +11,46 @@ function TambahGaleri() {
   const [nama, setNama] = useState("");
   const [tahun, setTahun] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Definisikan state session
+  const [session, setSession] = useState(null); 
+
+  useEffect(() => {
+      // Logika untuk memeriksa sesi pengguna
+      const checkSession = () => {
+          const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+          if (userSession) {
+              setSession(userSession); // Set sesi jika ada
+          } else {
+              // Redirect ke halaman login jika tidak ada sesi
+              window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+          }
+      };
+
+      checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+
+      const fetchData = async () => {
+          const db = getFirestore(app);
+          try {
+              const mainCollectionRef = collection(db, MAIN_COLLECTION);
+              const snapshot = await getDocs(mainCollectionRef);
+              
+              const promises = snapshot.docs.map(async (doc) => {
+                  const subCollectionRef = collection(db, doc.id);
+                  const subSnapshot = await getDocs(subCollectionRef);
+                  return { collection: doc.id, count: subSnapshot.size };
+              });
+
+              const stats = await Promise.all(promises);
+              setStatistics(stats);
+          } catch (error) {
+              console.error("Error fetching Firestore data:", error);
+              // Handle error here
+          }
+      };
+
+      fetchData();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -134,7 +174,7 @@ function TambahGaleri() {
 
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg">
+                    <div className="bg-white p-8 rounded-lg">
             <h2 className="text-lg font-semibold mb-4">Upload berhasil!</h2>
             <button
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm ml-1 px-10 py-2.5 "

@@ -28,6 +28,46 @@ function DetailGaleri() {
   const [editedItem, setEditedItem] = useState({});
   const [sortOrder, setSortOrder] = useState("asc"); // Add sort order state
 
+  const [statistics, setStatistics] = useState([]);
+  const [session, setSession] = useState(null); // Menyimpan informasi sesi
+
+  useEffect(() => {
+      // Logika untuk memeriksa sesi pengguna
+      const checkSession = () => {
+          const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+          if (userSession) {
+              setSession(userSession); // Set sesi jika ada
+          } else {
+              // Redirect ke halaman login jika tidak ada sesi
+              window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+          }
+      };
+
+      checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+
+      const fetchData = async () => {
+          const db = getFirestore(app);
+          try {
+              const mainCollectionRef = collection(db, MAIN_COLLECTION);
+              const snapshot = await getDocs(mainCollectionRef);
+              
+              const promises = snapshot.docs.map(async (doc) => {
+                  const subCollectionRef = collection(db, doc.id);
+                  const subSnapshot = await getDocs(subCollectionRef);
+                  return { collection: doc.id, count: subSnapshot.size };
+              });
+
+              const stats = await Promise.all(promises);
+              setStatistics(stats);
+          } catch (error) {
+              console.error("Error fetching Firestore data:", error);
+              // Handle error here
+          }
+      };
+
+      fetchData();
+  }, []);
+
   useEffect(() => {
     fetchData();
   }, [sortOrder]);
