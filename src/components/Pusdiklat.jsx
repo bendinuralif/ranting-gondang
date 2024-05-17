@@ -43,7 +43,7 @@ function Pusdiklat() {
                     No
                   </th>
                   <th scope="col" className="px-2 py-2">
-                    Nama Ketua
+                    Nama Pembina
                   </th>
                   <th scope="col" className="px-2 py-2">
                     Pusdiklat
