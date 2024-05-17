@@ -57,17 +57,17 @@ const GalleryPage = () => {
           >
             Semua
           </button>
-          {years.map(year => (
-            <button
-              key={year}
-              className={`text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 focus:ring-4 focus:outline-none rounded-full 
-                ${activeButton === year ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-white hover:border-gray-200 hover:bg-red-700 hover:text-white'}
-              `}
-              onClick={() => handleButtonClick(year)}
-            >
-              {year}
-            </button>
-          ))}
+          {years.sort((a, b) => a - b).map(year => (
+  <button
+    key={year}
+    className={`text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 focus:ring-4 focus:outline-none rounded-full 
+      ${activeButton === year ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-white hover:border-gray-200 hover:bg-red-700 hover:text-white'}
+    `}
+    onClick={() => handleButtonClick(year)}
+  >
+    {year}
+  </button>
+))}
         </div>
 
         {/* Galeri gambar */}
