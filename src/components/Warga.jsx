@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../page/Layout";
 import { retrieveData } from "../lib/firebase/service";
 
-function Siswa() {
+function Warga() {
   const [data, setData] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,7 +22,7 @@ function Siswa() {
 
   const fetchData = async () => {
     try {
-      const res = await retrieveData("Siswa");
+      const res = await retrieveData("Warga");
       const availableYears = Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a);
       setTahunOptions(availableYears);
   
@@ -117,7 +117,10 @@ function Siswa() {
                     Jenis Kelamin
                   </th>
                   <th scope="col" className="px-2 py-2">
-                    Rayon
+                    Alamat
+                  </th>
+                  <th scope="col" className="px-2 py-2">
+                    Tahun
                   </th>
                 </tr>
               </thead>
@@ -130,7 +133,8 @@ function Siswa() {
     <td className="px-2 py-2">{item.no}</td>
     <td className="px-2 py-2">{item.nama}</td>
     <td className="px-2 py-2">{item.jeniskelamin}</td>
-    <td className="px-2 py-2">{item.rayon}</td>
+    <td className="px-2 py-2">{item.alamat}</td>
+    <td className="px-2 py-2">{item.tahun}</td>
   </tr>
 ))}
 
@@ -208,9 +212,10 @@ function Siswa() {
       </div>
     </div>
     <div className="flex justify-end items-start  p-4 mt-5"></div>
+
   </Layout>
 );
 }
 
-export default Siswa;
+export default Warga;
 

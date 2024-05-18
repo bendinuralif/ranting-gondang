@@ -23,6 +23,9 @@ function CustomSidebar({isOpen}) {
             <FlowbiteSidebar.Item href="/layanan-admin" icon={HiInbox} className="hover:bg-red-700 transition-colors duration-300">
               Layanan
             </FlowbiteSidebar.Item>
+            <FlowbiteSidebar.Item href="/upload-Data" icon={HiInbox} className="hover:bg-red-700 transition-colors duration-300">
+              Upload Data
+            </FlowbiteSidebar.Item>
             
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Siswa" className="hover:bg-red-700 transition-colors duration-300">
               <FlowbiteSidebar.Item href="/detail-siswa" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>

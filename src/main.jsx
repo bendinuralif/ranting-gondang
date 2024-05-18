@@ -35,6 +35,8 @@ import DetailGaleri from './admin/page/Galeri.jsx/Detail.jsx';
 import Logout from './page/Logout.jsx';
 import Login from './page/login.jsx';
 import TambahKetuaRanting from './admin/page/SejarahSingkat.jsx/Tambah.jsx';
+import UploadData from './admin/page/UploadData.jsx';
+import Warga from './components/Warga.jsx';
 
 
 const router = createBrowserRouter([
@@ -89,6 +91,10 @@ const router = createBrowserRouter([
   {
     path: "/siswa",
     element: <Siswa />,
+  },
+  {
+    path: "/warga",
+    element: <Warga />,
   },
   {
     path: "/rayon",
@@ -165,6 +171,10 @@ const router = createBrowserRouter([
   {
     path: "/detail-galeri",
     element: <DetailGaleri />,
+  },
+  {
+    path: "/upload-Data",
+    element: <UploadData />,
   },
   // {
   //   path: "/uploadexcel",

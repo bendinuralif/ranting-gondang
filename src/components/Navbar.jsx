@@ -67,7 +67,7 @@ function Navbar() {
               <div className={`${isDataDropdownOpen ? "block" : "hidden"} absolute z-10 w-48 bg-white shadow-md mt-2 rounded-md`}>
                 <ul className="py-1 text-sm text-gray-700 ">
                   <li><a href="siswa" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Siswa</a></li>
-                  <li><a href="#" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Warga</a></li>
+                  <li><a href="warga" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Warga</a></li>
                   <li><a href="SubRayon" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Sub Rayon</a></li>
                   <li><a href="Pusdiklat" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Pusdiklat</a></li>
                   <li><a href="Rayon" className="block px-4 py-2 hover:bg-red-600 hover:text-white">Rayon</a></li>
