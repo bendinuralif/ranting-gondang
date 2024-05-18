@@ -89,7 +89,7 @@ function HomePage() {
         <CardKegiatan1 />
         <a
               href="/kegiatan"
-              class="inline-flex items-center px-3 py-2 text-xs  md:text-sm font-medium text-center text-white bg-black rounded-lg hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ml-10"
+              class="inline-flex items-center px-3 py-2 text-xs  md:text-sm font-medium text-center text-white bg-black rounded-lg hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ml-5 md:ml-10"
             >
               Selengkapnya
               <svg
