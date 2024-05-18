@@ -15,7 +15,7 @@ function CustomFooter() {
           </div>
           <div className="flex space-x-10">
             <a href="https://www.instagram.com/psht.ranting_gondang/" className="text-white">
-              <BsInstagram size={30}  /> {/* Adjust the size as needed */}
+              <BsInstagram size={25}  /> {/* Adjust the size as needed */}
             </a>
             {/* <a href="#" className="text-white">
               <BsTwitter size={30} />
@@ -24,7 +24,7 @@ function CustomFooter() {
               <BsGithub size={30} />
             </a> */}
             <a href="mailto:rantinggondang@gmail.com" className="text-white">
-              <BsEnvelope size={30} /> {/* Adjust the size as needed */}
+              <BsEnvelope size={25} /> {/* Adjust the size as needed */}
             </a>
           </div>
         </div>

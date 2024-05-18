@@ -11,6 +11,8 @@ function TambahGaleri() {
   const [nama, setNama] = useState("");
   const [tahun, setTahun] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   // Definisikan state session
   const [session, setSession] = useState(null); 
@@ -54,20 +56,22 @@ function TambahGaleri() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Menampilkan modal loading saat proses dimulai
     const db = getFirestore(app);
     try {
+      // Proses pengungahan gambar
       const storage = getStorage(app);
       const storageRef = ref(storage, 'images/' + uploadGambar.name);
       await uploadBytes(storageRef, uploadGambar);
-
+  
       const downloadURL = await getDownloadURL(storageRef);
-
+  
       const docRef = await addDoc(collection(db, "Galeri"), {
         nama,
         tahun,
         downloadURL
       });
-      
+  
       console.log("Document written with ID: ", docRef.id);
       setUploadGambar("");
       setNama("");
@@ -77,7 +81,9 @@ function TambahGaleri() {
     } catch (error) {
       console.error("Error adding document: ", error);
     }
+    setIsLoading(false); // Menyembunyikan modal loading setelah proses selesai
   };
+  
 
   const handleTahunChange = (e) => {
     const inputTahun = e.target.value;
@@ -185,6 +191,12 @@ function TambahGaleri() {
           </div>
         </div>
       )}
+      {isLoading && (
+  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+  </div>
+)}
+
     </LayoutAdmin>
   );
 }

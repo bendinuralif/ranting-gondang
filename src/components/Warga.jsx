@@ -77,7 +77,7 @@ function Warga() {
     <Layout>
       <div className="pt-20">
         <div className="text-lg md:text-2xl font-semibold pt-10 text-center">
-          SISWA RANTING GONDANG
+          DATA WARGA RANTING GONDANG
         </div>
         <div className="text-lg md:text-2xl font-semibold pb-5 text-center">
           CABANG SRAGEN

@@ -12,6 +12,7 @@ function UploadData() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -24,31 +25,37 @@ function UploadData() {
       console.error("Please select a collection and choose a file to upload.");
       return;
     }
-
+  
     try {
+      setIsLoading(true); // Tandai bahwa proses pengungahan dimulai
+  
       const reader = new FileReader();
       reader.onload = async (e) => {
         const jsonData = e.target.result;
         const data = JSON.parse(jsonData);
         const db = getFirestore(app);
         const collectionRef = collection(db, selectedCollection);
-
+  
         // Upload each document in the data array
         for (const item of data) {
           await addDoc(collectionRef, item);
         }
-
+  
         console.log("Data uploaded successfully!");
         setShowSuccessModal(true);
+        setIsLoading(false); // Tandai bahwa proses pengungahan selesai
       };
-
+  
       reader.readAsText(file);
     } catch (error) {
       console.error("Error uploading file:", error);
       setErrorMessage("Upload failed.");
       setShowErrorModal(true);
+      setIsLoading(false); // Tandai bahwa proses pengungahan selesai dengan kesalahan
     }
   };
+  
+  
 
   return (
     <LayoutAdmin>
@@ -127,6 +134,11 @@ Tutup
 </div>
 </div>
 </div>
+)}
+{isLoading && (
+  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+  </div>
 )}
 </LayoutAdmin>
 );
