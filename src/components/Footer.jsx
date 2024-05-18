@@ -10,7 +10,7 @@ function CustomFooter() {
           <div className="w-full sm:w-auto mb-2 md:mb-2 sm:mb-0 text-center sm:text-left">
             <a href="/" className="inline-flex items-center" target="_blank" rel="noopener noreferrer">
               <img src={logo} alt="Flowbite Logo" title="RANTING GONDANG" className="h-10 " />
-              <span className="text-white text-l md:text-xl ml-2 font-bold">RANTING GONDANG</span>
+              <span className="text-white text-l md:text-xl ml-2 font-bold">PSHT RANTING GONDANG</span>
             </a>
           </div>
           <div className="flex space-x-10">
