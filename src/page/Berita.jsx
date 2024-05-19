@@ -1,12 +1,9 @@
+import CardBerita from "../components/CardBerita";
 import Layout from "./Layout";
-import CustomCarousel from "../components/Carousel";
-import kegiatan1 from "../assets/img/kegiatan-1.jpg";
-import kegiatan2 from "../assets/img/kegiatan-2.jpg";
-import kegiatan3 from "../assets/img/kegiatan-3.jpg";
-import CardKegiatan from "../components/CardKegiatan"
 
 
-function Kegiatan() {
+
+function Berita() {
   return (
     <div>
       <Layout>
@@ -14,15 +11,15 @@ function Kegiatan() {
           <div class="">
           <div className="pt-20 text-center">
                 <div className="text-2xl md:text-3xl font-semibold pt-10 pb-3 md:pb-10">
-                    KEGIATAN
+                    BERITA
                 </div>
             </div>
-            <CardKegiatan />
           </div>
         </div>
+        <CardBerita />
       </Layout>
     </div>
   );
 }
 
-export default Kegiatan;
+export default Berita;

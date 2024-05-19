@@ -37,6 +37,8 @@ import Login from './page/login.jsx';
 import TambahKetuaRanting from './admin/page/SejarahSingkat.jsx/Tambah.jsx';
 import UploadData from './admin/page/UploadData.jsx';
 import Warga from './components/Warga.jsx';
+import KetuaRanting from './components/KetuaRanting.jsx';
+import Berita from './page/Berita.jsx';
 
 
 const router = createBrowserRouter([
@@ -173,8 +175,16 @@ const router = createBrowserRouter([
     element: <DetailGaleri />,
   },
   {
-    path: "/upload-Data",
+    path: "/upload-data",
     element: <UploadData />,
+  },
+  {
+    path: "/ketua-ranting",
+    element: <KetuaRanting />,
+  },
+  {
+    path: "/berita",
+    element: <Berita />,
   },
   // {
   //   path: "/uploadexcel",

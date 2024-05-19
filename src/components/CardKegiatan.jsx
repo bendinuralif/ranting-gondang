@@ -2,7 +2,7 @@ import kegiatan1 from '../assets/img/kegiatan-1.jpg';
 import kegiatan2 from '../assets/img/kegiatan-2.jpg';
 import kegiatan3 from '../assets/img/kegiatan-3.jpg';
 
-const CardKegiatan1 = () => {
+const CardKegiatan = () => {
   return (
     <>
       <div class="block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
@@ -95,4 +95,4 @@ const CardKegiatan1 = () => {
   );
 };
 
-export default CardKegiatan1;
+export default CardKegiatan;
