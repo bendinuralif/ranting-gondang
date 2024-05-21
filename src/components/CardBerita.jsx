@@ -2,25 +2,25 @@ import React from 'react';
 
 const newsArticles = [
   {
-    title: "Berita Pertama",
-    description: "Pada hari minggu 27 Maret 2022, PSHT Ranting Gondang Cabang Sragen sukses Melaksanakan Tes Kenaikan Sabuk Putih. Hadir dalam acara, Ketua Ranting PSHT Gondang Sumarno, Warga PSHT se Ranting Gondang,Kapolsek Gondang AKP Sudarmaji S.H.",
-    date: "20 Maret 2022",
+    title: "PSHT Ranting Gondang Sukses Melaksanakan Tes Kenaikan Sabuk Putih",
+    description: "SRAGEN – Kilasfakta.com. Pada hari minggu 27 Maret 2022, PSHT Ranting Gondang Cabang Sragen sukses Melaksanakan Tes Kenaikan Sabuk Putih. Hadir dalam acara, Ketua Ranting PSHT Gondang Sumarno, Warga PSHT se Ranting Gondang,Kapolsek Gondang AKP Sudarmaji S.H.",
+    date: "28 Maret 2022",
     image: "https://kilasfakta.com/wp-content/uploads/2022/03/IMG-20220328-WA0055.jpg",
     link: "https://kilasfakta.com/psht-ranting-gondang-sukses-melaksanakan-tes-kenaikan-sabuk-putih/",
   },
   {
-    title: "Berita Kedua",
-    description: "Deskripsi singkat untuk berita kedua.",
-    date: "19 Mei 2024",
-    image: "https://example.com/path/to/berita-2.jpg",
-    link: "https://example.com/berita-kedua",
+    title: "PSHT Ranting Gondang Sukses Laksanakan Tes Kenaikan Sabuk Hijau",
+    description: "SRAGEN – Kilasfakta.com. Hari minggu 13 februari 2022 Siswa PSHT Ranting Gondang Cabang Sragen, Sukses Melaksanakan Tes Kenaikan Sabuk Hijau. Hadir dalam acara, Ketua Ranting PSHT Gondang Sumarno, Warga PSHT se Ranting Gondang,Kapolsek Gondang AKP Sudarmaji S.H.",
+    date: "13 Februari 2022 ",
+    image: "https://kilasfakta.com/wp-content/uploads/2022/02/IMG-20220213-WA0037.jpg",
+    link: "https://kilasfakta.com/11336-2/",
   },
   {
-    title: "Berita Ketiga",
-    description: "Deskripsi singkat untuk berita ketiga.",
-    date: "18 Mei 2024",
-    image: "https://example.com/path/to/berita-3.jpg",
-    link: "https://example.com/berita-ketiga",
+    title: "1.000 Lebih Pendekar PSHT Gondang Berkumpul Untuk Maaf-Maafan. Rindukan PSHT Sragen Bisa Bersatu Lagi!  ",
+    description: "SRAGEN- Lebih dari 1.000 warga perguruan silat persaudaraan setia hati terate (PSHT) ranting Gondang berkumpul untuk mengikuti halal bihalal di padepokan PSHT Gondang, Jumat (29/6/2018) malam. Selain saling memaafkan, momentum halal bihalal itu diharapkan bisa menjadi wahana pemersatu kembali PSHT di Sragen yang kini dilanda dualisme.",
+    date: "30 Juni 2018",
+    image: "https://i0.wp.com/joglosemarnews.com/images/2018/06/IMG-20180630-WA0001-520x390.jpg?resize=520%2C390&ssl=1",
+    link: "https://joglosemarnews.com/2018/06/1-000-lebih-pendekar-psht-gondang-berkumpul-untuk-maaf-maafan-rindukan-psht-sragen-bisa-bersatu-lagi/",
   },
   // Tambahkan lebih banyak berita sesuai kebutuhan
 ];
