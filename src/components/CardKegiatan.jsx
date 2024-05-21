@@ -9,7 +9,11 @@ const CardKegiatan = () => {
     const fetchData = async () => {
       try {
         const data = await retrieveData("Kegiatan");
-        setKegiatanData(data);
+
+        // Sort data by date in descending order
+        const sortedData = data.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+        setKegiatanData(sortedData);
       } catch (error) {
         console.error("Error fetching kegiatan data:", error);
       }
@@ -38,8 +42,7 @@ const CardKegiatan = () => {
               SALAM PERSAUDARAAN SH TERATE JAYA🙏
               <br />
               <br />
-              <td >{format(new Date(kegiatan.tanggal), "dd-MMM-yyyy")}</td>
-
+              <td>{format(new Date(kegiatan.tanggal), "dd-MMM-yyyy")}</td>
               <br />
               {kegiatan.deskripsi}
               <br />
