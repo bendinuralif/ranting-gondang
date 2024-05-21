@@ -79,7 +79,7 @@ function Navbar() {
               <NavLink to="/kegiatan" className={linkClass}>Kegiatan</NavLink>
             </li>
             <li>
-              <NavLink to="#" className={linkClass}>Berita</NavLink>
+              <NavLink to="/berita" className={linkClass}>Berita</NavLink>
             </li>
             <li>
               <NavLink to="/layanan" className={linkClass}>Layanan</NavLink>

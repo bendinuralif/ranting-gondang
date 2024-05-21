@@ -14,7 +14,7 @@ function Dashboard() {
     useEffect(() => {
         // Logika untuk memeriksa sesi pengguna
         const checkSession = () => {
-            const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+            const userSession = JSON.parse(sessionStorage.getItem("user")); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
             if (userSession) {
                 setSession(userSession); // Set sesi jika ada
             } else {
@@ -32,7 +32,7 @@ function Dashboard() {
                 const snapshot = await getDocs(mainCollectionRef);
                 
                 const promises = snapshot.docs.map(async (doc) => {
-                    const subCollectionRef = collection(db, doc.id);
+                    const subCollectionRef = collection(db, MAIN_COLLECTION, doc.id, "subcollection"); // Adjust this to match your subcollection path
                     const subSnapshot = await getDocs(subCollectionRef);
                     return { collection: doc.id, count: subSnapshot.size };
                 });
@@ -54,16 +54,16 @@ function Dashboard() {
                 <h2 className="text-2xl font-semibold mb-4">Dashboard</h2>
                 <div className="bg-white shadow-md rounded-lg p-6">
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">Statistik Firestore</h3>
+                        <h3 className="text-lg font-semibold">
+                            Selamat Datang, {session ? session.nama : "User"}  !
+                        </h3>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {statistics.map((stat, index) => (
-                            <div key={index} className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-2 rounded-lg">
-                                <p className="text-xs font-semibold uppercase">Koleksi: {stat.collection}</p>
-                                <p className="text-xl font-bold">{stat.count}</p>
-                            </div>
-                        ))}
+                </div>
+                <div className="bg-white shadow-md rounded-lg p-6 mt-5">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold">jsahsa</h3>
                     </div>
+                    
                 </div>
             </div>
         </LayoutAdmin>

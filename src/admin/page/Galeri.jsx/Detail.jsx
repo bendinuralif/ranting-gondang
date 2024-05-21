@@ -3,6 +3,8 @@ import LayoutAdmin from "../LayoutAdmin";
 import { addDoc, collection, getFirestore, deleteDoc, updateDoc, getDocs, doc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../../lib/firebase/init";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 function DetailGaleri() {
   const [data, setData] = useState([]);
@@ -222,10 +224,7 @@ function DetailGaleri() {
                   Tahun
                 </th>
                 <th scope="col" className="px-2 py-3">
-                  Edit
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Hapus
+                Action
                 </th>
               </tr>
             </thead>
@@ -244,21 +243,21 @@ function DetailGaleri() {
                   <td className="px-2 py-2">{item.nama}</td>
                   <td className="px-2 py-2">{item.tahun}</td>
                   <td className="px-2 py-2">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                  <td className="px-2 py-2">
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Hapus
-                    </button>
-                  </td>
+                  <button
+  onClick={() => handleEdit(item)}
+  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+>
+  <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
+</button>
+                  
+                 
+                  <button
+  onClick={() => handleDelete(item)}
+  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+>
+  <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
+</button>
+</td>
                 </tr>
               ))}
             </tbody>

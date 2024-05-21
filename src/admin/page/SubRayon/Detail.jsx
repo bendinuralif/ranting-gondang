@@ -4,6 +4,8 @@ import { retrieveData, uploadData } from "../../../lib/firebase/service";
 import { collection, addDoc, getFirestore, deleteDoc, doc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { updateDoc } from "firebase/firestore";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 function DetailSubRayon() {
   const [data, setData] = useState([]);
@@ -203,10 +205,7 @@ function DetailSubRayon() {
                   Rayon
                 </th>
                 <th scope="col" className="px-2 py-3">
-                  Edit
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Hapus
+                  Action
                 </th>
               </tr>
             </thead>
@@ -218,21 +217,21 @@ function DetailSubRayon() {
                   <td className="px-2 py-2">{item.sub}</td>
                   <td className="px-2 py-2">{item.rayon}</td>
                   <td className="px-2 py-2">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                  </td>
-                  <td className="px-2 py-2">
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Hapus
-                    </button>
-                  </td>
+                  <button
+  onClick={() => handleEdit(item)}
+  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+>
+  <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
+</button>
+                  
+                 
+                  <button
+  onClick={() => handleDelete(item)}
+  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+>
+  <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
+</button>
+</td>
                 </tr>
               ))}
             </tbody>

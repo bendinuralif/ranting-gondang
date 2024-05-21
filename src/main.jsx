@@ -39,6 +39,8 @@ import UploadData from './admin/page/UploadData.jsx';
 import Warga from './components/Warga.jsx';
 import KetuaRanting from './components/KetuaRanting.jsx';
 import Berita from './page/Berita.jsx';
+import TambahWarga from './admin/page/Warga/Tambah.jsx';
+import DetailWarga from './admin/page/Warga/Detail.jsx';
 
 
 const router = createBrowserRouter([
@@ -121,6 +123,14 @@ const router = createBrowserRouter([
   {
     path: "/detail-siswa",
     element: <DetailSiswa />,
+  },
+  {
+    path: "/tambah-warga",
+    element: <TambahWarga />,
+  },
+  {
+    path: "/detail-warga",
+    element: <DetailWarga />,
   },
   {
     path: "/detail-subrayon",

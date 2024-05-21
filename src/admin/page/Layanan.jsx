@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "./LayoutAdmin";
 import { retrieveData, uploadData } from "./../../lib/firebase/service";
-import { collection, addDoc, getFirestore, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getFirestore, deleteDoc, doc, getDocs } from "firebase/firestore";
 import app from "./../../lib/firebase/init";
 import { updateDoc } from "firebase/firestore";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import 'tailwindcss/tailwind.css';
 
 function LayananAdmin() {
@@ -17,46 +19,6 @@ function LayananAdmin() {
   const [editingItemId, setEditingItemId] = useState(null); // State to track which item is being edited
   const [disabledButtons, setDisabledButtons] = useState([]); // State to track disabled buttons
   const [itemToDelete, setItemToDelete] = useState(null);
-
-  const [statistics, setStatistics] = useState([]);
-    const [session, setSession] = useState(null); // Menyimpan informasi sesi
-
-    useEffect(() => {
-        // Logika untuk memeriksa sesi pengguna
-        const checkSession = () => {
-            const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
-            if (userSession) {
-                setSession(userSession); // Set sesi jika ada
-            } else {
-                // Redirect ke halaman login jika tidak ada sesi
-                window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
-            }
-        };
-
-        checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
-
-        const fetchData = async () => {
-            const db = getFirestore(app);
-            try {
-                const mainCollectionRef = collection(db, MAIN_COLLECTION);
-                const snapshot = await getDocs(mainCollectionRef);
-                
-                const promises = snapshot.docs.map(async (doc) => {
-                    const subCollectionRef = collection(db, doc.id);
-                    const subSnapshot = await getDocs(subCollectionRef);
-                    return { collection: doc.id, count: subSnapshot.size };
-                });
-
-                const stats = await Promise.all(promises);
-                setStatistics(stats);
-            } catch (error) {
-                console.error("Error fetching Firestore data:", error);
-                // Handle error here
-            }
-        };
-
-        fetchData();
-    }, []);
 
   useEffect(() => {
     fetchData();
@@ -198,7 +160,7 @@ function LayananAdmin() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.nama}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.noTelepon}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.alamat}</td>
-                  <td className="px-6 py-4  text-sm text-gray-500">{item.deskripsi}</td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.deskripsi}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {item.tanggalSelesai ? new Date(item.tanggalSelesai).toLocaleString() : (
                       <button
@@ -208,7 +170,7 @@ function LayananAdmin() {
                         }`}
                         disabled={editingItemId === item.id || disabledButtons.includes(item.id)}
                       >
-                        Selesai
+                        <FontAwesomeIcon icon={faCheck} className="mr-2" /> Selesai
                       </button>
                     )}
                   </td>
@@ -217,7 +179,7 @@ function LayananAdmin() {
                       onClick={() => setItemToDelete(item)}
                       className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                     >
-                      Hapus
+                      <FontAwesomeIcon icon={faTrashAlt} className="mr-2" /> Hapus
                     </button>
                   </td>
                 </tr>
@@ -240,9 +202,7 @@ function LayananAdmin() {
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                    <FontAwesomeIcon icon={faTrashAlt} className="h-6 w-6 text-red-600" />
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
