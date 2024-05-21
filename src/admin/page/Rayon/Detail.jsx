@@ -235,43 +235,38 @@ function DetailRayon() {
               ))}
             </tbody>
           </table>
-          <div className="flex justify-end items-center px-3">
-            <label htmlFor="rowsPerPage" className="mr-2">
-              Baris per halaman:
-            </label>
-            <select
-              id="rowsPerPage"
-              onChange={handleChangeRowsPerPage}
-              value={rowsPerPage}
-              className="border rounded px-3 py-1"
-            >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-              <option value={"All"}>Semua</option>
-            </select>
-          </div>
-          <div className="flex justify-end items-start p-4">
+          <div className="flex justify-between items-center px-3 pb-3">
             <div>
+              <label htmlFor="rowsPerPage" className="mr-2">
+                Baris per halaman:
+              </label>
+              <select
+                id="rowsPerPage"
+                value={rowsPerPage}
+                onChange={handleChangeRowsPerPage}
+                className="border rounded px-3 py-1"
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value={data.length}>All</option>
+              </select>
+            </div>
+            <div className="flex items-center">
               <button
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === 1 ? "cursor-not-allowed" : "bg-red-500 text-white"
-                }`}
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded mr-2"
               >
                 Prev
               </button>
-              <span className="mx-2 text-sm text-gray-600">
-                Page {currentPage} of {totalPages}
+              <span>
+                Halaman {currentPage} dari {totalPages}
               </span>
               <button
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === totalPages ? "cursor-not-allowed" : "bg-red-500 text-white"
-                }`}
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded ml-2"
               >
                 Next
               </button>
@@ -280,26 +275,13 @@ function DetailRayon() {
         </div>
       </div>
       {editModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg">
-            <div className="flex justify-between items-center">
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
               <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
-              <button
-                className="text-black font-semibold"
-                onClick={() => setEditModalOpen(false)}
-                style={{ alignSelf: "flex-start" }}
-              >
-                X
-              </button>
-            </div>
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-6 mb-6 md:grid-cols-1">
-                <div>
-                  <label
-                    htmlFor="nama"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Nama
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label htmlFor="nama" className="block text-sm font-medium text-gray-700">
+                    Nama:
                   </label>
                   <input
                     type="text"
@@ -308,19 +290,13 @@ function DetailRayon() {
                     onChange={(e) =>
                       setSelectedItem({ ...selectedItem, nama: e.target.value })
                     }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Masukan nama"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
                   />
                 </div>
-              </div>
-              <div className="grid gap-6 mb-6 md:grid-cols-1">
-                <div>
-                  <label
-                    htmlFor="rayon"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Rayon {/* Mengganti 'Rayon' menjadi 'rayon' */}
+                <div className="mb-4">
+                  <label htmlFor="rayon" className="block text-sm font-medium text-gray-700">
+                    Rayon:
                   </label>
                   <input
                     type="text"
@@ -329,22 +305,29 @@ function DetailRayon() {
                     onChange={(e) =>
                       setSelectedItem({ ...selectedItem, rayon: e.target.value })
                     }
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Masukan rayon"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
                   />
                 </div>
-              </div>
-              <button
-                type="submit"
-                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Submit
-              </button>
-            </form>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setEditModalOpen(false)}
+                    className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg">

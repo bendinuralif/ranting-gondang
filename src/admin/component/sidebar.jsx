@@ -14,7 +14,7 @@ function CustomSidebar({isOpen}) {
         <span></span>
         <span></span>
       </div> */}
-      <FlowbiteSidebar aria-label="Sidebar with multi-level dropdown example" className={`bg-gray-800 text-white ${isOpen ? 'block' : 'hidden'} md:block absolute md:static transition-all duration-300 ease-in-out`}>
+      <FlowbiteSidebar aria-label="Sidebar with multi-level dropdown example" className={`${isOpen ? 'block' : 'hidden'} bg-blue-800 text-white md:block absolute md:static transition-all duration-300 ease-in-out`}>
         <FlowbiteSidebar.Items>
           <FlowbiteSidebar.ItemGroup >
             <FlowbiteSidebar.Item href="/dashboard" icon={HiChartPie} className="hover:bg-red-700 transition-colors duration-300">

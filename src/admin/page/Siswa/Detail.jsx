@@ -381,18 +381,20 @@ function DetailSiswa() {
                   <td className="p-2 md:p-3">{item.jeniskelamin}</td>
                   <td className="p-2 md:p-3">{item.rayon}</td>
                   <td className="p-2 md:p-3 text-center">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="text-blue-600 dark:text-blue-500 hover:underline mx-1"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="text-red-600 dark:text-red-500 hover:underline mx-1"
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
+                  <button
+  onClick={() => handleEdit(item)}
+  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+>
+  <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
+</button>
+                  
+                 
+                  <button
+  onClick={() => handleDelete(item)}
+  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+>
+  <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
+</button>
                   </td>
                   <td className="p-2 md:p-3 text-center">
                   <input

@@ -262,32 +262,38 @@ function DetailGaleri() {
               ))}
             </tbody>
           </table>
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center px-3 pb-3">
             <div>
-              <span className="mr-2">Rows per page:</span>
+              <label htmlFor="rowsPerPage" className="mr-2">
+                Baris per halaman:
+              </label>
               <select
+                id="rowsPerPage"
                 value={rowsPerPage}
                 onChange={handleChangeRowsPerPage}
-                className="px-2 py-1 border border-gray-300 rounded-md"
+                className="border rounded px-3 py-1"
               >
                 <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="20">20</option>
-                <option value="All">All</option>
+                <option value={data.length}>All</option>
               </select>
             </div>
-            <div>
+            <div className="flex items-center">
               <button
                 onClick={handlePrevPage}
                 disabled={currentPage === 1}
-                className="px-2 py-1 mr-2 border border-gray-300 rounded-md"
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded mr-2"
               >
                 Prev
               </button>
+              <span>
+                Halaman {currentPage} dari {totalPages}
+              </span>
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
-                className="px-2 py-1 border border-gray-300 rounded-md"
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded ml-2"
               >
                 Next
               </button>
