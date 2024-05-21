@@ -58,6 +58,10 @@ function CustomSidebar({isOpen}) {
               <FlowbiteSidebar.Item href="/detail-galeri" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
               <FlowbiteSidebar.Item href="/tambah-galeri" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
+            <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Kegiatan" className="hover:bg-red-700 transition-colors duration-300">
+              <FlowbiteSidebar.Item href="/detail-kegiatan" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/tambah-kegiatan" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
+            </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Item href="#" icon={HiArrowSmRight} className="hover:bg-red-700 transition-colors duration-300">
               Sign In
             </FlowbiteSidebar.Item>

@@ -41,6 +41,8 @@ import KetuaRanting from './components/KetuaRanting.jsx';
 import Berita from './page/Berita.jsx';
 import TambahWarga from './admin/page/Warga/Tambah.jsx';
 import DetailWarga from './admin/page/Warga/Detail.jsx';
+import TambahKegiatan from './admin/page/Kegiatan/Tambah.jsx';
+import DetailKegiatan from './admin/page/Kegiatan/Detail.jsx';
 
 
 const router = createBrowserRouter([
@@ -183,6 +185,14 @@ const router = createBrowserRouter([
   {
     path: "/detail-galeri",
     element: <DetailGaleri />,
+  },
+  {
+    path: "/tambah-kegiatan",
+    element: <TambahKegiatan />,
+  },
+  {
+    path: "/detail-kegiatan",
+    element: <DetailKegiatan />,
   },
   {
     path: "/upload-data",

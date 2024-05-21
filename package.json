@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "main": "server.js",
-
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -22,6 +21,7 @@
     "axios": "^1.6.8",
     "chart.js": "^4.4.2",
     "cheerio": "^1.0.0-rc.12",
+    "date-fns": "^3.6.0",
     "express": "^4.19.2",
     "firebase": "^10.11.1",
     "flowbite": "^2.3.0",
