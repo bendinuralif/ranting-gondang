@@ -10,6 +10,7 @@ function Warga() {
   const [tahunOptions, setTahunOptions] = useState([]);
   const [selectedTahun, setSelectedTahun] = useState();
   const [paginatedData, setPaginatedData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -25,13 +26,13 @@ function Warga() {
       const res = await retrieveData("Warga");
       const availableYears = Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a);
       setTahunOptions(availableYears);
-  
+
       if (!selectedTahun && availableYears.length > 0) {
         setSelectedTahun(availableYears[0]);
       }
-  
+
       const filteredData = selectedTahun ? res.filter((item) => item.tahun == selectedTahun) : res;
-  
+
       const filteredAndSortedData = filteredData.filter(
         (item) => typeof item.no === "string" || typeof item.no === "number"
       );
@@ -42,7 +43,7 @@ function Warga() {
           return a.no - b.no;
         }
       });
-  
+
       setData(sortedData);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -67,11 +68,19 @@ function Warga() {
     setSelectedTahun(selectedYear);
   };
 
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1);
+  };
+
   useEffect(() => {
+    const filteredData = data.filter((item) =>
+      item.nama.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    setPaginatedData(data.slice(startIndex, endIndex));
-  }, [data, currentPage, rowsPerPage, selectedTahun]);
+    setPaginatedData(filteredData.slice(startIndex, endIndex));
+  }, [data, currentPage, rowsPerPage, searchQuery]);
 
   return (
     <Layout>
@@ -86,24 +95,38 @@ function Warga() {
       <div className="justify-center items-center px-5">
         <div className="px-2 block mx-auto max-w-7xl mt-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
           <div className="relative overflow-x-auto mt-4">
-            <div className="flex justify-end items-center px-3 pb-3">
-              <label htmlFor="tahun" className="mr-2">
-                Pilih Tahun:
-              </label>
-              <select
-                id="tahun"
-                onChange={handleChangeTahun}
-                value={selectedTahun}
-                className="border rounded px-3 py-1"
-              >
-                {tahunOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
+          <div className="flex flex-col md:flex-row justify-between items-center px-3 pb-3 space-y-3 md:space-y-0">
+              <div className="flex items-center">
+                <label htmlFor="tahun" className="mr-2">
+                  Pilih Tahun:
+                </label>
+                <select
+                  id="tahun"
+                  onChange={handleChangeTahun}
+                  value={selectedTahun}
+                  className="border rounded px-3 py-1"
+                >
+                  {tahunOptions.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center">
+                <label htmlFor="search" className="mr-2">
+                  Search:
+                </label>
+                <input
+                  type="text"
+                  id="search"
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  className="border rounded px-3 py-1"
+                  placeholder="Search by nama"
+                />
+              </div>
             </div>
-
             <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
               <thead className="text-xs md:text-sm text-black uppercase bg-gray-300 dark:bg-gray-700 dark:text-red-00">
                 <tr>
