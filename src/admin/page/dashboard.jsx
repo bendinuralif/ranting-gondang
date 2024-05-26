@@ -246,7 +246,9 @@ function Dashboard() {
             ))}
           </div>
         </div>
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+        
+      </div>
+      <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold text-gray-700">
               Grafik Warga dan Siswa dari Tahun ke Tahun
@@ -258,7 +260,6 @@ function Dashboard() {
             <p className="text-gray-600">Loading data...</p>
           )}
         </div>
-      </div>
     </LayoutAdmin>
   );
 }
