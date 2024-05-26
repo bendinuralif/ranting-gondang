@@ -102,9 +102,9 @@ function Dashboard() {
           let hasMore = true;
 
           while (hasMore) {
-            let q = query(collection(db, collectionItem.name), orderBy("tahun"), limit(pageSize));
+            let q = query(collection(db, collectionItem.name), limit(pageSize));
             if (lastVisible) {
-              q = query(collection(db, collectionItem.name), orderBy("tahun"), startAfter(lastVisible), limit(pageSize));
+              q = query(collection(db, collectionItem.name), startAfter(lastVisible), limit(pageSize));
             }
 
             const snapshot = await getDocs(q);
@@ -116,16 +116,12 @@ function Dashboard() {
             }
           }
 
-          const years = allDocs.map(doc => doc.data().tahun).filter(year => year).sort((a, b) => a - b);
-          const range = years.length ? `${years[0]} - ${years[years.length - 1]}` : "N/A";
-
           const data = {
             name: collectionItem.displayName,
             count: allDocs.length,
-            range: collectionItem.name === "Warga" || collectionItem.name === "Siswa" ? range : null,
             icon: collectionItem.icon,
             link: collectionItem.link,
-            years: allDocs.map(doc => doc.data().tahun)
+            years: allDocs.map(doc => doc.data().tahun).filter(year => year).sort((a, b) => a - b)
           };
 
           await saveToCache(collectionKey, data);
@@ -221,7 +217,7 @@ function Dashboard() {
             </h3>
           </div>
         </div>
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold text-gray-700">Jumlah Item</h3>
           </div>
@@ -236,8 +232,8 @@ function Dashboard() {
                     <div className="ml-4">
                       <h4 className="text-lg font-semibold text-gray-800">{stat.name}</h4>
                       <p className="text-2xl font-bold text-gray-800">{stat.count}</p>
-                      {stat.range && (
-                        <p className="text-sm text-gray-600">Tahun: {stat.range}</p>
+                      {stat.years && stat.years.length > 0 && (
+                        <p className="text-sm text-gray-600">Tahun: {stat.years[0]} - {stat.years[stat.years.length - 1]}</p>
                       )}
                     </div>
                   </div>
@@ -246,9 +242,7 @@ function Dashboard() {
             ))}
           </div>
         </div>
-        
-      </div>
-      <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold text-gray-700">
               Grafik Warga dan Siswa dari Tahun ke Tahun
@@ -260,6 +254,7 @@ function Dashboard() {
             <p className="text-gray-600">Loading data...</p>
           )}
         </div>
+      </div>
     </LayoutAdmin>
   );
 }
