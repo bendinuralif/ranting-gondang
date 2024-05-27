@@ -75,7 +75,9 @@ function Warga() {
 
   useEffect(() => {
     const filteredData = data.filter((item) =>
-      item.nama.toLowerCase().includes(searchQuery.toLowerCase())
+      item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.jeniskelamin.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.alamat.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -95,7 +97,7 @@ function Warga() {
       <div className="justify-center items-center px-5">
         <div className="px-2 block mx-auto max-w-7xl mt-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
           <div className="relative overflow-x-auto mt-4">
-          <div className="flex flex-col md:flex-row justify-between items-center px-3 pb-3 space-y-3 md:space-y-0">
+            <div className="flex flex-col md:flex-row justify-between items-center px-3 pb-3 space-y-3 md:space-y-0">
               <div className="flex items-center">
                 <label htmlFor="tahun" className="mr-2">
                   Pilih Tahun:
@@ -114,16 +116,13 @@ function Warga() {
                 </select>
               </div>
               <div className="flex items-center">
-                <label htmlFor="search" className="mr-2">
-                  Search:
-                </label>
                 <input
                   type="text"
                   id="search"
                   value={searchQuery}
                   onChange={handleSearch}
                   className="border rounded px-3 py-1"
-                  placeholder="Search by nama"
+                  placeholder="Search..."
                 />
               </div>
             </div>
@@ -148,19 +147,18 @@ function Warga() {
                 </tr>
               </thead>
               <tbody>
-              {paginatedData.map((item, index) => (
-  <tr
-    key={index}
-    className={`bg-${index % 2 === 0 ? 'gray-100' : 'white'} border-b dark:bg-gray-800 dark:border-gray-700`}
-  >
-    <td className="px-2 py-2">{item.no}</td>
-    <td className="px-2 py-2">{item.nama}</td>
-    <td className="px-2 py-2">{item.jeniskelamin}</td>
-    <td className="px-2 py-2">{item.alamat}</td>
-    <td className="px-2 py-2">{item.tahun}</td>
-  </tr>
-))}
-
+                {paginatedData.map((item, index) => (
+                  <tr
+                    key={index}
+                    className={`bg-${index % 2 === 0 ? "gray-100" : "white"} border-b dark:bg-gray-800 dark:border-gray-700`}
+                  >
+                    <td className="px-2 py-2">{item.no}</td>
+                    <td className="px-2 py-2">{item.nama}</td>
+                    <td className="px-2 py-2">{item.jeniskelamin}</td>
+                    <td className="px-2 py-2">{item.alamat}</td>
+                    <td className="px-2 py-2">{item.tahun}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
             <div className="flex justify-end items-center px-3">
@@ -180,7 +178,7 @@ function Warga() {
               </select>
             </div>
           </div>
-          <div className="flex justify-end items-start  p-4">
+          <div className="flex justify-end items-start p-4">
             <div>
               <button
                 className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
@@ -210,35 +208,33 @@ function Warga() {
               </span>
               <button
                 className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === totalPages                    ? "cursor-not-allowed"
-                  : "bg-red-500 text-white"
-              }`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                  currentPage === totalPages
+                    ? "cursor-not-allowed"
+                    : "bg-red-500 text-white"
+                }`}
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div className="flex justify-end items-start  p-4 mt-5"></div>
-
-  </Layout>
-);
+    </Layout>
+  );
 }
 
 export default Warga;
-

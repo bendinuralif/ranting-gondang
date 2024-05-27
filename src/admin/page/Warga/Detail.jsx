@@ -32,7 +32,7 @@ function DetailWarga() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [itemToDeleteName, setItemToDeleteName] = useState("");
-  const [showDeleteSelectedButton, setShowDeleteSelectedButton] = useState(false); // State untuk mengontrol visibilitas tombol "Hapus Terpilih"
+  const [showDeleteSelectedButton, setShowDeleteSelectedButton] = useState(false);
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
 
   const [selectedItem, setSelectedItem] = useState({
@@ -45,6 +45,7 @@ function DetailWarga() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
@@ -166,28 +167,18 @@ function DetailWarga() {
     setSelectedTahun(selectedYear);
   };
 
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    setPaginatedData(data.slice(startIndex, endIndex));
-  }, [data, currentPage, rowsPerPage, selectedTahun]);
-
   const handleCheckboxChange = (itemId) => {
     setCheckedItems((prevCheckedItems) => ({
       ...prevCheckedItems,
       [itemId]: !prevCheckedItems[itemId],
     }));
-  
-    // Perbarui status tombol "Hapus Terpilih"
+
     const isCheckedItemsExist = Object.values({
       ...checkedItems,
-      [itemId]: !checkedItems[itemId], // Perbarui nilai untuk item yang baru saja diubah statusnya
+      [itemId]: !checkedItems[itemId],
     }).some((isChecked) => isChecked);
     setShowDeleteSelectedButton(isCheckedItemsExist);
   };
-  
-  
- 
 
   const handleEdit = (item) => {
     setSelectedItem(item);
@@ -214,9 +205,7 @@ function DetailWarga() {
   const toggleConfirmDeleteModal = () => {
     setConfirmDeleteModalOpen(!confirmDeleteModalOpen);
   };
-  
-  
-  // Fungsi untuk menghapus item terpilih setelah konfirmasi
+
   const handleConfirmedDeleteSelected = async () => {
     try {
       const db = getFirestore(app);
@@ -231,67 +220,49 @@ function DetailWarga() {
       console.log("Selected items deleted successfully!");
       fetchData();
       setCheckedItems({});
-      setShowDeleteSelectedButton(false); // Setelah item terpilih dihapus, sembunyikan tombol "Hapus Terpilih" lagi
-      toggleConfirmDeleteModal(); // Tutup modal konfirmasi setelah penghapusan berhasil
-      setConfirmDeleteModalOpen(false); // Pastikan modal konfirmasi ditutup
+      setShowDeleteSelectedButton(false);
+      toggleConfirmDeleteModal();
+      setConfirmDeleteModalOpen(false);
     } catch (error) {
       console.error("Error deleting selected items:", error);
     }
   };
-  
-  
-  
+
   const confirmDeleteSelected = () => {
-    // Mengumpulkan semua item yang telah dicentang
     const itemsToDelete = Object.entries(checkedItems)
       .filter(([itemId, isChecked]) => isChecked)
       .map(([itemId, isChecked]) => itemId);
-  
-    // Menampilkan modal konfirmasi jika ada item yang akan dihapus
+
     if (itemsToDelete.length > 0) {
-      // Simpan item yang akan dihapus dan tampilkan modal konfirmasi
-      setSelectedItemToDelete(itemsToDelete); 
+      setSelectedItemToDelete(itemsToDelete);
       setConfirmDeleteModalOpen(true);
     } else {
-      // Jika tidak ada item yang dicentang, berikan pesan kepada pengguna
       console.log("Tidak ada item yang dicentang untuk dihapus");
     }
   };
-  
 
   const handleDeleteSelected = async () => {
     try {
       const db = getFirestore(app);
       const batch = writeBatch(db);
-      
-      // Loop melalui objek checkedItems untuk menghapus item yang dicentang
+
       for (const itemId in checkedItems) {
         if (checkedItems[itemId]) {
           const itemRef = doc(db, "Warga", itemId);
           batch.delete(itemRef);
         }
       }
-  
-      // Lakukan commit batch
+
       await batch.commit();
-      
-      // Log ke konsol untuk memastikan item terpilih dihapus dengan sukses
       console.log("Selected items deleted successfully!");
-  
-      // Panggil fetchData untuk memperbarui tampilan setelah penghapusan
       fetchData();
-  
-      // Reset checkedItems dan sembunyikan tombol "Hapus Terpilih"
       setCheckedItems({});
       setShowDeleteSelectedButton(false);
-  
     } catch (error) {
       console.error("Error deleting selected items:", error);
     }
   };
-  
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -312,6 +283,18 @@ function DetailWarga() {
       console.error("Error updating item:", error);
     }
   };
+
+  useEffect(() => {
+    const filteredData = data.filter((item) =>
+      item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.jeniskelamin.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.alamat.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.tahun.toString().includes(searchQuery.toLowerCase())
+    );
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    setPaginatedData(filteredData.slice(startIndex, endIndex));
+  }, [data, currentPage, rowsPerPage, searchQuery]);
 
   return (
     <LayoutAdmin>
@@ -335,18 +318,26 @@ function DetailWarga() {
               ))}
             </select>
           </div>
+          <div className="flex justify-end items-center px-3 pb-3">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border rounded px-3 py-1"
+            />
+          </div>
 
           <div className="flex justify-start items-center px-3 pb-3">
-        {/* Tampilkan tombol "Hapus Terpilih" hanya jika ada item yang dicentang */}
-        {showDeleteSelectedButton && (
-          <button
-          onClick={confirmDeleteSelected} // Tampilkan modal konfirmasi ketika tombol "Hapus Terpilih" diklik
-          className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
-        >
-          Hapus Terpilih
-        </button>
-        )}
-      </div>
+            {showDeleteSelectedButton && (
+              <button
+                onClick={confirmDeleteSelected}
+                className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+              >
+                Hapus Terpilih
+              </button>
+            )}
+          </div>
 
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -354,7 +345,7 @@ function DetailWarga() {
                 <th className="p-2 md:p-3 text-center">No.</th>
                 <th className="p-2 md:p-3">Nama</th>
                 <th className="p-2 md:p-3">Jenis Kelamin</th>
-                <th className="p-2 md:p-3">alamat</th>
+                <th className="p-2 md:p-3">Alamat</th>
                 <th className="p-2 md:p-3 text-center">Aksi</th>
                 <th className="p-2 md:p-3 text-center">
                   <input
@@ -381,27 +372,25 @@ function DetailWarga() {
                   <td className="p-2 md:p-3">{item.jeniskelamin}</td>
                   <td className="p-2 md:p-3">{item.alamat}</td>
                   <td className="p-2 md:p-3 text-center">
-                  <button
-  onClick={() => handleEdit(item)}
-  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
->
-  <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
-</button>
-                  
-                 
-                  <button
-  onClick={() => handleDelete(item)}
-  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
->
-  <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
-</button>
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} />
+                    </button>
                   </td>
                   <td className="p-2 md:p-3 text-center">
-                  <input
-  type="checkbox"
-  checked={checkedItems[item.id] || false}
-  onChange={() => handleCheckboxChange(item.id)}
-/>
+                    <input
+                      type="checkbox"
+                      checked={checkedItems[item.id] || false}
+                      onChange={() => handleCheckboxChange(item.id)}
+                    />
                   </td>
                 </tr>
               ))}
@@ -504,7 +493,7 @@ function DetailWarga() {
                 </div>
                 <div className="mb-4">
                   <label htmlFor="alamat" className="block text-sm font-medium text-gray-700">
-                    alamat:
+                    Alamat:
                   </label>
                   <input
                     type="text"
@@ -577,46 +566,45 @@ function DetailWarga() {
         )}
 
         {showSuccessModal && (
-          <div className="fixedinset-x-0 bottom-0 flex items-center justify-center h-16 bg-green-500 text-white font-bold py-2 px-4 rounded">
-          {uploadMessage}
-        </div>
-      )}
+          <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-green-500 text-white font-bold py-2 px-4 rounded">
+            {uploadMessage}
+          </div>
+        )}
 
-      {showErrorModal && (
-        <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-red-500 text-white font-bold py-2 px-4 rounded">
-          {errorMessage}
-        </div>
-      )}
-     {confirmDeleteModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
-      <h2 className="text-lg font-semibold mb-4">Hapus Item Terpilih</h2>
-      <p>Apakah Anda yakin ingin menghapus item terpilih?</p>
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={() => toggleConfirmDeleteModal()}
-          className="bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => {
-            handleConfirmedDeleteSelected(); // Panggil fungsi untuk menghapus item terpilih
-            toggleConfirmDeleteModal(); // Tutup modal konfirmasi setelah penghapusan berhasil
-          }}
-          className="bg-red-500 text-white font-bold py-2 px-4 rounded"
-        >
-          Delete
-        </button>
+        {showErrorModal && (
+          <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-red-500 text-white font-bold py-2 px-4 rounded">
+            {errorMessage}
+          </div>
+        )}
+
+        {confirmDeleteModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+              <h2 className="text-lg font-semibold mb-4">Hapus Item Terpilih</h2>
+              <p>Apakah Anda yakin ingin menghapus item terpilih?</p>
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => toggleConfirmDeleteModal()}
+                  className="bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleConfirmedDeleteSelected();
+                    toggleConfirmDeleteModal();
+                  }}
+                  className="bg-red-500 text-white font-bold py-2 px-4 rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  </div>
-)}
-
-    </div>
-  </LayoutAdmin>
-);
+    </LayoutAdmin>
+  );
 }
 
 export default DetailWarga;
-

@@ -222,6 +222,7 @@ function Dashboard() {
             <h3 className="text-xl font-semibold text-gray-700">Jumlah Item</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div>
             {statistics.map((stat, index) => (
               <Link to={stat.link} key={index} className="block">
                 <div className="bg-white p-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl">
@@ -229,6 +230,7 @@ function Dashboard() {
                     <div className="flex-shrink-0">
                       {icons[stat.icon]}
                     </div>
+                    
                     <div className="ml-4">
                       <h4 className="text-lg font-semibold text-gray-800">{stat.name}</h4>
                       <p className="text-2xl font-bold text-gray-800">{stat.count}</p>
@@ -240,6 +242,7 @@ function Dashboard() {
                 </div>
               </Link>
             ))}
+            </div>
           </div>
         </div>
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
@@ -249,7 +252,9 @@ function Dashboard() {
             </h3>
           </div>
           {chartData ? (
-            <LineChart data={chartData} />
+            <div className="w-full overflow-x-auto">
+              <LineChart data={chartData} />
+            </div>
           ) : (
             <p className="text-gray-600">Loading data...</p>
           )}
