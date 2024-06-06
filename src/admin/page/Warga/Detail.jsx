@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import {
-  retrieveData,
-  uploadData
-} from "../../../lib/firebase/service";
-import {
-  collection,
-  addDoc,
-  getFirestore,
-  deleteDoc,
-  doc,
-  writeBatch,
-  getDocs,
-  updateDoc
-} from "firebase/firestore";
+import { retrieveData, uploadData } from "../../../lib/firebase/service";
+import { collection, addDoc, getFirestore, deleteDoc, doc, writeBatch, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrashAlt, faPrint, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function DetailWarga() {
   const [data, setData] = useState([]);
@@ -30,12 +18,19 @@ function DetailWarga() {
   const [paginatedData, setPaginatedData] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false); // State for Add Modal
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [itemToDeleteName, setItemToDeleteName] = useState("");
   const [showDeleteSelectedButton, setShowDeleteSelectedButton] = useState(false);
   const [confirmDeleteModalOpen, setConfirmDeleteModalOpen] = useState(false);
-
   const [selectedItem, setSelectedItem] = useState({
+    nama: "",
+    no: "",
+    jeniskelamin: "",
+    alamat: "",
+    tahun: ""
+  });
+  const [newItem, setNewItem] = useState({ // State for new item
     nama: "",
     no: "",
     jeniskelamin: "",
@@ -284,6 +279,19 @@ function DetailWarga() {
     }
   };
 
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const db = getFirestore(app);
+      await addDoc(collection(db, "Warga"), newItem);
+      console.log("New item added successfully!");
+      setAddModalOpen(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error adding new item:", error);
+    }
+  };
+
   useEffect(() => {
     const filteredData = data.filter((item) =>
       item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -296,58 +304,108 @@ function DetailWarga() {
     setPaginatedData(filteredData.slice(startIndex, endIndex));
   }, [data, currentPage, rowsPerPage, searchQuery]);
 
+  const handlePrintAll = () => {
+    let printContent = `
+      <h2>Detail Warga</h2>
+      <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Jenis Kelamin</th>
+            <th>Alamat</th>
+            <th>Tahun</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.forEach((item, index) => {
+      printContent += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.nama}</td>
+          <td>${item.jeniskelamin}</td>
+          <td>${item.alamat}</td>
+          <td>${item.tahun}</td>
+        </tr>
+      `;
+    });
+
+    printContent += `
+        </tbody>
+      </table>
+    `;
+
+    const printWindow = window.open("", "", "width=800,height=600");
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Warga</h2>
-        <div className="overflow-x-auto">
-          <div className="flex justify-end items-center px-3 pb-3">
-            <label htmlFor="tahun" className="mr-2">
-              Pilih Tahun:
-            </label>
-            <select
-              id="tahun"
-              onChange={handleChangeTahun}
-              value={selectedTahun}
-              className="border rounded px-3 py-1"
-            >
-              {tahunOptions.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <label htmlFor="tahun" className="mr-2 font-medium">Pilih Tahun:</label>
+              <select
+                id="tahun"
+                onChange={handleChangeTahun}
+                value={selectedTahun}
+                className="border rounded px-3 py-1"
+              >
+                {tahunOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <button
+                onClick={handlePrintAll}
+                className="bg-green-500 text-white font-bold py-2 px-4 rounded mr-2"
+              >
+                <FontAwesomeIcon icon={faPrint} className="mr-2" /> Cetak Semua
+              </button>
+              <button
+                onClick={() => setAddModalOpen(true)}
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+              >
+                <FontAwesomeIcon icon={faPlus} /> Tambah
+              </button>
+            </div>
           </div>
-          <div className="flex justify-end items-center px-3 pb-3">
+          <div className="flex justify-between items-center mb-4">
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border rounded px-3 py-1"
+              className="border rounded px-3 py-1 w-full"
             />
-          </div>
-
-          <div className="flex justify-start items-center px-3 pb-3">
             {showDeleteSelectedButton && (
               <button
                 onClick={confirmDeleteSelected}
-                className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-red-500 text-white font-bold py-2 px-4 rounded ml-2"
               >
                 Hapus Terpilih
               </button>
             )}
           </div>
-
-          <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <table className="w-full text-sm text-left text-gray-700">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
-                <th className="p-2 md:p-3 text-center">No.</th>
-                <th className="p-2 md:p-3">Nama</th>
-                <th className="p-2 md:p-3">Jenis Kelamin</th>
-                <th className="p-2 md:p-3">Alamat</th>
-                <th className="p-2 md:p-3 text-center">Aksi</th>
-                <th className="p-2 md:p-3 text-center">
+                <th className="p-3 text-center">No.</th>
+                <th className="p-3">Nama</th>
+                <th className="p-3">Jenis Kelamin</th>
+                <th className="p-3">Alamat</th>
+                <th className="p-3">Tahun</th>
+                <th className="p-3 text-center">Aksi</th>
+                <th className="p-3 text-center">
                   <input
                     type="checkbox"
                     onChange={(e) =>
@@ -365,16 +423,17 @@ function DetailWarga() {
               {paginatedData.map((item, index) => (
                 <tr
                   key={item.id}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  className="bg-white border-b hover:bg-gray-50"
                 >
-                  <td className="p-2 md:p-3 text-center">{item.no}</td>
-                  <td className="p-2 md:p-3">{item.nama}</td>
-                  <td className="p-2 md:p-3">{item.jeniskelamin}</td>
-                  <td className="p-2 md:p-3">{item.alamat}</td>
-                  <td className="p-2 md:p-3 text-center">
+                  <td className="p-3 text-center">{item.no}</td>
+                  <td className="p-3">{item.nama}</td>
+                  <td className="p-3">{item.jeniskelamin}</td>
+                  <td className="p-3">{item.alamat}</td>
+                  <td className="p-3">{item.tahun}</td>
+                  <td className="p-3 text-center">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
@@ -385,7 +444,7 @@ function DetailWarga() {
                       <FontAwesomeIcon icon={faTrashAlt} />
                     </button>
                   </td>
-                  <td className="p-2 md:p-3 text-center">
+                  <td className="p-3 text-center">
                     <input
                       type="checkbox"
                       checked={checkedItems[item.id] || false}
@@ -396,12 +455,9 @@ function DetailWarga() {
               ))}
             </tbody>
           </table>
-
-          <div className="flex justify-between items-center px-3 pb-3">
+          <div className="flex justify-between items-center mt-4">
             <div>
-              <label htmlFor="rowsPerPage" className="mr-2">
-                Baris per halaman:
-              </label>
+              <label htmlFor="rowsPerPage" className="mr-2 font-medium">Baris per halaman:</label>
               <select
                 id="rowsPerPage"
                 value={rowsPerPage}
@@ -541,6 +597,111 @@ function DetailWarga() {
           </div>
         )}
 
+        {addModalOpen && ( // Add Modal
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+              <h2 className="text-lg font-semibold mb-4">Tambah Item</h2>
+              <form onSubmit={handleAdd}>
+                <div className="mb-4">
+                  <label htmlFor="nama" className="block text-sm font-medium text-gray-700">
+                    Nama:
+                  </label>
+                  <input
+                    type="text"
+                    id="nama"
+                    value={newItem.nama}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, nama: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="no" className="block text-sm font-medium text-gray-700">
+                    No:
+                  </label>
+                  <input
+                    type="text"
+                    id="no"
+                    value={newItem.no}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, no: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="jeniskelamin" className="block text-sm font-medium text-gray-700">
+                    Jenis Kelamin:
+                  </label>
+                  <select
+                    id="jeniskelamin"
+                    value={newItem.jeniskelamin}
+                    onChange={(e) =>
+                      setNewItem({
+                        ...newItem,
+                        jeniskelamin: e.target.value,
+                      })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  >
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="alamat" className="block text-sm font-medium text-gray-700">
+                    Alamat:
+                  </label>
+                  <input
+                    type="text"
+                    id="alamat"
+                    value={newItem.alamat}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, alamat: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="tahun" className="block text-sm font-medium text-gray-700">
+                    Tahun:
+                  </label>
+                  <input
+                    type="text"
+                    id="tahun"
+                    value={newItem.tahun}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, tahun: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setAddModalOpen(false)}
+                    className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {selectedItemToDelete && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
             <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
@@ -566,7 +727,7 @@ function DetailWarga() {
         )}
 
         {showSuccessModal && (
-          <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-green-500 text-white font-bold py-2 px-4 rounded">
+          <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-blue-500 text-white font-bold py-2 px-4 rounded">
             {uploadMessage}
           </div>
         )}

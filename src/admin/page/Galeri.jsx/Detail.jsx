@@ -4,11 +4,12 @@ import { addDoc, collection, getFirestore, deleteDoc, updateDoc, getDocs, doc } 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function DetailGaleri() {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,47 +28,50 @@ function DetailGaleri() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [editedItem, setEditedItem] = useState({});
-  const [sortOrder, setSortOrder] = useState("asc"); // Add sort order state
+  const [newItem, setNewItem] = useState({
+    nama: "",
+    tahun: "",
+    downloadURL: "",
+  });
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const [statistics, setStatistics] = useState([]);
-  const [session, setSession] = useState(null); // Menyimpan informasi sesi
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-      // Logika untuk memeriksa sesi pengguna
-      const checkSession = () => {
-          const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
-          if (userSession) {
-              setSession(userSession); // Set sesi jika ada
-          } else {
-              // Redirect ke halaman login jika tidak ada sesi
-              window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
-          }
-      };
+    const checkSession = () => {
+      const userSession = sessionStorage.getItem("user");
+      if (userSession) {
+        setSession(userSession);
+      } else {
+        window.location.href = "/login";
+      }
+    };
 
-      checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+    checkSession();
 
-      const fetchData = async () => {
-          const db = getFirestore(app);
-          try {
-              const mainCollectionRef = collection(db, MAIN_COLLECTION);
-              const snapshot = await getDocs(mainCollectionRef);
-              
-              const promises = snapshot.docs.map(async (doc) => {
-                  const subCollectionRef = collection(db, doc.id);
-                  const subSnapshot = await getDocs(subCollectionRef);
-                  return { collection: doc.id, count: subSnapshot.size };
-              });
+    const fetchData = async () => {
+      const db = getFirestore(app);
+      try {
+        const mainCollectionRef = collection(db, "Galeri");
+        const snapshot = await getDocs(mainCollectionRef);
+        
+        const promises = snapshot.docs.map(async (doc) => {
+          const subCollectionRef = collection(db, doc.id);
+          const subSnapshot = await getDocs(subCollectionRef);
+          return { collection: doc.id, count: subSnapshot.size };
+        });
 
-              const stats = await Promise.all(promises);
-              setStatistics(stats);
-          } catch (error) {
-              console.error("Error fetching Firestore data:", error);
-              // Handle error here
-          }
-      };
+        const stats = await Promise.all(promises);
+        setStatistics(stats);
+      } catch (error) {
+        console.error("Error fetching Firestore data:", error);
+      }
+    };
 
-      fetchData();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -90,7 +94,6 @@ function DetailGaleri() {
     try {
       const querySnapshot = await getDocs(collection(db, "Galeri"));
       const res = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // Sort the data based on tahun
       res.sort((a, b) => {
         const yearA = parseInt(a.tahun, 10);
         const yearB = parseInt(b.tahun, 10);
@@ -109,6 +112,7 @@ function DetailGaleri() {
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
     setFile(uploadedFile);
+    setFilePreview(URL.createObjectURL(uploadedFile));
   };
 
   const handleUploadGambar = async () => {
@@ -205,27 +209,47 @@ function DetailGaleri() {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
+  const handleSubmitAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const downloadURL = await handleUploadGambar();
+      if (downloadURL) {
+        const db = getFirestore(app);
+        const newGalleryItem = { ...newItem, downloadURL };
+        await addDoc(collection(db, "Galeri"), newGalleryItem);
+        console.log("Item added successfully!");
+        setShowAddModal(false);
+        fetchData();
+        setNewItem({ nama: "", tahun: "", downloadURL: "" });
+        setFile(null);
+        setFilePreview(null);
+      }
+    } catch (error) {
+      console.error("Error adding item:", error);
+    }
+  };
+
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Galeri</h2>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+          <div className="flex justify-end items-center mb-4">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+            >
+              <FontAwesomeIcon icon={faPlus} /> Tambah
+            </button>
+          </div>
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="p-4"></th>
-                <th scope="col" className="px-2 py-3">
-                  Gambar
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Nama
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Tahun
-                </th>
-                <th scope="col" className="px-2 py-3">
-                Action
-                </th>
+                <th scope="col" className="px-2 py-3">Gambar</th>
+                <th scope="col" className="px-2 py-3">Nama</th>
+                <th scope="col" className="px-2 py-3">Tahun</th>
+                <th scope="col" className="px-2 py-3">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -243,30 +267,26 @@ function DetailGaleri() {
                   <td className="px-2 py-2">{item.nama}</td>
                   <td className="px-2 py-2">{item.tahun}</td>
                   <td className="px-2 py-2">
-                  <button
-  onClick={() => handleEdit(item)}
-  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
->
-  <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
-</button>
-                  
-                 
-                  <button
-  onClick={() => handleDelete(item)}
-  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
->
-  <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
-</button>
-</td>
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+                    >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <div className="flex justify-between items-center px-3 pb-3">
+          <div className="flex justify-between items-center mt-4">
             <div>
-              <label htmlFor="rowsPerPage" className="mr-2">
-                Baris per halaman:
-              </label>
+              <label htmlFor="rowsPerPage" className="mr-2 font-medium">Baris per halaman:</label>
               <select
                 id="rowsPerPage"
                 value={rowsPerPage}
@@ -287,9 +307,7 @@ function DetailGaleri() {
               >
                 Prev
               </button>
-              <span>
-                Halaman {currentPage} dari {totalPages}
-              </span>
+              <span>Halaman {currentPage} dari {totalPages}</span>
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
@@ -301,6 +319,95 @@ function DetailGaleri() {
           </div>
         </div>
       </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+              <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <form onSubmit={handleSubmitAdd}>
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
+                        Tambah Galeri
+                      </h3>
+                      <div className="mt-2">
+                        <label htmlFor="addNama" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Nama
+                        </label>
+                        <input
+                          type="text"
+                          id="addNama"
+                          name="addNama"
+                          value={newItem.nama}
+                          onChange={(e) => setNewItem({ ...newItem, nama: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="addTahun" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Tahun
+                        </label>
+                        <input
+                          type="number"
+                          id="addTahun"
+                          name="addTahun"
+                          value={newItem.tahun}
+                          onChange={(e) => setNewItem({ ...newItem, tahun: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="addGambar" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Gambar
+                        </label>
+                        <input
+                          type="file"
+                          id="addGambar"
+                          name="addGambar"
+                          onChange={handleFileChange}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      {filePreview && (
+                        <div className="mt-2">
+                          <img src={filePreview} alt="Preview" className="w-full h-auto max-h-60 object-cover rounded-lg" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button
+                      type="submit"
+                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                    >
+                      Simpan
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowAddModal(false);
+                        setFile(null);
+                        setFilePreview(null);
+                      }}
+                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showEditModal && (
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
@@ -308,10 +415,7 @@ function DetailGaleri() {
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div
-              className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-              role="dialog" aria-modal="true" aria-labelledby="modal-headline"
-            >
+            <div className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
               <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <form onSubmit={handleSubmitEdit}>
                   <div className="sm:flex sm:items-start">
@@ -338,7 +442,7 @@ function DetailGaleri() {
                           Tahun
                         </label>
                         <input
-                          type="text"
+                          type="number"
                           id="editTahun"
                           name="editTahun"
                           value={editedItem.tahun}
@@ -366,7 +470,7 @@ function DetailGaleri() {
                         <img
                           src={editedItem.downloadURL}
                           alt={editedItem.nama}
-                          className="h-20 w-20 mt-1 rounded-full cursor-pointer"
+                          className="w-full h-auto max-h-60 object-cover rounded-lg"
                           onClick={() => handleImageClick(editedItem.downloadURL)}
                         />
                       </div>
@@ -392,6 +496,7 @@ function DetailGaleri() {
           </div>
         </div>
       )}
+
       {showImageModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -415,54 +520,53 @@ function DetailGaleri() {
           </div>
         </div>
       )}
+
       {selectedItemToDelete && (
-  <div className="fixed z-10 inset-0 overflow-y-auto">
-    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-      </div>
-
-      <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-      <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div className="sm:flex sm:items-start">
-            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-              <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
-              <div className="mt-2">
-                <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.nama}</span>"?</p>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.nama}</span>"?</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  onClick={() => {
+                    confirmDelete(selectedItemToDelete);
+                    setSelectedItemToDelete(null);
+                  }}
+                  type="button"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Ya
+                </button>
+                <button
+                  onClick={() => setSelectedItemToDelete(null)}
+                  type="button"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Tidak
+                </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button
-            onClick={() => {
-              confirmDelete(selectedItemToDelete);
-              setSelectedItemToDelete(null);
-            }}
-            type="button"
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Ya
-          </button>
-          <button
-            onClick={() => setSelectedItemToDelete(null)}
-            type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Tidak
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </LayoutAdmin>
   );
 }

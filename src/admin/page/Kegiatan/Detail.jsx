@@ -10,6 +10,7 @@ import { format } from "date-fns";
 function DetailKegiatan() {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,25 +30,28 @@ function DetailKegiatan() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [editedItem, setEditedItem] = useState({});
-  const [sortOrder, setSortOrder] = useState("asc"); // Add sort order state
-
-  const [statistics, setStatistics] = useState([]);
-  const [session, setSession] = useState(null); // Menyimpan informasi sesi
+  const [newItem, setNewItem] = useState({
+    gambar: "",
+    judul: "",
+    deskripsi: "",
+    tanggal: "",
+  });
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Logika untuk memeriksa sesi pengguna
     const checkSession = () => {
-      const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+      const userSession = sessionStorage.getItem("user");
       if (userSession) {
-        setSession(userSession); // Set sesi jika ada
+        setSession(userSession);
       } else {
-        // Redirect ke halaman login jika tidak ada sesi
-        window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+        window.location.href = "/login";
       }
     };
 
-    checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+    checkSession();
 
     const fetchData = async () => {
       const db = getFirestore(app);
@@ -55,20 +59,18 @@ function DetailKegiatan() {
         const mainCollectionRef = collection(db, "Kegiatan");
         const snapshot = await getDocs(mainCollectionRef);
         const res = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        // Sort the data based on tanggal
         res.sort((a, b) => {
-          const yearA = parseInt(a.tanggal, 10);
-          const yearB = parseInt(b.tanggal, 10);
+          const dateA = new Date(a.tanggal);
+          const dateB = new Date(b.tanggal);
           if (sortOrder === "asc") {
-            return yearA - yearB;
+            return dateA - dateB;
           } else {
-            return yearB - yearA;
+            return dateB - dateA;
           }
         });
         setData(res);
       } catch (error) {
         console.error("Error fetching Firestore data:", error);
-        // Handle error here
       }
     };
 
@@ -89,6 +91,7 @@ function DetailKegiatan() {
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
     setFile(uploadedFile);
+    setFilePreview(URL.createObjectURL(uploadedFile));
   };
 
   const handleUploadGambar = async () => {
@@ -176,6 +179,26 @@ function DetailKegiatan() {
     }
   };
 
+  const handleSubmitAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const downloadURL = await handleUploadGambar();
+      if (downloadURL) {
+        const db = getFirestore(app);
+        const newActivity = { ...newItem, downloadURL };
+        await addDoc(collection(db, "Kegiatan"), newActivity);
+        console.log("Item added successfully!");
+        setShowAddModal(false);
+        fetchData();
+        setNewItem({ gambar: "", judul: "", deskripsi: "", tanggal: "" });
+        setFile(null);
+        setFilePreview(null);
+      }
+    } catch (error) {
+      console.error("Error adding item:", error);
+    }
+  };
+
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
     setShowImageModal(true);
@@ -190,25 +213,23 @@ function DetailKegiatan() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Kegiatan</h2>
         <div className="overflow-x-auto">
+          <div className="flex justify-end items-center px-3 pb-3">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+            >
+              Tambah Kegiatan
+            </button>
+          </div>
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="p-4"></th>
-                <th scope="col" className="px-2 py-3">
-                  Gambar
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Judul
-                </th>
-                <th scope="col" className="px-2 py-3 tracking-wider">
-                  Deskripsi
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Tanggal
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Action
-                </th>
+                <th scope="col" className="px-2 py-3">Gambar</th>
+                <th scope="col" className="px-2 py-3">Judul</th>
+                <th scope="col" className="px-2 py-3">Deskripsi</th>
+                <th scope="col" className="px-2 py-3">Tanggal</th>
+                <th scope="col" className="px-2 py-3">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -219,14 +240,13 @@ function DetailKegiatan() {
                     <img
                       src={item.downloadURL}
                       alt={item.judul}
-                      className="h-10 w-10 rounded-full cursor-pointer"
+                      className="h-40 w-40 rounded-full cursor-pointer"
                       onClick={() => handleImageClick(item.downloadURL)}
                     />
                   </td>
                   <td className="px-2 py-2">{item.judul}</td>
                   <td className="px-2 py-2">{item.deskripsi}</td>
                   <td className="px-2 py-2">{format(new Date(item.tanggal), "dd-MMM-yyyy")}</td>
-
                   <td className="px-2 py-2">
                     <button
                       onClick={() => handleEdit(item)}
@@ -247,9 +267,7 @@ function DetailKegiatan() {
           </table>
           <div className="flex justify-between items-center px-3 pb-3">
             <div>
-              <label htmlFor="rowsPerPage" className="mr-2">
-                Baris per halaman:
-              </label>
+              <label htmlFor="rowsPerPage" className="mr-2">Baris per halaman:</label>
               <select
                 id="rowsPerPage"
                 value={rowsPerPage}
@@ -270,9 +288,7 @@ function DetailKegiatan() {
               >
                 Prev
               </button>
-              <span>
-                Halaman {currentPage} dari {totalPages}
-              </span>
+              <span>Halaman {currentPage} dari {totalPages}</span>
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
@@ -284,56 +300,87 @@ function DetailKegiatan() {
           </div>
         </div>
       </div>
-      {showEditModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
-          <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
-                <form onSubmit={handleSubmitEdit}>
-                <div className="mb-4">
-                  <label htmlFor="judul" className="block text-sm font-medium text-gray-700">
-                    Judul:
-                  </label>
-                  <input
-                    type="text"
-                    id="judul"
-                    value={editedItem.judul}
-                    onChange={(e) =>
-                      setEditedItem({ ...editedItem, judul: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="tanggal" className="block text-sm font-medium text-gray-700">
-                    Tanggal:
-                  </label>
-                  <input
-                    type="date"
-                    id="tanggal"
-                    value={editedItem.tanggal}
-                    onChange={(e) =>
-                      setEditedItem({ ...editedItem, tanggal: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="deskripsi" className="block text-sm font-medium text-gray-700">
-                    Deskripsi:
-                  </label>
-                  <input
-                    type="text"
-                    id="deskripsi"
-                    value={editedItem.deskripsi}
-                    onChange={(e) =>
-                      setEditedItem({ ...editedItem, deskripsi: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div
+              className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              role="dialog" aria-modal="true" aria-labelledby="modal-headline"
+            >
+              <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <form onSubmit={handleSubmitAdd}>
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
+                        Tambah Kegiatan
+                      </h3>
+                      <div className="mt-2">
+                        <label htmlFor="addJudul" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Judul
+                        </label>
+                        <input
+                          type="text"
+                          id="addJudul"
+                          name="addJudul"
+                          value={newItem.judul}
+                          onChange={(e) => setNewItem({ ...newItem, judul: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="addDeskripsi" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Deskripsi
+                        </label>
+                        <input
+                          type="text"
+                          id="addDeskripsi"
+                          name="addDeskripsi"
+                          value={newItem.deskripsi}
+                          onChange={(e) => setNewItem({ ...newItem, deskripsi: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="addTanggal" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Tanggal
+                        </label>
+                        <input
+                          type="date"
+                          id="addTanggal"
+                          name="addTanggal"
+                          value={newItem.tanggal}
+                          onChange={(e) => setNewItem({ ...newItem, tanggal: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="addGambar" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Gambar
+                        </label>
+                        <input
+                          type="file"
+                          id="addGambar"
+                          name="addGambar"
+                          onChange={handleFileChange}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      {filePreview && (
+                        <div className="mt-2">
+                          <img src={filePreview} alt="Preview" className="w-full h-auto max-h-80 object-cover rounded-lg" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button
                       type="submit"
@@ -342,7 +389,11 @@ function DetailKegiatan() {
                       Simpan
                     </button>
                     <button
-                      onClick={() => setShowEditModal(false)}
+                      onClick={() => {
+                        setShowAddModal(false);
+                        setFile(null);
+                        setFilePreview(null);
+                      }}
                       className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                     >
                       Batal
@@ -350,8 +401,68 @@ function DetailKegiatan() {
                   </div>
                 </form>
               </div>
-              </div>
+            </div>
+          </div>
+        </div>
       )}
+
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+            <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
+            <form onSubmit={handleSubmitEdit}>
+              <div className="mb-4">
+                <label htmlFor="judul" className="block text-sm font-medium text-gray-700">Judul:</label>
+                <input
+                  type="text"
+                  id="judul"
+                  value={editedItem.judul}
+                  onChange={(e) => setEditedItem({ ...editedItem, judul: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="tanggal" className="block text-sm font-medium text-gray-700">Tanggal:</label>
+                <input
+                  type="date"
+                  id="tanggal"
+                  value={editedItem.tanggal}
+                  onChange={(e) => setEditedItem({ ...editedItem, tanggal: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="deskripsi" className="block text-sm font-medium text-gray-700">Deskripsi:</label>
+                <input
+                  type="text"
+                  id="deskripsi"
+                  value={editedItem.deskripsi}
+                  onChange={(e) => setEditedItem({ ...editedItem, deskripsi: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="submit"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Simpan
+                </button>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {showImageModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -375,6 +486,7 @@ function DetailKegiatan() {
           </div>
         </div>
       )}
+
       {selectedItemToDelete && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

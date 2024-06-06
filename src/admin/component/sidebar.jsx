@@ -26,7 +26,16 @@ function CustomSidebar({isOpen}) {
             <FlowbiteSidebar.Item href="/upload-data" icon={HiInbox} className="hover:bg-red-700 transition-colors duration-300">
               Upload Data
             </FlowbiteSidebar.Item>
-            <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Warga" className="hover:bg-red-700 transition-colors duration-300">
+            <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Data" className="hover:bg-red-700 transition-colors duration-300">
+              <FlowbiteSidebar.Item href="/detail-siswa" icon={HiInformationCircle} className="hover:bg-red-700">Siswa</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-warga" icon={HiInformationCircle} className="hover:bg-red-700">Warga</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-subrayon" icon={HiInformationCircle} className="hover:bg-red-700">Sub Rayon</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-rayon" icon={HiInformationCircle} className="hover:bg-red-700">Rayon</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-pusdiklat" icon={HiInformationCircle} className="hover:bg-red-700">Pusdiklat</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-struktur-organisasi" icon={HiInformationCircle} className="hover:bg-red-700">Struktur Organiasi</FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item href="/detail-sejarah-singkat" icon={HiInformationCircle} className="hover:bg-red-700">Ketua Ranting</FlowbiteSidebar.Item>
+            </FlowbiteSidebar.Collapse>
+            {/* <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Warga" className="hover:bg-red-700 transition-colors duration-300">
               <FlowbiteSidebar.Item href="/detail-warga" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
               <FlowbiteSidebar.Item href="/tambah-warga" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
@@ -53,7 +62,7 @@ function CustomSidebar({isOpen}) {
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Struktur Organisasi" className="hover:bg-red-700 transition-colors duration-300">
               <FlowbiteSidebar.Item href="/detail-struktur-organisasi" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
               <FlowbiteSidebar.Item href="/tambah-struktur-organisasi" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>
-            </FlowbiteSidebar.Collapse>
+            </FlowbiteSidebar.Collapse> */}
             <FlowbiteSidebar.Collapse icon={HiViewGrid} label="Galeri" className="hover:bg-red-700 transition-colors duration-300">
               <FlowbiteSidebar.Item href="/detail-galeri" icon={HiInformationCircle} className="hover:bg-red-700">Detail</FlowbiteSidebar.Item>
               <FlowbiteSidebar.Item href="/tambah-galeri" icon={HiDocumentAdd} className="hover:bg-red-700">Tambah</FlowbiteSidebar.Item>

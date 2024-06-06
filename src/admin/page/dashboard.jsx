@@ -143,6 +143,13 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+          <div className="flex justify-between items-center">
+            <h3 className="text-2xl font-semibold text-gray-800">
+              {/* Berisi Cart siswa dan warga dari tahun ke tahun */}
+            </h3>
+          </div>
+        </div>
     </LayoutAdmin>
   );
 }

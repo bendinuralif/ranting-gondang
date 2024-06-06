@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import {
-  retrieveData,
-  uploadData
-} from "../../../lib/firebase/service";
+import { Link } from "react-router-dom";
+import { retrieveData, uploadData } from "../../../lib/firebase/service";
 import {
   collection,
   addDoc,
@@ -12,11 +10,11 @@ import {
   doc,
   writeBatch,
   getDocs,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit, faTrashAlt, faPlus, faPrint } from "@fortawesome/free-solid-svg-icons";
 
 function DetailSiswa() {
   const [data, setData] = useState([]);
@@ -30,6 +28,7 @@ function DetailSiswa() {
   const [paginatedData, setPaginatedData] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false); // State for add modal
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [itemToDeleteName, setItemToDeleteName] = useState("");
   const [showDeleteSelectedButton, setShowDeleteSelectedButton] = useState(false);
@@ -39,7 +38,14 @@ function DetailSiswa() {
     no: "",
     jeniskelamin: "",
     rayon: "",
-    tahun: ""
+    tahun: "",
+  });
+  const [newItem, setNewItem] = useState({
+    nama: "",
+    no: "",
+    jeniskelamin: "",
+    rayon: "",
+    tahun: "",
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -92,15 +98,17 @@ function DetailSiswa() {
         : snapshot.docs;
 
       const data = filteredData.map((doc) => ({ id: doc.id, ...doc.data() }));
-      const filteredAndSortedData = data.filter(
-        (item) => typeof item.no === "string" || typeof item.no === "number"
-      ).sort((a, b) => {
-        if (typeof a.no === "string" && typeof b.no === "string") {
-          return a.no.localeCompare(b.no);
-        } else {
-          return a.no - b.no;
-        }
-      });
+      const filteredAndSortedData = data
+        .filter(
+          (item) => typeof item.no === "string" || typeof item.no === "number"
+        )
+        .sort((a, b) => {
+          if (typeof a.no === "string" && typeof b.no === "string") {
+            return a.no.localeCompare(b.no);
+          } else {
+            return a.no - b.no;
+          }
+        });
 
       setData(filteredAndSortedData);
     } catch (error) {
@@ -289,76 +297,143 @@ function DetailSiswa() {
     }
   };
 
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const db = getFirestore(app);
+      await addDoc(collection(db, "Siswa"), newItem);
+      console.log("Item added successfully!");
+      setAddModalOpen(false);
+      fetchData();
+    } catch (error) {
+      console.error("Error adding item:", error);
+    }
+  };
+
   useEffect(() => {
-    const filteredData = data.filter((item) =>
-      item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.jeniskelamin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.rayon.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.tahun.toString().includes(searchQuery.toLowerCase())
+    const filteredData = data.filter(
+      (item) =>
+        item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.jeniskelamin.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.rayon.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.tahun.toString().includes(searchQuery.toLowerCase())
     );
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     setPaginatedData(filteredData.slice(startIndex, endIndex));
   }, [data, currentPage, rowsPerPage, searchQuery]);
 
+  const handlePrintAll = () => {
+    let printContent = `
+      <h2 className="text-lg font-semibold">Detail Siswa</h2>
+      <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Nama</th>
+            <th>Jenis Kelamin</th>
+            <th>Rayon</th>
+            <th>Tahun</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.forEach((item, index) => {
+      printContent += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.nama}</td>
+          <td>${item.jeniskelamin}</td>
+          <td>${item.rayon}</td>
+          <td>${item.tahun}</td>
+        </tr>
+      `;
+    });
+
+    printContent += `
+        </tbody>
+      </table>
+    `;
+
+    const printWindow = window.open("", "", "width=800,height=600");
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Siswa</h2>
-        <div className="overflow-x-auto">
-          <div className="flex justify-end items-center px-3 pb-3">
-            <label htmlFor="tahun" className="mr-2">
-              Pilih Tahun:
-            </label>
-            <select
-              id="tahun"
-              onChange={handleChangeTahun}
-              value={selectedTahun}
-              className="border rounded px-3 py-1"
-            >
-              {tahunOptions.map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
+        <div className="overflow-x-auto bg-white shadow-md rounded-lg p-4">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <label htmlFor="tahun" className="mr-2 font-medium">Pilih Tahun:</label>
+              <select
+                id="tahun"
+                onChange={handleChangeTahun}
+                value={selectedTahun}
+                className="border rounded px-3 py-1"
+              >
+                {tahunOptions.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <button
+                onClick={handlePrintAll}
+                className="bg-green-500 text-white font-bold py-2 px-4 rounded mr-2"
+              >
+                <FontAwesomeIcon icon={faPrint} className="mr-2" /> Cetak Semua
+              </button>
+              <button
+                onClick={() => setAddModalOpen(true)}
+                className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+              >
+                <FontAwesomeIcon icon={faPlus} /> Tambah
+              </button>
+            </div>
           </div>
-          <div className="flex justify-end items-center px-3 pb-3">
+          <div className="flex justify-between items-center mb-4">
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border rounded px-3 py-1"
+              className="border rounded px-3 py-1 w-full"
             />
-          </div>
-
-          <div className="flex justify-start items-center px-3 pb-3">
             {showDeleteSelectedButton && (
               <button
                 onClick={confirmDeleteSelected}
-                className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-red-500 text-white font-bold py-2 px-4 rounded ml-2"
               >
                 Hapus Terpilih
               </button>
             )}
           </div>
-
-          <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <table className="w-full text-sm text-left text-gray-700">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
-                <th className="p-2 md:p-3 text-center">No.</th>
-                <th className="p-2 md:p-3">Nama</th>
-                <th className="p-2 md:p-3">Jenis Kelamin</th>
-                <th className="p-2 md:p-3">Rayon</th>
-                <th className="p-2 md:p-3 text-center">Aksi</th>
-                <th className="p-2 md:p-3 text-center">
+                <th className="p-3 text-center">No.</th>
+                <th className="p-3">Nama</th>
+                <th className="p-3">Jenis Kelamin</th>
+                <th className="p-3">Rayon</th>
+                <th className="p-3">Tahun</th>
+                <th className="p-3 text-center">Aksi</th>
+                <th className="p-3 text-center">
                   <input
                     type="checkbox"
                     onChange={(e) =>
                       setCheckedItems(
                         Object.fromEntries(
-                          paginatedData.map((item) => [item.id, e.target.checked])
+                          paginatedData.map((item) => [
+                            item.id,
+                            e.target.checked,
+                          ])
                         )
                       )
                     }
@@ -370,16 +445,17 @@ function DetailSiswa() {
               {paginatedData.map((item, index) => (
                 <tr
                   key={item.id}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  className="bg-white border-b hover:bg-gray-50"
                 >
-                  <td className="p-2 md:p-3 text-center">{item.no}</td>
-                  <td className="p-2 md:p-3">{item.nama}</td>
-                  <td className="p-2 md:p-3">{item.jeniskelamin}</td>
-                  <td className="p-2 md:p-3">{item.rayon}</td>
-                  <td className="p-2 md:p-3 text-center">
+                  <td className="p-3 text-center">{item.no}</td>
+                  <td className="p-3">{item.nama}</td>
+                  <td className="p-3">{item.jeniskelamin}</td>
+                  <td className="p-3">{item.rayon}</td>
+                  <td className="p-3">{item.tahun}</td>
+                  <td className="p-3 text-center">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
@@ -390,7 +466,7 @@ function DetailSiswa() {
                       <FontAwesomeIcon icon={faTrashAlt} />
                     </button>
                   </td>
-                  <td className="p-2 md:p-3 text-center">
+                  <td className="p-3 text-center">
                     <input
                       type="checkbox"
                       checked={checkedItems[item.id] || false}
@@ -401,12 +477,9 @@ function DetailSiswa() {
               ))}
             </tbody>
           </table>
-
-          <div className="flex justify-between items-center px-3 pb-3">
+          <div className="flex justify-between items-center mt-4">
             <div>
-              <label htmlFor="rowsPerPage" className="mr-2">
-                Baris per halaman:
-              </label>
+              <label htmlFor="rowsPerPage" className="mr-2 font-medium">Baris per halaman:</label>
               <select
                 id="rowsPerPage"
                 value={rowsPerPage}
@@ -447,7 +520,10 @@ function DetailSiswa() {
               <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label htmlFor="nama" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="nama"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Nama:
                   </label>
                   <input
@@ -462,7 +538,10 @@ function DetailSiswa() {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="no" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="no"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     No:
                   </label>
                   <input
@@ -477,7 +556,10 @@ function DetailSiswa() {
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="jeniskelamin" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="jeniskelamin"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Jenis Kelamin:
                   </label>
                   <select
@@ -497,7 +579,10 @@ function DetailSiswa() {
                   </select>
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="rayon" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="rayon"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Rayon:
                   </label>
                   <input
@@ -505,14 +590,20 @@ function DetailSiswa() {
                     id="rayon"
                     value={selectedItem.rayon}
                     onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, rayon: e.target.value })
+                      setSelectedItem({
+                        ...selectedItem,
+                        rayon: e.target.value,
+                      })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
                   />
                 </div>
                 <div className="mb-4">
-                  <label htmlFor="tahun" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="tahun"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Tahun:
                   </label>
                   <input
@@ -520,7 +611,10 @@ function DetailSiswa() {
                     id="tahun"
                     value={selectedItem.tahun}
                     onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, tahun: e.target.value })
+                      setSelectedItem({
+                        ...selectedItem,
+                        tahun: e.target.value,
+                      })
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
@@ -530,6 +624,126 @@ function DetailSiswa() {
                   <button
                     type="button"
                     onClick={() => setEditModalOpen(false)}
+                    className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {addModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+              <h2 className="text-lg font-semibold mb-4">Tambah Siswa</h2>
+              <form onSubmit={handleAddSubmit}>
+                <div className="mb-4">
+                  <label
+                    htmlFor="nama"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Nama:
+                  </label>
+                  <input
+                    type="text"
+                    id="nama"
+                    value={newItem.nama}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, nama: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="no"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    No:
+                  </label>
+                  <input
+                    type="text"
+                    id="no"
+                    value={newItem.no}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, no: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="jeniskelamin"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Jenis Kelamin:
+                  </label>
+                  <select
+                    id="jeniskelamin"
+                    value={newItem.jeniskelamin}
+                    onChange={(e) =>
+                      setNewItem({
+                        ...newItem,
+                        jeniskelamin: e.target.value,
+                      })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  >
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="rayon"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Rayon:
+                  </label>
+                  <input
+                    type="text"
+                    id="rayon"
+                    value={newItem.rayon}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, rayon: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="tahun"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Tahun:
+                  </label>
+                  <input
+                    type="text"
+                    id="tahun"
+                    value={newItem.tahun}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, tahun: e.target.value })
+                    }
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setAddModalOpen(false)}
                     className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
                   >
                     Cancel
@@ -571,46 +785,47 @@ function DetailSiswa() {
         )}
 
         {showSuccessModal && (
-          <div className="fixedinset-x-0 bottom-0 flex items-center justify-center h-16 bg-green-500 text-white font-bold py-2 px-4 rounded">
-          {uploadMessage}
-        </div>
-      )}
+          <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-blue-500 text-white font-bold py-2 px-4 rounded">
+            {uploadMessage}
+          </div>
+        )}
 
-      {showErrorModal && (
-        <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-red-500 text-white font-bold py-2 px-4 rounded">
-          {errorMessage}
-        </div>
-      )}
-     {confirmDeleteModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
-      <h2 className="text-lg font-semibold mb-4">Hapus Item Terpilih</h2>
-      <p>Apakah Anda yakin ingin menghapus item terpilih?</p>
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={() => toggleConfirmDeleteModal()}
-          className="bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => {
-            handleConfirmedDeleteSelected(); // Panggil fungsi untuk menghapus item terpilih
-            toggleConfirmDeleteModal(); // Tutup modal konfirmasi setelah penghapusan berhasil
-          }}
-          className="bg-red-500 text-white font-bold py-2 px-4 rounded"
-        >
-          Delete
-        </button>
+        {showErrorModal && (
+          <div className="fixed inset-x-0 bottom-0 flex items-center justify-center h-16 bg-red-500 text-white font-bold py-2 px-4 rounded">
+            {errorMessage}
+          </div>
+        )}
+
+        {confirmDeleteModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+              <h2 className="text-lg font-semibold mb-4">
+                Hapus Item Terpilih
+              </h2>
+              <p>Apakah Anda yakin ingin menghapus item terpilih?</p>
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => toggleConfirmDeleteModal()}
+                  className="bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    handleConfirmedDeleteSelected(); // Panggil fungsi untuk menghapus item terpilih
+                    toggleConfirmDeleteModal(); // Tutup modal konfirmasi setelah penghapusan berhasil
+                  }}
+                  className="bg-red-500 text-white font-bold py-2 px-4 rounded"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  </div>
-)}
-
-    </div>
-  </LayoutAdmin>
-);
+    </LayoutAdmin>
+  );
 }
 
 export default DetailSiswa;
-

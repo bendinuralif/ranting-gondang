@@ -5,7 +5,7 @@ import { collection, addDoc, getFirestore, deleteDoc, doc, getDocs } from "fireb
 import app from "./../../lib/firebase/init";
 import { updateDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons'
 import 'tailwindcss/tailwind.css';
 
 function LayananAdmin() {
@@ -16,8 +16,8 @@ function LayananAdmin() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [paginatedData, setPaginatedData] = useState([]);
-  const [editingItemId, setEditingItemId] = useState(null); // State to track which item is being edited
-  const [disabledButtons, setDisabledButtons] = useState([]); // State to track disabled buttons
+  const [editingItemId, setEditingItemId] = useState(null); 
+  const [disabledButtons, setDisabledButtons] = useState([]);
   const [itemToDelete, setItemToDelete] = useState(null);
 
   useEffect(() => {
@@ -104,12 +104,12 @@ function LayananAdmin() {
       const itemId = item.id;
       const itemRef = doc(db, "Layanan", itemId);
       await updateDoc(itemRef, {
-        ...item, // Send existing data again
-        tanggalSelesai: new Date().toISOString(), // Add completion date and time
+        ...item, 
+        tanggalSelesai: new Date().toISOString(), 
       });
       console.log("Item updated successfully with completion date!");
-      fetchData(); // Fetch the latest data from Firebase
-      setEditingItemId(null); // Reset editing item ID
+      fetchData(); 
+      setEditingItemId(null); 
     } catch (error) {
       console.error("Error updating item:", error);
     }
@@ -117,7 +117,7 @@ function LayananAdmin() {
 
   const handleEdit = (item) => {
     if (!editingItemId) {
-      handleSubmit(item); // Call handleSubmit when "Selesai" button is clicked
+      handleSubmit(item); 
       setEditingItemId(item.id);
       setDisabledButtons((prevButtons) => [...prevButtons, item.id]);
     }
@@ -125,21 +125,68 @@ function LayananAdmin() {
 
   const confirmDelete = async (itemToDelete) => {
     try {
-      // Delete item from the database
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Layanan", itemToDelete.id));
       console.log("Item deleted successfully!");
-      // Fetch data again after the item is deleted
       fetchData();
     } catch (error) {
       console.error("Error deleting item:", error);
     }
   };
 
+  const handlePrintAll = () => {
+    let printContent = `
+      <h2>Detail Layanan</h2>
+      <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>No Telepon</th>
+            <th>Alamat</th>
+            <th>Deskripsi</th>
+            <th>Tanggal Selesai</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    data.forEach((item, index) => {
+      printContent += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${item.nama}</td>
+          <td>${item.noTelepon}</td>
+          <td>${item.alamat}</td>
+          <td>${item.deskripsi}</td>
+          <td>${item.tanggalSelesai ? new Date(item.tanggalSelesai).toLocaleString() : "Belum Selesai"}</td>
+        </tr>
+      `;
+    });
+
+    printContent += `
+        </tbody>
+      </table>
+    `;
+
+    const printWindow = window.open("", "", "width=800,height=600");
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Layanan PSHT Ranting Gondang</h2>
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={handlePrintAll}
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            <FontAwesomeIcon icon={faPrint} className="mr-2" /> Cetak Semua
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -151,6 +198,7 @@ function LayananAdmin() {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selesai</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hapus</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cetak</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -180,6 +228,14 @@ function LayananAdmin() {
                       className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                     >
                       <FontAwesomeIcon icon={faTrashAlt} className="mr-2" /> Hapus
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <button
+                      onClick={() => handlePrint(item)}
+                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      <FontAwesomeIcon icon={faPrint} className="mr-2" /> Cetak
                     </button>
                   </td>
                 </tr>

@@ -5,7 +5,7 @@ import { collection, addDoc, getFirestore, deleteDoc, doc } from "firebase/fires
 import app from "../../../lib/firebase/init";
 import { updateDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function DetailSubRayon() {
   const [data, setData] = useState([]);
@@ -18,8 +18,14 @@ function DetailSubRayon() {
   const [paginatedData, setPaginatedData] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [selectedItem, setSelectedItem] = useState({
+    sub: "",
+    no: "",
+    rayon: "",
+  });
+  const [newItem, setNewItem] = useState({
     sub: "",
     no: "",
     rayon: "",
@@ -28,46 +34,46 @@ function DetailSubRayon() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-
   const [statistics, setStatistics] = useState([]);
-    const [session, setSession] = useState(null); // Menyimpan informasi sesi
+  const [session, setSession] = useState(null); // Menyimpan informasi sesi
 
-    useEffect(() => {
-        // Logika untuk memeriksa sesi pengguna
-        const checkSession = () => {
-            const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
-            if (userSession) {
-                setSession(userSession); // Set sesi jika ada
-            } else {
-                // Redirect ke halaman login jika tidak ada sesi
-                window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
-            }
-        };
+  useEffect(() => {
+    // Logika untuk memeriksa sesi pengguna
+    const checkSession = () => {
+      const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+      if (userSession) {
+        setSession(userSession); // Set sesi jika ada
+      } else {
+        // Redirect ke halaman login jika tidak ada sesi
+        window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+      }
+    };
 
-        checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+    checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
 
-        const fetchData = async () => {
-            const db = getFirestore(app);
-            try {
-                const mainCollectionRef = collection(db, MAIN_COLLECTION);
-                const snapshot = await getDocs(mainCollectionRef);
-                
-                const promises = snapshot.docs.map(async (doc) => {
-                    const subCollectionRef = collection(db, doc.id);
-                    const subSnapshot = await getDocs(subCollectionRef);
-                    return { collection: doc.id, count: subSnapshot.size };
-                });
+    const fetchData = async () => {
+      const db = getFirestore(app);
+      try {
+        const mainCollectionRef = collection(db, MAIN_COLLECTION);
+        const snapshot = await getDocs(mainCollectionRef);
 
-                const stats = await Promise.all(promises);
-                setStatistics(stats);
-            } catch (error) {
-                console.error("Error fetching Firestore data:", error);
-                // Handle error here
-            }
-        };
+        const promises = snapshot.docs.map(async (doc) => {
+          const subCollectionRef = collection(db, doc.id);
+          const subSnapshot = await getDocs(subCollectionRef);
+          return { collection: doc.id, count: subSnapshot.size };
+        });
 
-        fetchData();
-    }, []);
+        const stats = await Promise.all(promises);
+        setStatistics(stats);
+      } catch (error) {
+        console.error("Error fetching Firestore data:", error);
+        // Handle error here
+      }
+    };
+
+    fetchData();
+  }, []);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -186,10 +192,36 @@ function DetailSubRayon() {
     }
   };
 
+  const handleSubmitAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const db = getFirestore(app);
+      await addDoc(collection(db, "SubRayon"), newItem);
+      console.log("Item added successfully!");
+      setAddModalOpen(false);
+      setNewItem({
+        sub: "",
+        no: "",
+        rayon: "",
+      });
+      fetchData();
+    } catch (error) {
+      console.error("Error adding item:", error);
+    }
+  };
+
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Sub Rayon</h2>
+        <div className="flex justify-between items-center mb-4">
+          <button
+            onClick={() => setAddModalOpen(true)}
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+          >
+            <FontAwesomeIcon icon={faPlus} /> Tambah
+          </button>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -217,21 +249,19 @@ function DetailSubRayon() {
                   <td className="px-2 py-2">{item.sub}</td>
                   <td className="px-2 py-2">{item.rayon}</td>
                   <td className="px-2 py-2">
-                  <button
-  onClick={() => handleEdit(item)}
-  className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
->
-  <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
-</button>
-                  
-                 
-                  <button
-  onClick={() => handleDelete(item)}
-  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
->
-  <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
-</button>
-</td>
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item)}
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -276,59 +306,128 @@ function DetailSubRayon() {
         </div>
       </div>
       {editModalOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-            <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
-              <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label htmlFor="sub" className="block text-sm font-medium text-gray-700">
-                    Sub:
-                  </label>
-                  <input
-                    type="text"
-                    id="sub"
-                    value={selectedItem.sub}
-                    onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, sub: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-                <div className="mb-4">
-                  <label htmlFor="rayon" className="block text-sm font-medium text-gray-700">
-                    Rayon:
-                  </label>
-                  <input
-                    type="text"
-                    id="rayon"
-                    value={selectedItem.rayon}
-                    onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, rayon: e.target.value })
-                    }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setEditModalOpen(false)}
-                    className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Save
-                  </button>
-                </div>
-              </form>
-            </div>
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+            <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label htmlFor="sub" className="block text-sm font-medium text-gray-700">
+                  Sub:
+                </label>
+                <input
+                  type="text"
+                  id="sub"
+                  value={selectedItem.sub}
+                  onChange={(e) =>
+                    setSelectedItem({ ...selectedItem, sub: e.target.value })
+                  }
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="rayon" className="block text-sm font-medium text-gray-700">
+                  Rayon:
+                </label>
+                <input
+                  type="text"
+                  id="rayon"
+                  value={selectedItem.rayon}
+                  onChange={(e) =>
+                    setSelectedItem({ ...selectedItem, rayon: e.target.value })
+                  }
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(false)}
+                  className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
           </div>
-        )}
+        </div>
+      )}
+      {addModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+            <h2 className="text-lg font-semibold mb-4">Tambah Item</h2>
+            <form onSubmit={handleSubmitAdd}>
+              <div className="mb-4">
+                <label htmlFor="sub" className="block text-sm font-medium text-gray-700">
+                  Sub:
+                </label>
+                <input
+                  type="text"
+                  id="sub"
+                  value={newItem.sub}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, sub: e.target.value })
+                  }
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="no" className="block text-sm font-medium text-gray-700">
+                  No:
+                </label>
+                <input
+                  type="number"
+                  id="no"
+                  value={newItem.no}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, no: e.target.value })
+                  }
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="rayon" className="block text-sm font-medium text-gray-700">
+                  Rayon:
+                </label>
+                <input
+                  type="text"
+                  id="rayon"
+                  value={newItem.rayon}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, rayon: e.target.value })
+                  }
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setAddModalOpen(false)}
+                  className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white font-bold py-2 px-4 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg">
@@ -361,54 +460,53 @@ function DetailSubRayon() {
         </div>
       )}
       {selectedItemToDelete && (
-  <div className="fixed z-10 inset-0 overflow-y-auto">
-    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-      </div>
-
-      <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-      <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div className="sm:flex sm:items-start">
-            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-              <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+        <div className="fixed z-10 inset-0 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
-              <div className="mt-2">
-                <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.sub}</span>"?</p>
+
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.sub}</span>"?</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  onClick={() => {
+                    confirmDelete(selectedItemToDelete);
+                    setSelectedItemToDelete(null);
+                  }}
+                  type="button"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Ya
+                </button>
+                <button
+                  onClick={() => setSelectedItemToDelete(null)}
+                  type="button"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Tidak
+                </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button
-            onClick={() => {
-              confirmDelete(selectedItemToDelete);
-              setSelectedItemToDelete(null);
-            }}
-            type="button"
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Ya
-          </button>
-          <button
-            onClick={() => setSelectedItemToDelete(null)}
-            type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Tidak
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
+      )}
     </LayoutAdmin>
   );
 }

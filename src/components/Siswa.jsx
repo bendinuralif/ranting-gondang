@@ -152,7 +152,7 @@ function Siswa() {
                       index % 2 === 0 ? "gray-100" : "white"
                     } border-b dark:bg-gray-800 dark:border-gray-700`}
                   >
-                    <td className="px-2 py-2">{item.no}</td>
+                    <td className="px-2 py-2">{index + 1}</td>
                     <td className="px-2 py-2">{item.nama}</td>
                     <td className="px-2 py-2">{item.jeniskelamin}</td>
                     <td className="px-2 py-2">{item.rayon}</td>
