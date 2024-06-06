@@ -1,8 +1,9 @@
 import Layout from "./Layout";
 import CustomCarousel from "../components/Carousel";
 import Intro from "./../components/Intro";
-import CardKegiatan from "../components/CardKegiatan";
 import CardBerita from "../components/CardBerita";
+import CardKegiatanHome from "../components/CardKegiatanHome";
+import CardBeritaHome from "../components/CardBeritaHome";
 
 function HomePage() {
   return (
@@ -87,7 +88,7 @@ function HomePage() {
                 KEGIATAN TERBARU
               </h5>
             </a>
-        <CardKegiatan />
+        <CardKegiatanHome />
         <a
               href="/kegiatan"
               class="inline-flex items-center px-3 py-2 text-xs  md:text-sm font-medium text-center text-white bg-black rounded-lg hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ml-5 md:ml-10"
@@ -114,7 +115,7 @@ function HomePage() {
                 BERITA TERBARU
               </h5>
             </a>
-        <CardBerita />
+        <CardBeritaHome />
         <a
               href="/berita"
               class="inline-flex items-center px-3 py-2 text-xs  md:text-sm font-medium text-center text-white bg-black rounded-lg hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 ml-5 md:ml-10"
