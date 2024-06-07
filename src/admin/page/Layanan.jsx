@@ -198,7 +198,7 @@ function LayananAdmin() {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Selesai</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hapus</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cetak</th>
+                <th scope="col" className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cetak</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -230,12 +230,12 @@ function LayananAdmin() {
                       <FontAwesomeIcon icon={faTrashAlt} className="mr-2" /> Hapus
                     </button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
                     <button
                       onClick={() => handlePrint(item)}
-                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-2 rounded"
                     >
-                      <FontAwesomeIcon icon={faPrint} className="mr-2" /> Cetak
+                    <FontAwesomeIcon icon={faPrint} className="mr-2" />
                     </button>
                   </td>
                 </tr>

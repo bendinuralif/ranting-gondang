@@ -425,7 +425,7 @@ function DetailWarga() {
                   key={item.id}
                   className="bg-white border-b hover:bg-gray-50"
                 >
-                  <td className="p-3 text-center">{item.no}</td>
+                  <td className="p-3 text-center">{index + 1}</td>
                   <td className="p-3">{item.nama}</td>
                   <td className="p-3">{item.jeniskelamin}</td>
                   <td className="p-3">{item.alamat}</td>

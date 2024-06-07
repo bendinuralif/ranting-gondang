@@ -325,7 +325,7 @@ function DetailSiswa() {
 
   const handlePrintAll = () => {
     let printContent = `
-      <h2 className="text-lg font-semibold">Detail Siswa</h2>
+      <h2 className="text-lg font-semibold">Siswa </h2>
       <table border="1" style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>
@@ -447,7 +447,7 @@ function DetailSiswa() {
                   key={item.id}
                   className="bg-white border-b hover:bg-gray-50"
                 >
-                  <td className="p-3 text-center">{item.no}</td>
+                  <td className="p-3 text-center">{index + 1}</td>
                   <td className="p-3">{item.nama}</td>
                   <td className="p-3">{item.jeniskelamin}</td>
                   <td className="p-3">{item.rayon}</td>

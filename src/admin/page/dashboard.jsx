@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
 import LayoutAdmin from "./LayoutAdmin";
 import 'tailwindcss/tailwind.css';
+import { Line } from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 const ItemCard = ({ title, count, youngestYear, oldestYear, link }) => {
   const navigate = useNavigate();
@@ -13,19 +17,19 @@ const ItemCard = ({ title, count, youngestYear, oldestYear, link }) => {
 
   return (
     <div
-      className="bg-white shadow-lg rounded-lg p-6 mb-6 hover:shadow-xl transition-shadow duration-200 cursor-pointer"
+      className="bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg rounded-lg p-6 mb-6 hover:shadow-xl transition-shadow duration-200 cursor-pointer"
       onClick={handleClick}
     >
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-xl font-semibold text-gray-800">{title}</h3>
+          <h3 className="text-xl font-semibold text-white">{title}</h3>
           {youngestYear && oldestYear && (
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-200">
               {youngestYear} - {oldestYear}
             </p>
           )}
         </div>
-        <p className="text-2xl font-bold text-red-600">{count}</p>
+        <p className="text-2xl font-bold text-white">{count}</p>
       </div>
     </div>
   );
@@ -41,6 +45,7 @@ const Dashboard = () => {
     pusdiklat: { count: 0 },
     strukturOrganisasi: { count: 0 },
   });
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,6 +70,8 @@ const Dashboard = () => {
     if (session) {
       const fetchData = async () => {
         const db = getFirestore();
+        const currentYear = new Date().getFullYear();
+        const nextYear = currentYear + 1;
 
         try {
           const collections = [
@@ -105,6 +112,37 @@ const Dashboard = () => {
           }, {});
 
           setCounts(newCounts);
+
+          // Fetch data by year for chart
+          const fetchYearlyData = async (collectionName, year) => {
+            const querySnapshot = await getDocs(query(collection(db, collectionName), where('tahun', '==', year)));
+            return querySnapshot.size;
+          };
+
+          const siswaCurrentYearCount = await fetchYearlyData('Siswa', currentYear);
+          const siswaNextYearCount = await fetchYearlyData('Siswa', nextYear);
+          const wargaCurrentYearCount = await fetchYearlyData('Warga', currentYear);
+          const wargaNextYearCount = await fetchYearlyData('Warga', nextYear);
+
+          setChartData({
+            labels: [currentYear, nextYear],
+            datasets: [
+              {
+                label: 'Jumlah Siswa',
+                data: [siswaCurrentYearCount, siswaNextYearCount],
+                fill: false,
+                backgroundColor: 'rgb(75, 192, 192)',
+                borderColor: 'rgba(75, 192, 192, 0.2)',
+              },
+              {
+                label: 'Jumlah Warga',
+                data: [wargaCurrentYearCount, wargaNextYearCount],
+                fill: false,
+                backgroundColor: 'rgb(153, 102, 255)',
+                borderColor: 'rgba(153, 102, 255, 0.2)',
+              },
+            ],
+          });
         } catch (error) {
           console.error("Failed to fetch data from Firebase", error);
         }
@@ -121,7 +159,7 @@ const Dashboard = () => {
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 py-6">
-        <h2 className="text-4xl font-extrabold mb-8">Dashboard</h2>
+        <h2 className="text-4xl font-extrabold mb-8 text-center">Dashboard</h2>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center">
             <h3 className="text-2xl font-semibold text-gray-800">
@@ -142,14 +180,19 @@ const Dashboard = () => {
             <ItemCard title="Struktur Organisasi" count={counts.strukturOrganisasi.count} link="/strukturorganisasi" />
           </div>
         </div>
-      </div>
-      <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-2xl font-semibold text-gray-800">
-              {/* Berisi Cart siswa dan warga dari tahun ke tahun */}
-            </h3>
-          </div>
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Statistik</h3>
+          <Line data={chartData} />
         </div>
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h3>
+          {/* Add code for recent activities here */}
+        </div>
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Notifikasi</h3>
+          {/* Add code for notifications here */}
+        </div>
+      </div>
     </LayoutAdmin>
   );
 }
