@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, getDocs, query, orderBy } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import LayoutAdmin from "./LayoutAdmin";
 import 'tailwindcss/tailwind.css';
 import { Line } from 'react-chartjs-2';
@@ -17,7 +17,7 @@ const ItemCard = ({ title, count, youngestYear, oldestYear, link }) => {
 
   return (
     <div
-      className="bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg rounded-lg p-6 mb-6 hover:shadow-xl transition-shadow duration-200 cursor-pointer"
+      className="bg-gradient-to-r from-red-500 to-red-700 shadow-lg rounded-lg p-6 mb-6 hover:shadow-xl transition-shadow duration-200 cursor-pointer"
       onClick={handleClick}
     >
       <div className="flex justify-between items-center">
@@ -71,7 +71,7 @@ const Dashboard = () => {
       const fetchData = async () => {
         const db = getFirestore();
         const currentYear = new Date().getFullYear();
-        const nextYear = currentYear + 1;
+        const yearsRange = Array.from({ length: 10 }, (_, i) => currentYear - i).reverse(); // Last 5 years
 
         try {
           const collections = [
@@ -98,8 +98,6 @@ const Dashboard = () => {
               if (oldestDoc.docs.length > 0) {
                 oldestYear = oldestDoc.docs[0].data().tahun;
               }
-
-              console.log(`Collection: ${name}, Youngest Year: ${youngestYear}, Oldest Year: ${oldestYear}`);
             }
 
             return { key, count: snapshot.size, youngestYear, oldestYear };
@@ -119,27 +117,37 @@ const Dashboard = () => {
             return querySnapshot.size;
           };
 
-          const siswaCurrentYearCount = await fetchYearlyData('Siswa', currentYear);
-          const siswaNextYearCount = await fetchYearlyData('Siswa', nextYear);
-          const wargaCurrentYearCount = await fetchYearlyData('Warga', currentYear);
-          const wargaNextYearCount = await fetchYearlyData('Warga', nextYear);
+          // Ensure all years from the range have data, even if it's zero
+          const fetchYearlyDataWithFallback = async (collectionName, year) => {
+            try {
+              return await fetchYearlyData(collectionName, year);
+            } catch {
+              return 0;
+            }
+          };
+
+          const siswaDataPromises = yearsRange.map(year => fetchYearlyDataWithFallback('Siswa', year));
+          const wargaDataPromises = yearsRange.map(year => fetchYearlyDataWithFallback('Warga', year));
+
+          const siswaData = await Promise.all(siswaDataPromises);
+          const wargaData = await Promise.all(wargaDataPromises);
 
           setChartData({
-            labels: [currentYear, nextYear],
+            labels: yearsRange,
             datasets: [
               {
                 label: 'Jumlah Siswa',
-                data: [siswaCurrentYearCount, siswaNextYearCount],
+                data: siswaData,
                 fill: false,
-                backgroundColor: 'rgb(75, 192, 192)',
-                borderColor: 'rgba(75, 192, 192, 0.2)',
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgba(255, 99, 132, 0.2)',
               },
               {
                 label: 'Jumlah Warga',
-                data: [wargaCurrentYearCount, wargaNextYearCount],
+                data: wargaData,
                 fill: false,
-                backgroundColor: 'rgb(153, 102, 255)',
-                borderColor: 'rgba(153, 102, 255, 0.2)',
+                backgroundColor: 'rgb(54, 162, 235)',
+                borderColor: 'rgba(54, 162, 235, 0.2)',
               },
             ],
           });
@@ -182,7 +190,24 @@ const Dashboard = () => {
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">Statistik</h3>
-          <Line data={chartData} />
+          <Line data={chartData} options={{
+            responsive: true,
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Tahun'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Jumlah'
+                },
+                beginAtZero: true
+              }
+            }
+          }} />
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h3>

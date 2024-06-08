@@ -88,27 +88,27 @@ function Siswa() {
 
   return (
     <Layout>
-      <div className="pt-20">
-        <div className="text-lg md:text-2xl font-semibold pt-10 text-center">
+      <div className="pt-20 text-center">
+        <h2 className="text-2xl md:text-4xl font-bold pt-10 text-gray-800">
           SISWA RANTING GONDANG
-        </div>
-        <div className="text-lg md:text-2xl font-semibold pb-5 text-center">
+        </h2>
+        <h3 className="text-xl md:text-3xl font-medium pb-5 text-gray-600">
           CABANG SRAGEN
-        </div>
+        </h3>
       </div>
-      <div className="justify-center items-center px-5">
-        <div className="px-2 block mx-auto max-w-7xl mt-2 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700">
+      <div className="flex justify-center items-center px-5">
+        <div className="w-full max-w-7xl mt-2 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
           <div className="relative overflow-x-auto mt-4">
-            <div className="flex flex-col md:flex-row justify-between items-center px-3 pb-3 space-y-3 md:space-y-0">
-              <div className="flex items-center">
-                <label htmlFor="tahun" className="mr-2">
+            <div className="flex flex-col md:flex-row justify-between items-center px-4 pb-4 space-y-3 md:space-y-0">
+              <div className="flex items-center space-x-2">
+                <label htmlFor="tahun" className="text-gray-700 dark:text-gray-300">
                   Pilih Tahun:
                 </label>
                 <select
                   id="tahun"
                   onChange={handleChangeTahun}
                   value={selectedTahun}
-                  className="border rounded px-3 py-1"
+                  className="border rounded-lg px-3 py-2 focus:ring focus:ring-red-200 dark:bg-gray-700 dark:text-gray-300"
                 >
                   {tahunOptions.map((year) => (
                     <option key={year} value={year}>
@@ -117,29 +117,29 @@ function Siswa() {
                   ))}
                 </select>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center space-x-2">
                 <input
                   type="search"
                   onChange={handleSearch}
                   value={searchQuery}
-                  className="border rounded px-3 py-1"
+                  className="border rounded-lg px-3 py-2 focus:ring focus:ring-red-200 dark:bg-gray-700 dark:text-gray-300"
                   placeholder="Search..."
                 />
               </div>
             </div>
-            <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-700 dark:text-gray-600">
-              <thead className="text-xs md:text-sm text-black uppercase bg-gray-300 dark:bg-gray-700 dark:text-red-00">
+            <table className="w-full text-sm text-left text-gray-700 dark:text-gray-400">
+              <thead className="text-xs uppercase bg-gray-300 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <th scope="col" className="px-2 py-2">
+                  <th scope="col" className="px-4 py-3">
                     No
                   </th>
-                  <th scope="col" className="px-2 py-2">
+                  <th scope="col" className="px-4 py-3">
                     Nama
                   </th>
-                  <th scope="col" className="px-2 py-2">
+                  <th scope="col" className="px-4 py-3">
                     Jenis Kelamin
                   </th>
-                  <th scope="col" className="px-2 py-2">
+                  <th scope="col" className="px-4 py-3">
                     Rayon
                   </th>
                 </tr>
@@ -152,23 +152,23 @@ function Siswa() {
                       index % 2 === 0 ? "gray-100" : "white"
                     } border-b dark:bg-gray-800 dark:border-gray-700`}
                   >
-                    <td className="px-2 py-2">{index + 1}</td>
-                    <td className="px-2 py-2">{item.nama}</td>
-                    <td className="px-2 py-2">{item.jeniskelamin}</td>
-                    <td className="px-2 py-2">{item.rayon}</td>
+                    <td className="px-4 py-3">{index + 1}</td>
+                    <td className="px-4 py-3">{item.nama}</td>
+                    <td className="px-4 py-3">{item.jeniskelamin}</td>
+                    <td className="px-4 py-3">{item.rayon}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="flex justify-end items-center px-3 py-2">
-              <label htmlFor="rowsPerPage" className="mr-2">
+            <div className="flex justify-end items-center px-4 py-4">
+              <label htmlFor="rowsPerPage" className="mr-2 text-gray-700 dark:text-gray-300">
                 Rows per page:
               </label>
               <select
                 id="rowsPerPage"
                 onChange={handleChangeRowsPerPage}
                 value={rowsPerPage}
-                className="border rounded px-3 py-1"
+                className="border rounded-lg px-3 py-2 focus:ring focus:ring-red-200 dark:bg-gray-700 dark:text-gray-300"
               >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
@@ -177,61 +177,32 @@ function Siswa() {
               </select>
             </div>
           </div>
-          <div className="flex justify-end items-start p-4">
-            <div>
-              <button
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === 1
-                    ? "cursor-not-allowed"
-                    : "bg-red-500 text-white"
-                }`}
-                onClick={handlePrevPage}
-                disabled={currentPage === 1}
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
-              <span className="mx-2 text-sm text-gray-600">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                className={`px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600 ${
-                  currentPage === totalPages
-                    ? "cursor-not-allowed"
-                    : "bg-red-500 text-white"
-                }`}
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </button>
-            </div>
+          <div className="flex justify-between items-center p-4">
+            <button
+              className={`px-3 py-2 rounded-lg ${
+                currentPage === 1 ? "cursor-not-allowed bg-gray-300" : "bg-red-500 text-white hover:bg-red-600"
+              }`}
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span className="text-gray-600 dark:text-gray-400">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className={`px-3 py-2 rounded-lg ${
+                currentPage === totalPages ? "cursor-not-allowed bg-gray-300" : "bg-red-500 text-white hover:bg-red-600"
+              }`}
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
+      <div className="mb-5"></div>
     </Layout>
   );
 }

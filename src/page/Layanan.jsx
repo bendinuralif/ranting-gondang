@@ -4,20 +4,12 @@ import { addDoc, collection, getFirestore } from "firebase/firestore";
 import app from "../lib/firebase/init";
 import { useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMapMarkerAlt,
-  faPhone,
-  faEnvelope,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMapMarkerAlt, faPhone, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 const firestore = getFirestore(app);
 
 function Layanan() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const [nama, setNama] = useState("");
   const [noTelepon, setNoTelepon] = useState("");
   const [alamat, setAlamat] = useState("");
@@ -33,13 +25,12 @@ function Layanan() {
   const onSubmit = async () => {
     try {
       const newData = {
-        nama: nama,
-        noTelepon: noTelepon,
-        alamat: alamat,
-        deskripsi: deskripsi,
+        nama,
+        noTelepon,
+        alamat,
+        deskripsi,
       };
       await addDoc(collection(firestore, "Layanan"), newData);
-      console.log("Layanan added successfully!");
       setSuccessMessage("Layanan berhasil ditambahkan.");
       setErrorMessage("");
       setShowModal(true);
@@ -55,40 +46,28 @@ function Layanan() {
   };
 
   const closeModal = () => {
-    setTimeout(() => {
-      setShowModal(false);
-      setSuccessMessage("");
-      setErrorMessage("");
-    }, 500);
+    setShowModal(false);
+    setSuccessMessage("");
+    setErrorMessage("");
   };
 
   return (
     <Layout>
       <div className="pt-20 text-center">
-        <div className="text-2xl md:text-3xl font-semibold pt-10 pb-3 md:pb-5">
-          LAYANAN
-        </div>
-        <div className="flex justify-center pt-5 pb-10 md:pb-20">
-          <div className="max-w-4xl px-6  rounded-lg">
-            <p className="text-sm md:text-lg text-black text-justify ">
-              "Selamat datang di Layanan Persaudaraan Setia Hati Terate (PSHT)
-              Ranting Gondang. Kami hadir untuk membantu Anda berbagi pengaduan,
-              saran, atau pengalaman Anda dengan kami. Tim kami selalu siap
-              mendengarkan dan mempertimbangkan setiap pengaduan yang diberikan
-              untuk terus meningkatkan kualitas layanan kami."
+        <div className="text-2xl md:text-3xl font-semibold pt-10 pb-5">LAYANAN</div>
+        <div className="flex justify-center pt-5 pb-10">
+          <div className="max-w-4xl px-6 rounded-lg">
+            <p className="text-sm md:text-lg text-black text-justify">
+              "Selamat datang di Layanan Persaudaraan Setia Hati Terate (PSHT) Ranting Gondang. Kami hadir untuk membantu Anda berbagi pengaduan, saran, atau pengalaman Anda dengan kami. Tim kami selalu siap mendengarkan dan mempertimbangkan setiap pengaduan yang diberikan untuk terus meningkatkan kualitas layanan kami."
             </p>
           </div>
         </div>
       </div>
 
       <div className="mx-auto mb-10 px-6 md:px-10 rounded-lg md:max-w-7xl">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto">
-          {/* Input Nama */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="nama"
-            >
+        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto bg-white p-8 shadow-md rounded-lg">
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nama">
               <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
               Nama
             </label>
@@ -101,17 +80,11 @@ function Layanan() {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Masukkan nama"
             />
-            {errors.nama && (
-              <p className="text-red-500 text-xs mt-1">Nama harus diisi</p>
-            )}
+            {errors.nama && <p className="text-red-500 text-xs mt-1">Nama harus diisi</p>}
           </div>
 
-          {/* Input Nomor Telepon */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="telepon"
-            >
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telepon">
               <FontAwesomeIcon icon={faPhone} className="mr-2" />
               Nomor Telepon
             </label>
@@ -124,19 +97,11 @@ function Layanan() {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Masukkan nomor telepon"
             />
-            {errors.telepon && (
-              <p className="text-red-500 text-xs mt-1">
-                Nomor telepon harus diisi
-              </p>
-            )}
+            {errors.telepon && <p className="text-red-500 text-xs mt-1">Nomor telepon harus diisi</p>}
           </div>
 
-          {/* Input Alamat */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="alamat"
-            >
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="alamat">
               <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
               Alamat
             </label>
@@ -149,17 +114,11 @@ function Layanan() {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Masukkan alamat"
             />
-            {errors.alamat && (
-              <p className="text-red-500 text-xs mt-1">Alamat harus diisi</p>
-            )}
+            {errors.alamat && <p className="text-red-500 text-xs mt-1">Alamat harus diisi</p>}
           </div>
 
-          {/* Input Deskripsi */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="deskripsi"
-            >
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="deskripsi">
               <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
               Deskripsi
             </label>
@@ -171,12 +130,9 @@ function Layanan() {
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               placeholder="Masukkan deskripsi"
             ></textarea>
-            {errors.deskripsi && (
-              <p className="text-red-500 text-xs mt-1">Deskripsi harus diisi</p>
-            )}
+            {errors.deskripsi && <p className="text-red-500 text-xs mt-1">Deskripsi harus diisi</p>}
           </div>
 
-          {/* Tombol Submit */}
           <div className="flex items-center justify-between">
             <button
               type="submit"
@@ -188,21 +144,17 @@ function Layanan() {
         </form>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-10 rounded-md relative">
             <button onClick={closeModal} className="absolute top-0 right-0 p-2">
               &times;
             </button>
-            {successMessage && (
-              <p className="text-green-500">{successMessage}</p>
-            )}
+            {successMessage && <p className="text-green-500">{successMessage}</p>}
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
           </div>
         </div>
       )}
-      {/* End of Modal */}
     </Layout>
   );
 }
