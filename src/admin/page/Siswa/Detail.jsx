@@ -15,6 +15,7 @@ import {
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt, faPlus, faPrint } from "@fortawesome/free-solid-svg-icons";
+import { useDebounce } from "use-debounce";
 
 function DetailSiswa() {
   const [data, setData] = useState([]);
@@ -51,6 +52,7 @@ function DetailSiswa() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
@@ -187,8 +189,8 @@ function DetailSiswa() {
     }));
 
     const isCheckedItemsExist = Object.values({
-      ...checkedItems,
-      [itemId]: !checkedItems[itemId],
+      ...prevCheckedItems,
+      [itemId]: !prevCheckedItems[itemId],
     }).some((isChecked) => isChecked);
     setShowDeleteSelectedButton(isCheckedItemsExist);
   };
@@ -313,19 +315,19 @@ function DetailSiswa() {
   useEffect(() => {
     const filteredData = data.filter(
       (item) =>
-        item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.jeniskelamin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.rayon.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tahun.toString().includes(searchQuery.toLowerCase())
+        item.nama.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        item.jeniskelamin.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        item.rayon.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        item.tahun.toString().includes(debouncedSearchQuery.toLowerCase())
     );
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     setPaginatedData(filteredData.slice(startIndex, endIndex));
-  }, [data, currentPage, rowsPerPage, searchQuery]);
+  }, [data, currentPage, rowsPerPage, debouncedSearchQuery]);
 
   const handlePrintAll = () => {
     let printContent = `
-      <h2 className="text-lg font-semibold">Siswa </h2>
+      <h2 className="text-lg font-semibold">Siswa</h2>
       <table border="1" style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>

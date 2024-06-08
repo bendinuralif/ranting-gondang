@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, orderBy, limit, where, startAfter } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import LayoutAdmin from "./LayoutAdmin";
 import 'tailwindcss/tailwind.css';
 import { Line } from 'react-chartjs-2';
@@ -50,17 +51,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     const checkSession = () => {
-      try {
-        const userSession = JSON.parse(sessionStorage.getItem("user"));
-        if (userSession) {
-          setSession(userSession);
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setSession(user);
         } else {
           navigate("/login");
         }
-      } catch (error) {
-        console.error("Failed to parse session storage", error);
-        navigate("/login");
-      }
+      });
     };
 
     checkSession();
@@ -71,7 +69,7 @@ const Dashboard = () => {
       const fetchData = async () => {
         const db = getFirestore();
         const currentYear = new Date().getFullYear();
-        const yearsRange = Array.from({ length: 10 }, (_, i) => currentYear - i).reverse(); // Last 5 years
+        const yearsRange = Array.from({ length: 10 }, (_, i) => currentYear - i).reverse(); // Last 10 years
 
         try {
           const collections = [
@@ -171,7 +169,7 @@ const Dashboard = () => {
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center">
             <h3 className="text-2xl font-semibold text-gray-800">
-              Selamat Datang, {session.nama}!
+              Selamat Datang, {session.displayName || session.email}!
             </h3>
           </div>
         </div>
@@ -180,12 +178,12 @@ const Dashboard = () => {
             Jumlah item:
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ItemCard title="Siswa" count={counts.siswa.count} youngestYear={counts.siswa.youngestYear} oldestYear={counts.siswa.oldestYear} link="/siswa" />
-            <ItemCard title="Warga" count={counts.warga.count} youngestYear={counts.warga.youngestYear} oldestYear={counts.warga.oldestYear} link="/warga" />
-            <ItemCard title="SubRayon" count={counts.subRayon.count} link="/subrayon" />
-            <ItemCard title="Rayon" count={counts.rayon.count} link="/rayon" />
-            <ItemCard title="Pusdiklat" count={counts.pusdiklat.count} link="/pusdiklat" />
-            <ItemCard title="Struktur Organisasi" count={counts.strukturOrganisasi.count} link="/strukturorganisasi" />
+            <ItemCard title="Detail Siswa" count={counts.siswa.count} youngestYear={counts.siswa.youngestYear} oldestYear={counts.siswa.oldestYear} link="/siswa" />
+            <ItemCard title="Detail Warga" count={counts.warga.count} youngestYear={counts.warga.youngestYear} oldestYear={counts.warga.oldestYear} link="/warga" />
+            <ItemCard title="Detail SubRayon" count={counts.subRayon.count} link="/subrayon" />
+            <ItemCard title="Detail Rayon" count={counts.rayon.count} link="/rayon" />
+            <ItemCard title="Detail Pusdiklat" count={counts.pusdiklat.count} link="/pusdiklat" />
+            <ItemCard title="Detail Struktur Organisasi" count={counts.strukturOrganisasi.count} link="/strukturorganisasi" />
           </div>
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">

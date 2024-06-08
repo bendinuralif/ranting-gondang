@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LayoutAdmin from "./LayoutAdmin";
-import { addDoc, collection } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 import app from "./../../lib/firebase/init";
 
 const collections = ["Siswa", "Warga", "Rayon", "SubRayon", "StrukturOrganisasi"];
@@ -14,6 +13,17 @@ function UploadData() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    const checkSession = () => {
+      const userSession = sessionStorage.getItem("user");
+      if (!userSession) {
+        window.location.href = "/login";
+      }
+    };
+
+    checkSession();
+  }, []);
+
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
     setFile(uploadedFile);
@@ -25,37 +35,35 @@ function UploadData() {
       console.error("Please select a collection and choose a file to upload.");
       return;
     }
-  
+
     try {
-      setIsLoading(true); // Tandai bahwa proses pengungahan dimulai
-  
+      setIsLoading(true); // Indicate that the upload process has started
+
       const reader = new FileReader();
       reader.onload = async (e) => {
         const jsonData = e.target.result;
         const data = JSON.parse(jsonData);
         const db = getFirestore(app);
         const collectionRef = collection(db, selectedCollection);
-  
+
         // Upload each document in the data array
         for (const item of data) {
           await addDoc(collectionRef, item);
         }
-  
+
         console.log("Data uploaded successfully!");
         setShowSuccessModal(true);
-        setIsLoading(false); // Tandai bahwa proses pengungahan selesai
+        setIsLoading(false); // Indicate that the upload process has finished
       };
-  
+
       reader.readAsText(file);
     } catch (error) {
       console.error("Error uploading file:", error);
       setErrorMessage("Upload failed.");
       setShowErrorModal(true);
-      setIsLoading(false); // Tandai bahwa proses pengungahan selesai dengan kesalahan
+      setIsLoading(false); // Indicate that the upload process has finished with an error
     }
   };
-  
-  
 
   return (
     <LayoutAdmin>
@@ -95,8 +103,9 @@ function UploadData() {
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            disabled={isLoading}
           >
-            Unggah Data
+            {isLoading ? "Uploading..." : "Unggah Data"}
           </button>
         </form>
       </div>
@@ -120,28 +129,30 @@ function UploadData() {
       {showErrorModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white rounded-lg overflow-hidden shadow-xl max-w-sm w-full">
-<div className="p-6">
-<p className="text-lg font-semibold mb-4">Upload gagal!</p>
-<p className="text-sm text-gray-700">{errorMessage}</p>
-</div>
-<div className="bg-gray-100 p-4 flex justify-center">
-<button
-className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-10 py-2.5"
-onClick={() => setShowErrorModal(false)}
->
-Tutup
-</button>
-</div>
-</div>
-</div>
-)}
-{isLoading && (
-  <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
-  </div>
-)}
-</LayoutAdmin>
-);
+            <div className="p-6">
+              <p className="text-lg font-semibold mb-4">Upload gagal!</p>
+              <p className="text-sm text-gray-700">{errorMessage}</p>
+            </div>
+            <div className="bg-gray-100 p-4 flex justify-center">
+              <button
+                className="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-10 py-2.5"
+                onClick={() => setShowErrorModal(false)}
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading Spinner */}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      )}
+    </LayoutAdmin>
+  );
 }
 
 export default UploadData;

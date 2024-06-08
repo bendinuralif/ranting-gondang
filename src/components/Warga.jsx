@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useDebounce } from "use-debounce";
 import Layout from "../page/Layout";
 import { retrieveData } from "../lib/firebase/service";
 
@@ -11,10 +12,11 @@ function Warga() {
   const [selectedTahun, setSelectedTahun] = useState();
   const [paginatedData, setPaginatedData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
   useEffect(() => {
     fetchData();
-  }, [selectedTahun]);
+  }, [selectedTahun, currentPage, rowsPerPage]);
 
   useEffect(() => {
     const totalPagesCount = Math.ceil(data.length / rowsPerPage);
@@ -23,7 +25,12 @@ function Warga() {
 
   const fetchData = async () => {
     try {
-      const res = await retrieveData("Warga");
+      const res = await retrieveData("Warga", {
+        limit: rowsPerPage,
+        offset: (currentPage - 1) * rowsPerPage,
+        tahun: selectedTahun,
+        searchQuery: debouncedSearchQuery,
+      });
       const availableYears = Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a);
       setTahunOptions(availableYears);
 
@@ -75,14 +82,14 @@ function Warga() {
 
   useEffect(() => {
     const filteredData = data.filter((item) =>
-      item.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.jeniskelamin.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.alamat.toLowerCase().includes(searchQuery.toLowerCase())
+      item.nama.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      item.jeniskelamin.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      item.alamat.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
     );
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     setPaginatedData(filteredData.slice(startIndex, endIndex));
-  }, [data, currentPage, rowsPerPage, searchQuery]);
+  }, [data, currentPage, rowsPerPage, debouncedSearchQuery]);
 
   return (
     <Layout>

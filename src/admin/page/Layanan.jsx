@@ -5,7 +5,7 @@ import { collection, addDoc, getFirestore, deleteDoc, doc, getDocs } from "fireb
 import app from "./../../lib/firebase/init";
 import { updateDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
 import 'tailwindcss/tailwind.css';
 
 function LayananAdmin() {
@@ -19,8 +19,19 @@ function LayananAdmin() {
   const [editingItemId, setEditingItemId] = useState(null); 
   const [disabledButtons, setDisabledButtons] = useState([]);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
+    const checkSession = () => {
+      const userSession = sessionStorage.getItem("user");
+      if (!userSession) {
+        window.location.href = "/login";
+      }
+    };
+
+    checkSession();
     fetchData();
   }, []);
 
@@ -143,7 +154,7 @@ function LayananAdmin() {
             <th>No</th>
             <th>Nama</th>
             <th>No Telepon</th>
-            <th>Alamat</th>
+            <th>Alamat</</th>
             <th>Deskripsi</th>
             <th>Tanggal Selesai</th>
           </tr>
