@@ -1,56 +1,62 @@
-import React from 'react';
-
-const newsArticles = [
-  {
-    title: "PSHT Ranting Gondang Sukses Melaksanakan Tes Kenaikan Sabuk Putih",
-    description: "SRAGEN – Kilasfakta.com. Pada hari minggu 27 Maret 2022, PSHT Ranting Gondang Cabang Sragen sukses Melaksanakan Tes Kenaikan Sabuk Putih. Hadir dalam acara, Ketua Ranting PSHT Gondang Sumarno, Warga PSHT se Ranting Gondang,Kapolsek Gondang AKP Sudarmaji S.H.",
-    date: "28 Maret 2022",
-    image: "https://kilasfakta.com/wp-content/uploads/2022/03/IMG-20220328-WA0055.jpg",
-    link: "https://kilasfakta.com/psht-ranting-gondang-sukses-melaksanakan-tes-kenaikan-sabuk-putih/",
-  },
-  {
-    title: "PSHT Ranting Gondang Sukses Laksanakan Tes Kenaikan Sabuk Hijau",
-    description: "SRAGEN – Kilasfakta.com. Hari minggu 13 februari 2022 Siswa PSHT Ranting Gondang Cabang Sragen, Sukses Melaksanakan Tes Kenaikan Sabuk Hijau. Hadir dalam acara, Ketua Ranting PSHT Gondang Sumarno, Warga PSHT se Ranting Gondang,Kapolsek Gondang AKP Sudarmaji S.H.",
-    date: "13 Februari 2022 ",
-    image: "https://kilasfakta.com/wp-content/uploads/2022/02/IMG-20220213-WA0037.jpg",
-    link: "https://kilasfakta.com/11336-2/",
-  },
-  {
-    title: "1.000 Lebih Pendekar PSHT Gondang Berkumpul Untuk Maaf-Maafan. Rindukan PSHT Sragen Bisa Bersatu Lagi!  ",
-    description: "SRAGEN- Lebih dari 1.000 warga perguruan silat persaudaraan setia hati terate (PSHT) ranting Gondang berkumpul untuk mengikuti halal bihalal di padepokan PSHT Gondang, Jumat (29/6/2018) malam. Selain saling memaafkan, momentum halal bihalal itu diharapkan bisa menjadi wahana pemersatu kembali PSHT di Sragen yang kini dilanda dualisme.",
-    date: "30 Juni 2018",
-    image: "https://i0.wp.com/joglosemarnews.com/images/2018/06/IMG-20180630-WA0001-520x390.jpg?resize=520%2C390&ssl=1",
-    link: "https://joglosemarnews.com/2018/06/1-000-lebih-pendekar-psht-gondang-berkumpul-untuk-maaf-maafan-rindukan-psht-sragen-bisa-bersatu-lagi/",
-  },
-  // Tambahkan lebih banyak BeritaHome sesuai kebutuhan
-];
+import React, { useState, useEffect } from 'react';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import app from "../lib/firebase/init";
 
 const CardBeritaHome = () => {
+  const [newsArticles, setNewsArticles] = useState([]);
+
+  useEffect(() => {
+    const fetchNewsArticles = async () => {
+      const db = getFirestore(app);
+      try {
+        const querySnapshot = await getDocs(collection(db, "Berita"));
+        let articles = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        // Sort articles by date
+        articles.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+        // Get only the 6 most recent articles
+        articles = articles.slice(0, 6);
+        setNewsArticles(articles);
+      } catch (error) {
+        console.error("Error fetching news articles: ", error);
+      }
+    };
+
+    fetchNewsArticles();
+  }, []);
+
   return (
-    <div className="block mx-auto max-w-7xl mt-10 mb-10 sm:px-10">
-      <div className="">
+    <div className="container mx-auto mt-10 mb-10 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {newsArticles.map((article, index) => (
           <a
             href={article.link}
             key={index}
-            className="mt-10 my-10 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:max-w-6xl mx-5 md:mx-auto hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+            className="group block bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 ease-in-out dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
             target="_blank"
             rel="noopener noreferrer"
           >
+            <div className="relative">
               <img
-                className="object-cover w-full rounded-t-lg h-64 md:h-96"
-                src={article.image}
-                alt={article.title}
+                className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
+                src={article.downloadURL}
+                alt={article.judul}
               />
-              <div className="flex flex-col justify-between p-4 leading-normal">
-                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  {article.title}
-                </h5>
-                <p className="text-sm mb-3 font-normal text-gray-700 dark:text-gray-400 md:text-lg text-justify">
-                  {article.description}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{article.date}</p>
-              </div>
+              <div className="absolute inset-0 bg-black opacity-25 group-hover:opacity-50 transition-opacity duration-300 ease-in-out"></div>
+            </div>
+            <div className="p-4">
+              <h5 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-red-600 transition-colors duration-300 ease-in-out">
+                {article.judul}
+              </h5>
+              <p className="text-sm text-gray-700 dark:text-gray-400 mb-4">
+                {article.deskripsi}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {article.tanggal}
+              </p>
+            </div>
           </a>
         ))}
       </div>
