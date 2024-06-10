@@ -28,13 +28,9 @@ const Login = () => {
       }
     } catch (error) {
       console.error(error);
-      setError('NIW dan password anda salah. Silahkan coba lagi.'); // Set error message
+      setError('NIW or password is incorrect. Please try again.'); // Set error message
       setLogin(false); // Reset login state if there was an error
     }
-  };
-
-  const handleBack = () => {
-    window.history.back();
   };
 
   return (
@@ -46,7 +42,7 @@ const Login = () => {
             Selamat Datang Di Admin PSHT Ranting Gondang!
           </h2>
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
               <span className="block sm:inline">{error}</span>
             </div>
           )}
@@ -107,17 +103,7 @@ const Login = () => {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 disabled={login} // Disable button while logging in
               >
-                Masuk
-              </button>
-            </div>
-
-            <div className="mt-4">
-              <button
-                type="button"
-                onClick={handleBack}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Kembali
+                Sign in
               </button>
             </div>
           </form>

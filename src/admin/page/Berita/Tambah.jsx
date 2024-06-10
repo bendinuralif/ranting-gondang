@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { addDoc, collection } from "firebase/firestore";
-import { getFirestore, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../../lib/firebase/init";
-import { format } from 'date-fns';
-import id from 'date-fns/locale/id';
 
-function TambahKegiatan() {
-  const [uploadGambar, setUploadGambar] = useState("");
+function TambahBerita() {
+  const [uploadGambar, setUploadGambar] = useState(null);
   const [previewImage, setPreviewImage] = useState("");
   const [judul, setJudul] = useState("");
   const [tanggal, setTanggal] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
+  const [link, setLink] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const MAIN_COLLECTION = "your_main_collection_name"; // Ganti dengan nama koleksi utama Anda
+  const MAIN_COLLECTION = "your_main_collection_name"; // Replace with your main collection name
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,76 +29,74 @@ function TambahKegiatan() {
         });
 
         const stats = await Promise.all(promises);
-        setStatistics(stats);
+        // Handle stats if necessary
       } catch (error) {
         console.error("Error fetching Firestore data:", error);
-        // Handle error here
       }
     };
 
     fetchData();
   }, []);
 
-  const handletanggalChange = (e) => {
-    const inputtanggal = e.target.value;
-    const regex = /^\d{4}-\d{2}-\d{2}$/; // Regex untuk format yyyy-mm-dd
-  
-    // Memeriksa apakah input sesuai dengan format yang diharapkan
-    if (regex.test(inputtanggal)) {
-      setTanggal(inputtanggal); // Memperbarui nilai tanggal jika sesuai format
+  const handleTanggalChange = (e) => {
+    const inputTanggal = e.target.value;
+    const regex = /^\d{4}-\d{2}-\d{2}$/; // Regex for yyyy-mm-dd format
+
+    if (regex.test(inputTanggal)) {
+      setTanggal(inputTanggal);
     } else {
-      // Menampilkan pesan kesalahan jika format tidak sesuai
-      console.log("Format tanggal tidak valid. Gunakan format yyyy-mm-dd.");
+      console.log("Invalid date format. Use yyyy-mm-dd.");
     }
   };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Menampilkan modal loading saat proses dimulai
+    setIsLoading(true);
+
     const db = getFirestore(app);
     try {
-      // Proses pengungahan gambar
+      // Image upload process
       const storage = getStorage(app);
       const storageRef = ref(storage, 'images/' + uploadGambar.name);
       await uploadBytes(storageRef, uploadGambar);
-  
+
       const downloadURL = await getDownloadURL(storageRef);
 
-      // Ubah format tanggal ke "yyyy-MM-dd"
-      const formattedTanggal = tanggal; // Sesuaikan dengan format tanggal yang Anda gunakan
-      const docRef = await addDoc(collection(db, "Kegiatan"), {
+      // Add document to Firestore
+      await addDoc(collection(db, "Berita"), {
         judul,
-        tanggal: formattedTanggal,
+        tanggal,
         deskripsi,
+        link,
         downloadURL
       });
-  
-      console.log("Document written with ID: ", docRef.id);
-      setUploadGambar("");
+
+      // Reset form
+      setUploadGambar(null);
       setJudul("");
       setTanggal("");
       setDeskripsi("");
+      setLink("");
       setPreviewImage("");
       setShowSuccessModal(true);
     } catch (error) {
       console.error("Error adding document: ", error);
     }
-    setIsLoading(false); // Menyembunyikan modal loading setelah proses selesai
-};
-
+    setIsLoading(false);
+  };
 
   const handleUploadGambarChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setUploadGambar(selectedFile);
-      setPreviewImage(URL.createObjectURL(selectedFile)); 
+      setPreviewImage(URL.createObjectURL(selectedFile));
     }
   };
 
   return (
     <LayoutAdmin>
       <div>
-        <h2 className="text-lg md:text-2xl font-semibold p-4">Tamabah Kegiatan</h2>
+        <h2 className="text-lg md:text-2xl font-semibold p-4">Tambah Berita</h2>
       </div>
       <div className="flex justify-center items-center p-5 ">
         <form className="max-w-3xl mx-auto bg-gray-200 shadow-md rounded-lg p-8" onSubmit={handleSubmit}>
@@ -128,6 +124,23 @@ const handleSubmit = async (e) => {
           </div>
           
           <div className="grid gap-6 mb-6 md:grid-cols-1">
+            <div>
+              <label
+                htmlFor="link"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Link
+              </label>
+              <input
+                type="text"
+                id="link"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Masukkan link"
+                required
+              />
+            </div>
             <div>
               <label
                 htmlFor="judul"
@@ -172,12 +185,12 @@ const handleSubmit = async (e) => {
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Tanggal
-                </label>
+              </label>
               <input
                 type="date"
                 id="tanggal"
                 value={tanggal}
-                onChange={handletanggalChange}
+                onChange={handleTanggalChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Masukkan tanggal"
                 required
@@ -216,4 +229,4 @@ const handleSubmit = async (e) => {
   );
 }
 
-export default TambahKegiatan;
+export default TambahBerita;

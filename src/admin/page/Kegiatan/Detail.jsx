@@ -237,12 +237,18 @@ function DetailKegiatan() {
                 <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-4 py-2"></td>
                   <td className="px-2 py-2">
-                    <img
-                      src={item.downloadURL}
-                      alt={item.judul}
-                      className="h-40 w-40 rounded-full cursor-pointer"
-                      onClick={() => handleImageClick(item.downloadURL)}
-                    />
+                  <div
+  className="h-20 w-30 cursor-pointer overflow-hidden flex items-center justify-center"
+  onClick={() => handleImageClick(item.downloadURL)}
+>
+  <img
+    src={item.downloadURL}
+    alt={item.judul}
+    className="h-full w-full object-cover"
+  />
+</div>
+
+
                   </td>
                   <td className="px-2 py-2">{item.judul}</td>
                   <td className="px-2 py-2">{item.deskripsi}</td>
@@ -337,7 +343,7 @@ function DetailKegiatan() {
                         <label htmlFor="addDeskripsi" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                           Deskripsi
                         </label>
-                        <input
+                        <textarea
                           type="text"
                           id="addDeskripsi"
                           name="addDeskripsi"
@@ -435,7 +441,7 @@ function DetailKegiatan() {
               </div>
               <div className="mb-4">
                 <label htmlFor="deskripsi" className="block text-sm font-medium text-gray-700">Deskripsi:</label>
-                <input
+                <textarea
                   type="text"
                   id="deskripsi"
                   value={editedItem.deskripsi}

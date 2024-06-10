@@ -4,9 +4,10 @@ import { addDoc, collection, getFirestore, deleteDoc, updateDoc, getDocs, doc } 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { format } from "date-fns";
 
-function DetailGaleri() {
+function DetailBerita() {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
@@ -18,8 +19,9 @@ function DetailGaleri() {
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [selectedItem, setSelectedItem] = useState({
     gambar: "",
-    nama: "",
-    tahun: "",
+    judul: "",
+    deskripsi: "",
+    tanggal: "",
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -31,13 +33,12 @@ function DetailGaleri() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editedItem, setEditedItem] = useState({});
   const [newItem, setNewItem] = useState({
-    nama: "",
-    tahun: "",
-    downloadURL: "",
+    gambar: "",
+    judul: "",
+    deskripsi: "",
+    tanggal: "",
   });
   const [sortOrder, setSortOrder] = useState("asc");
-
-  const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -55,26 +56,24 @@ function DetailGaleri() {
     const fetchData = async () => {
       const db = getFirestore(app);
       try {
-        const mainCollectionRef = collection(db, "Galeri");
+        const mainCollectionRef = collection(db, "Berita");
         const snapshot = await getDocs(mainCollectionRef);
-        
-        const promises = snapshot.docs.map(async (doc) => {
-          const subCollectionRef = collection(db, doc.id);
-          const subSnapshot = await getDocs(subCollectionRef);
-          return { collection: doc.id, count: subSnapshot.size };
+        const res = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        res.sort((a, b) => {
+          const dateA = new Date(a.tanggal);
+          const dateB = new Date(b.tanggal);
+          if (sortOrder === "asc") {
+            return dateA - dateB;
+          } else {
+            return dateB - dateA;
+          }
         });
-
-        const stats = await Promise.all(promises);
-        setStatistics(stats);
+        setData(res);
       } catch (error) {
         console.error("Error fetching Firestore data:", error);
       }
     };
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     fetchData();
   }, [sortOrder]);
 
@@ -88,26 +87,6 @@ function DetailGaleri() {
     const endIndex = startIndex + rowsPerPage;
     setPaginatedData(data.slice(startIndex, endIndex));
   }, [data, currentPage, rowsPerPage]);
-
-  const fetchData = async () => {
-    const db = getFirestore(app);
-    try {
-      const querySnapshot = await getDocs(collection(db, "Galeri"));
-      const res = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      res.sort((a, b) => {
-        const yearA = parseInt(a.tahun, 10);
-        const yearB = parseInt(b.tahun, 10);
-        if (sortOrder === "asc") {
-          return yearA - yearB;
-        } else {
-          return yearB - yearA;
-        }
-      });
-      setData(res);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   const handleFileChange = (e) => {
     const uploadedFile = e.target.files[0];
@@ -170,7 +149,7 @@ function DetailGaleri() {
   const confirmDelete = async () => {
     try {
       const db = getFirestore(app);
-      await deleteDoc(doc(db, "Galeri", selectedItemToDelete.id));
+      await deleteDoc(doc(db, "Berita", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
       fetchData();
       setSelectedItemToDelete(null);
@@ -190,13 +169,33 @@ function DetailGaleri() {
     try {
       const db = getFirestore(app);
       const itemId = editedItem.id;
-      const itemRef = doc(db, "Galeri", itemId);
+      const itemRef = doc(db, "Berita", itemId);
       await updateDoc(itemRef, editedItem);
       console.log("Item updated successfully!");
       setShowEditModal(false);
       fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
+    }
+  };
+
+  const handleSubmitAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const downloadURL = await handleUploadGambar();
+      if (downloadURL) {
+        const db = getFirestore(app);
+        const newActivity = { ...newItem, downloadURL };
+        await addDoc(collection(db, "Berita"), newActivity);
+        console.log("Item added successfully!");
+        setShowAddModal(false);
+        fetchData();
+        setNewItem({ gambar: "", judul: "", deskripsi: "", tanggal: "" });
+        setFile(null);
+        setFilePreview(null);
+      }
+    } catch (error) {
+      console.error("Error adding item:", error);
     }
   };
 
@@ -209,67 +208,55 @@ function DetailGaleri() {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  const handleSubmitAdd = async (e) => {
-    e.preventDefault();
-    try {
-      const downloadURL = await handleUploadGambar();
-      if (downloadURL) {
-        const db = getFirestore(app);
-        const newGalleryItem = { ...newItem, downloadURL };
-        await addDoc(collection(db, "Galeri"), newGalleryItem);
-        console.log("Item added successfully!");
-        setShowAddModal(false);
-        fetchData();
-        setNewItem({ nama: "", tahun: "", downloadURL: "" });
-        setFile(null);
-        setFilePreview(null);
-      }
-    } catch (error) {
-      console.error("Error adding item:", error);
-    }
-  };
-
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Galeri</h2>
-        <div className="overflow-x-auto bg-white shadow-md rounded-lg p-4">
-          <div className="flex justify-end items-center mb-4">
+        <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Berita</h2>
+        <div className="overflow-x-auto">
+          <div className="flex justify-end items-center px-3 pb-3">
             <button
               onClick={() => setShowAddModal(true)}
               className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
             >
-              <FontAwesomeIcon icon={faPlus} /> Tambah
+              Tambah Berita
             </button>
           </div>
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="p-2"></th>
+                <th scope="col" className="p-4"></th>
                 <th scope="col" className="px-2 py-3">Gambar</th>
-                <th scope="col" className="px-2 py-3">Nama</th>
-                <th scope="col" className="px-2 py-3">Tahun</th>
-                <th scope="col" className="px-2 py-3">Aksi</th>
+                <th scope="col" className="px-2 py-3">Judul</th>
+                <th scope="col" className="px-2 py-3">Deskripsi</th>
+                <th scope="col" className="px-2 py-3">Tanggal</th>
+                <th scope="col" className="px-2 py-3">Link</th>
+                <th scope="col" className="px-2 py-3">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedData.map((item, index) => (
                 <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                  <td className="px-2 py-2"></td>
+                  <td className="px-4 py-2"></td>
                   <td className="px-2 py-2">
-                    <img
-                      src={item.downloadURL}
-                      alt={item.nama}
+                    <div
                       className="h-20 w-30 cursor-pointer overflow-hidden flex items-center justify-center"
                       onClick={() => handleImageClick(item.downloadURL)}
-                    />
+                    >
+                      <img
+                        src={item.downloadURL}
+                        alt={item.judul}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                   </td>
-                  <td className="px-2 py-2">{item.nama}</td>
-                  <td className="px-2 py-2">{item.tahun}</td>
+                  <td className="px-2 py-2">{item.judul}</td>
+                  <td className="px-2 py-2">{item.deskripsi}</td>
+                  <td className="px-2 py-2">{format(new Date(item.tanggal), "dd-MMM-yyyy")}</td>
+                  <td className="px-2 py-2">{item.link} </td>
                   <td className="px-2 py-2">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
@@ -284,9 +271,9 @@ function DetailGaleri() {
               ))}
             </tbody>
           </table>
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-between items-center px-3 pb-3">
             <div>
-              <label htmlFor="rowsPerPage" className="mr-2 font-medium">Baris per halaman:</label>
+              <label htmlFor="rowsPerPage" className="mr-2">Baris per halaman:</label>
               <select
                 id="rowsPerPage"
                 value={rowsPerPage}
@@ -327,38 +314,69 @@ function DetailGaleri() {
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div
+              className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              role="dialog" aria-modal="true" aria-labelledby="modal-headline"
+            >
               <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <form onSubmit={handleSubmitAdd}>
                   <div className="sm:flex sm:items-start">
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                       <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                        Tambah Galeri
+                        Tambah Berita
                       </h3>
                       <div className="mt-2">
-                        <label htmlFor="addNama" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Nama
+                        <label htmlFor="addLink" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Link
                         </label>
                         <input
                           type="text"
-                          id="addNama"
-                          name="addNama"
-                          value={newItem.nama}
-                          onChange={(e) => setNewItem({ ...newItem, nama: e.target.value })}
+                          id="addLink"
+                          name="addLink"
+                          value={newItem.link}
+                          onChange={(e) => setNewItem({ ...newItem, link: e.target.value })}
                           required
                           className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
                         />
                       </div>
                       <div className="mt-2">
-                        <label htmlFor="addTahun" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Tahun
+                        <label htmlFor="addJudul" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Judul
                         </label>
                         <input
-                          type="number"
-                          id="addTahun"
-                          name="addTahun"
-                          value={newItem.tahun}
-                          onChange={(e) => setNewItem({ ...newItem, tahun: e.target.value })}
+                          type="text"
+                          id="addJudul"
+                          name="addJudul"
+                          value={newItem.judul}
+                          onChange={(e) => setNewItem({ ...newItem, judul: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="addDeskripsi" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Deskripsi
+                        </label>
+                        <textarea
+                          type="text"
+                          id="addDeskripsi"
+                          name="addDeskripsi"
+                          value={newItem.deskripsi}
+                          onChange={(e) => setNewItem({ ...newItem, deskripsi: e.target.value })}
+                          required
+                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
+                        />
+                      </div>
+                      <div className="mt-2">
+                        <label htmlFor="addTanggal" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Tanggal
+                        </label>
+                        <input
+                          type="date"
+                          id="addTanggal"
+                          name="addTanggal"
+                          value={newItem.tanggal}
+                          onChange={(e) => setNewItem({ ...newItem, tanggal: e.target.value })}
                           required
                           className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
                         />
@@ -378,7 +396,7 @@ function DetailGaleri() {
                       </div>
                       {filePreview && (
                         <div className="mt-2">
-                          <img src={filePreview} alt="Preview" className="w-full h-auto max-h-60 object-cover rounded-lg" />
+                          <img src={filePreview} alt="Preview" className="w-full h-auto max-h-80 object-cover rounded-lg" />
                         </div>
                       )}
                     </div>
@@ -409,90 +427,58 @@ function DetailGaleri() {
       )}
 
       {showEditModal && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-              <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <form onSubmit={handleSubmitEdit}>
-                  <div className="sm:flex sm:items-start">
-                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-headline">
-                        Edit Item
-                      </h3>
-                      <div className="mt-2">
-                        <label htmlFor="editNama" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Nama
-                        </label>
-                        <input
-                          type="text"
-                          id="editNama"
-                          name="editNama"
-                          value={editedItem.nama}
-                          onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
-                          required
-                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
-                        />
-                      </div>
-                      <div className="mt-2">
-                        <label htmlFor="editTahun" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Tahun
-                        </label>
-                        <input
-                          type="number"
-                          id="editTahun"
-                          name="editTahun"
-                          value={editedItem.tahun}
-                          onChange={(e) => setEditedItem({ ...editedItem, tahun: e.target.value })}
-                          required
-                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
-                        />
-                      </div>
-                      <div className="mt-2">
-                        <label htmlFor="editGambar" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Gambar Baru
-                        </label>
-                        <input
-                          type="file"
-                          id="editGambar"
-                          name="editGambar"
-                          onChange={(e) => setEditedItem({ ...editedItem, newImage: e.target.files[0] })}
-                          className="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:text-white"
-                        />
-                      </div>
-                      <div className="mt-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Gambar Saat Ini
-                        </label>
-                        <img
-                          src={editedItem.downloadURL}
-                          alt={editedItem.nama}
-                          className="w-full h-auto max-h-60 object-cover rounded-lg"
-                          onClick={() => handleImageClick(editedItem.downloadURL)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button
-                      type="submit"
-                      className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      Simpan
-                    </button>
-                    <button
-                      onClick={() => setShowEditModal(false)}
-                      className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    >
-                      Batal
-                    </button>
-                  </div>
-                </form>
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
+            <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
+            <form onSubmit={handleSubmitEdit}>
+              <div className="mb-4">
+                <label htmlFor="judul" className="block text-sm font-medium text-gray-700">Judul:</label>
+                <input
+                  type="text"
+                  id="judul"
+                  value={editedItem.judul}
+                  onChange={(e) => setEditedItem({ ...editedItem, judul: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
               </div>
-            </div>
+              <div className="mb-4">
+                <label htmlFor="tanggal" className="block text-sm font-medium text-gray-700">Tanggal:</label>
+                <input
+                  type="date"
+                  id="tanggal"
+                  value={editedItem.tanggal}
+                  onChange={(e) => setEditedItem({ ...editedItem, tanggal: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="deskripsi" className="block text-sm font-medium text-gray-700">Deskripsi:</label>
+                <textarea
+                  type="text"
+                  id="deskripsi"
+                  value={editedItem.deskripsi}
+                  onChange={(e) => setEditedItem({ ...editedItem, deskripsi: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  required
+                />
+              </div>
+              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="submit"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Simpan
+                </button>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-900 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -539,12 +525,12 @@ function DetailGaleri() {
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">Konfirmasi Hapus</h3>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.nama}</span>"?</p>
+                      <p className="text-sm text-gray-500">Apakah Anda yakin ingin menghapus "<span className="font-semibold text-[1rem]">{selectedItemToDelete.judul}</span>"?</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   onClick={() => {
                     confirmDelete(selectedItemToDelete);
@@ -571,4 +557,4 @@ function DetailGaleri() {
   );
 }
 
-export default DetailGaleri;
+export default DetailBerita;

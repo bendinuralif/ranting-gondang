@@ -127,6 +127,26 @@ function CustomSidebar({ isOpen }) {
                 Tambah
               </FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
+            <FlowbiteSidebar.Collapse
+              icon={HiViewGrid}
+              label="Berita"
+              className="hover:bg-red-700 transition-colors duration-300"
+            >
+              <FlowbiteSidebar.Item
+                href="/detail-berita"
+                icon={HiInformationCircle}
+                className="hover:bg-red-700"
+              >
+                Detail
+              </FlowbiteSidebar.Item>
+              <FlowbiteSidebar.Item
+                href="/tambah-berita"
+                icon={HiDocumentAdd}
+                className="hover:bg-red-700"
+              >
+                Tambah
+              </FlowbiteSidebar.Item>
+            </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Item
               href="#"
               icon={HiArrowSmRight}

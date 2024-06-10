@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, getDocs, query, orderBy, limit, where, startAfter } from "firebase/firestore";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import LayoutAdmin from "./LayoutAdmin";
 import 'tailwindcss/tailwind.css';
 import { Line } from 'react-chartjs-2';
@@ -47,18 +46,22 @@ const Dashboard = () => {
     strukturOrganisasi: { count: 0 },
   });
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+  const [recentActivities, setRecentActivities] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = () => {
-      const auth = getAuth();
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          setSession(user);
+      try {
+        const userSession = JSON.parse(sessionStorage.getItem("user"));
+        if (userSession) {
+          setSession(userSession);
         } else {
           navigate("/login");
         }
-      });
+      } catch (error) {
+        console.error("Failed to parse session storage", error);
+        navigate("/login");
+      }
     };
 
     checkSession();
@@ -149,6 +152,14 @@ const Dashboard = () => {
               },
             ],
           });
+
+          // Fetch recent activities
+          const recentActivitiesSnapshot = await getDocs(query(collection(db, "RecentActivities"), orderBy("timestamp", "desc"), limit(10)));
+          const recentActivitiesData = recentActivitiesSnapshot.docs.map(doc => doc.data());
+
+          console.log("Recent activities data fetched:", recentActivitiesData); // Debugging statement
+          setRecentActivities(recentActivitiesData);
+
         } catch (error) {
           console.error("Failed to fetch data from Firebase", error);
         }
@@ -169,7 +180,7 @@ const Dashboard = () => {
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <div className="flex justify-between items-center">
             <h3 className="text-2xl font-semibold text-gray-800">
-              Selamat Datang, {session.displayName || session.email}!
+              Selamat Datang, {session.nama}!
             </h3>
           </div>
         </div>
@@ -178,12 +189,12 @@ const Dashboard = () => {
             Jumlah item:
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ItemCard title="Detail Siswa" count={counts.siswa.count} youngestYear={counts.siswa.youngestYear} oldestYear={counts.siswa.oldestYear} link="/siswa" />
-            <ItemCard title="Detail Warga" count={counts.warga.count} youngestYear={counts.warga.youngestYear} oldestYear={counts.warga.oldestYear} link="/warga" />
-            <ItemCard title="Detail SubRayon" count={counts.subRayon.count} link="/subrayon" />
-            <ItemCard title="Detail Rayon" count={counts.rayon.count} link="/rayon" />
-            <ItemCard title="Detail Pusdiklat" count={counts.pusdiklat.count} link="/pusdiklat" />
-            <ItemCard title="Detail Struktur Organisasi" count={counts.strukturOrganisasi.count} link="/strukturorganisasi" />
+            <ItemCard title="Siswa" count={counts.siswa.count} youngestYear={counts.siswa.youngestYear} oldestYear={counts.siswa.oldestYear} link="/siswa" />
+            <ItemCard title="Warga" count={counts.warga.count} youngestYear={counts.warga.youngestYear} oldestYear={counts.warga.oldestYear} link="/warga" />
+            <ItemCard title="SubRayon" count={counts.subRayon.count} link="/subrayon" />
+            <ItemCard title="Rayon" count={counts.rayon.count} link="/rayon" />
+            <ItemCard title="Pusdiklat" count={counts.pusdiklat.count} link="/pusdiklat" />
+            <ItemCard title="Struktur Organisasi" count={counts.strukturOrganisasi.count} link="/strukturorganisasi" />
           </div>
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
@@ -194,13 +205,13 @@ const Dashboard = () => {
               x: {
                 title: {
                   display: true,
-                  text: 'Tahun'
+                  text: 'Year'
                 }
               },
               y: {
                 title: {
                   display: true,
-                  text: 'Jumlah'
+                  text: 'Count'
                 },
                 beginAtZero: true
               }
@@ -209,7 +220,13 @@ const Dashboard = () => {
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h3>
-          {/* Add code for recent activities here */}
+          <ul>
+            {recentActivities.map((activity, index) => (
+              <li key={index} className="mb-2">
+                {activity.description} - {new Date(activity.timestamp.seconds * 1000).toLocaleString()}
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">Notifikasi</h3>

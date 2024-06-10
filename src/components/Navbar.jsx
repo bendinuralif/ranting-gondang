@@ -11,12 +11,12 @@ function Navbar() {
     setIsOpen(!isOpen);
   };
 
-  const toggleProfilDropdown = () => {
+  const handleProfilClick = () => {
     setIsProfilDropdownOpen(!isProfilDropdownOpen);
     setIsDataDropdownOpen(false);
   };
 
-  const toggleDataDropdown = () => {
+  const handleDataClick = () => {
     setIsDataDropdownOpen(!isDataDropdownOpen);
     setIsProfilDropdownOpen(false);
   };
@@ -42,22 +42,32 @@ function Navbar() {
             <li>
               <NavLink to="/" className={linkClass} aria-current="page">Beranda</NavLink>
             </li>
-            <Dropdown title="Profil" isOpen={isProfilDropdownOpen} toggleDropdown={toggleProfilDropdown} items={[
-              { href: 'sejarah-singkat', text: 'Sejarah Singkat' },
-              { href: 'ketua-ranting', text: 'Ketua Ranting' },
-              { href: 'struktur-organisasi', text: 'Struktur Organisasi' },
-              { href: 'tujuan', text: 'Tujuan' },
-              { href: 'filosofi', text: 'Filosofi' },
-              { href: 'falsafah', text: 'Falsafah' },
-              { href: 'login', text: 'Login' }
-            ]} />
-            <Dropdown title="Data" isOpen={isDataDropdownOpen} toggleDropdown={toggleDataDropdown} items={[
-              { href: 'siswa', text: 'Siswa' },
-              { href: 'warga', text: 'Warga' },
-              { href: 'SubRayon', text: 'Sub Rayon' },
-              { href: 'Pusdiklat', text: 'Pusdiklat' },
-              { href: 'Rayon', text: 'Rayon' }
-            ]} />
+            <Dropdown 
+              title="Profil" 
+              isOpen={isProfilDropdownOpen} 
+              handleClick={handleProfilClick} 
+              items={[
+                { href: 'sejarah-singkat', text: 'Sejarah Singkat' },
+                { href: 'ketua-ranting', text: 'Ketua Ranting' },
+                { href: 'struktur-organisasi', text: 'Struktur Organisasi' },
+                { href: 'tujuan', text: 'Tujuan' },
+                { href: 'filosofi', text: 'Filosofi' },
+                { href: 'falsafah', text: 'Falsafah' },
+                { href: 'login', text: 'Login' }
+              ]} 
+            />
+            <Dropdown 
+              title="Data" 
+              isOpen={isDataDropdownOpen} 
+              handleClick={handleDataClick} 
+              items={[
+                { href: 'siswa', text: 'Siswa' },
+                { href: 'warga', text: 'Warga' },
+                { href: 'SubRayon', text: 'Sub Rayon' },
+                { href: 'Pusdiklat', text: 'Pusdiklat' },
+                { href: 'Rayon', text: 'Rayon' }
+              ]} 
+            />
             <li>
               <NavLink to="/kegiatan" className={linkClass}>Kegiatan</NavLink>
             </li>
@@ -80,16 +90,19 @@ function Navbar() {
   );
 }
 
-function Dropdown({ title, isOpen, toggleDropdown, items }) {
+function Dropdown({ title, isOpen, handleClick, items }) {
   return (
     <li className="relative">
-      <button onClick={toggleDropdown} className={`py-2 px-3 text-white rounded hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0 md:hover:text-red-700 flex items-center justify-between w-full md:w-auto ${isOpen ? 'text-red-700' : ''}`}>
+      <button 
+        onClick={handleClick}
+        className={`py-2 px-3 text-white rounded hover:bg-red-700 md:hover:bg-transparent md:border-0 md:p-0 md:hover:text-red-700 flex items-center justify-between w-full md:w-auto ${isOpen ? 'text-red-700' : ''}`}
+      >
         {title}
         <svg className={`ml-2 w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : 'rotate-0'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
-      <div className={`${isOpen ? "block" : "hidden"} absolute z-10 w-48 bg-white shadow-md mt-2 rounded-md`}>
+      <div className={`${isOpen ? "block" : "hidden"} absolute z-10 w-48 bg-white shadow-md mt-2 rounded-md transition-opacity duration-300 ease-in-out`}>
         <ul className="py-1 text-sm text-gray-700">
           {items.map((item, index) => (
             <li key={index}><a href={item.href} className="block px-4 py-2 hover:bg-red-600 hover:text-white">{item.text}</a></li>

@@ -43,6 +43,8 @@ import TambahWarga from './admin/page/Warga/Tambah.jsx';
 import DetailWarga from './admin/page/Warga/Detail.jsx';
 import TambahKegiatan from './admin/page/Kegiatan/Tambah.jsx';
 import DetailKegiatan from './admin/page/Kegiatan/Detail.jsx';
+import DetailBerita from './admin/page/Berita/Detail.jsx';
+import TambahBerita from './admin/page/Berita/Tambah.jsx';
 
 
 const router = createBrowserRouter([
@@ -193,6 +195,14 @@ const router = createBrowserRouter([
   {
     path: "/detail-kegiatan",
     element: <DetailKegiatan />,
+  },
+  {
+    path: "/tambah-berita",
+    element: <TambahBerita />,
+  },
+  {
+    path: "/detail-berita",
+    element: <DetailBerita />,
   },
   {
     path: "/upload-data",

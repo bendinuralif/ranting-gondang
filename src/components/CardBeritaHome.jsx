@@ -37,20 +37,20 @@ const CardBeritaHome = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img
-              className="object-cover w-full rounded-t-lg h-64 md:h-96"
-              src={article.image}
-              alt={article.title}
-            />
-            <div className="flex flex-col justify-between p-4 leading-normal">
-              <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {article.title}
-              </h5>
-              <p className="text-sm mb-3 font-normal text-gray-700 dark:text-gray-400 md:text-lg text-justify">
-                {article.description}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{article.date}</p>
-            </div>
+              <img
+                className="object-cover w-full rounded-t-lg h-64 md:h-96"
+                src={article.image}
+                alt={article.title}
+              />
+              <div className="flex flex-col justify-between p-4 leading-normal">
+                <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                  {article.title}
+                </h5>
+                <p className="text-sm mb-3 font-normal text-gray-700 dark:text-gray-400 md:text-lg text-justify">
+                  {article.description}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{article.date}</p>
+              </div>
           </a>
         ))}
       </div>
