@@ -33,7 +33,7 @@ const CardKegiatanHome = () => {
           className="mt-10 my-10 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-6xl mx-5 md:mx-auto hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-70"
         >
           <img
-            className="object-cover w-full rounded-t-lg h-120 md:w-1/3 md:w-52 md:rounded-none md:rounded-s-lg"
+            className="object-cover w-full rounded-t-lg h-120 md:w-1/3  md:rounded-none md:rounded-s-lg"
             src={kegiatan.downloadURL}
             alt=""
           />
