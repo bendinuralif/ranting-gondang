@@ -48,7 +48,7 @@ const CardBerita = () => {
               <h5 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-red-600 transition-colors duration-300 ease-in-out">
                 {article.judul}
               </h5>
-              <p className="text-sm text-gray-700 dark:text-gray-400 mb-4">
+              <p className="text-sm text-gray-700 text-justify dark:text-gray-400 mb-4">
                 {article.deskripsi}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
