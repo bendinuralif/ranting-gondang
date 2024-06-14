@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Sidebar as FlowbiteSidebar } from "flowbite-react";
-import { HiArrowSmRight, HiChartPie, HiInbox, HiDocumentAdd, HiInformationCircle, HiViewGrid, HiTable } from "react-icons/hi";
+import { HiArrowSmRight, HiChartPie, HiInbox, HiDocumentAdd, HiInformationCircle, HiViewGrid, HiTable, HiUser } from "react-icons/hi";
 
 function CustomSidebar({ isOpen }) {
   return (
@@ -148,11 +148,11 @@ function CustomSidebar({ isOpen }) {
               </FlowbiteSidebar.Item>
             </FlowbiteSidebar.Collapse>
             <FlowbiteSidebar.Item
-              href="#"
-              icon={HiArrowSmRight}
+              href="/user"
+              icon={HiUser}
               className="hover:bg-red-700 transition-colors duration-300"
             >
-              Sign In
+              User
             </FlowbiteSidebar.Item>
             <FlowbiteSidebar.Item
               href="#"
