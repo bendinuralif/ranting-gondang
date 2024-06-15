@@ -205,13 +205,13 @@ const Dashboard = () => {
               x: {
                 title: {
                   display: true,
-                  text: 'Year'
+                  text: 'Tahun'
                 }
               },
               y: {
                 title: {
                   display: true,
-                  text: 'Count'
+                  text: 'Jumlah'
                 },
                 beginAtZero: true
               }

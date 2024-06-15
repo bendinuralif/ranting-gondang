@@ -78,12 +78,10 @@ function User() {
         const snapshot = await getDocs(mainCollectionRef);
         const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         res.sort((a, b) => {
-          const dateA = new Date(a.nama);
-          const dateB = new Date(b.nama);
           if (sortOrder === "asc") {
-            return dateA - dateB;
+            return a.nama.localeCompare(b.nama);
           } else {
-            return dateB - dateA;
+            return b.nama.localeCompare(a.nama);
           }
         });
         setData(res);
@@ -126,7 +124,7 @@ function User() {
         }, 3000);
         return downloadURL;
       } else {
-        console.error("Please select a file to upload.");
+        console.error("Silakan pilih file untuk diunggah.");
       }
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -178,12 +176,10 @@ function User() {
           const snapshot = await getDocs(mainCollectionRef);
           const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
           res.sort((a, b) => {
-            const dateA = new Date(a.nama);
-            const dateB = new Date(b.nama);
             if (sortOrder === "asc") {
-              return dateA - dateB;
+              return a.nama.localeCompare(b.nama);
             } else {
-              return dateB - dateA;
+              return b.nama.localeCompare(a.nama);
             }
           });
           setData(res);
@@ -233,12 +229,10 @@ function User() {
           const snapshot = await getDocs(mainCollectionRef);
           const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
           res.sort((a, b) => {
-            const dateA = new Date(a.nama);
-            const dateB = new Date(b.nama);
             if (sortOrder === "asc") {
-              return dateA - dateB;
+              return a.nama.localeCompare(b.nama);
             } else {
-              return dateB - dateA;
+              return b.nama.localeCompare(a.nama);
             }
           });
           setData(res);
@@ -280,12 +274,10 @@ function User() {
             const snapshot = await getDocs(mainCollectionRef);
             const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
             res.sort((a, b) => {
-              const dateA = new Date(a.nama);
-              const dateB = new Date(b.nama);
               if (sortOrder === "asc") {
-                return dateA - dateB;
+                return a.nama.localeCompare(b.nama);
               } else {
-                return dateB - dateA;
+                return b.nama.localeCompare(a.nama);
               }
             });
             setData(res);
@@ -295,7 +287,7 @@ function User() {
         };
         fetchData();
       } else {
-        console.error("Failed to upload image.");
+        console.error("Gagal mengunggah gambar.");
       }
       setAddLoading(false);
     } catch (error) {
@@ -320,16 +312,16 @@ function User() {
               className="bg-blue-500 text-white px-4 py-2 rounded"
               onClick={() => setShowAddModal(true)}
             >
-              Add User
+              Tambah Pengguna
             </button>
           </div>
           <div>
-            <label htmlFor="rowsPerPage" className="mr-2">Rows per page:</label>
+            <label htmlFor="rowsPerPage" className="mr-2">Baris per halaman:</label>
             <select id="rowsPerPage" value={rowsPerPage} onChange={handleChangeRowsPerPage}>
               <option value={5}>5</option>
               <option value={10}>10</option>
               <option value={20}>20</option>
-              <option value="All">All</option>
+              <option value="All">Semua</option>
             </select>
           </div>
         </div>
@@ -345,7 +337,7 @@ function User() {
                 <th className="py-2 px-4 border-b">NIW</th>
                 <th className="py-2 px-4 border-b">Role</th>
                 <th className="py-2 px-4 border-b">Password</th>
-                <th className="py-2 px-4 border-b">Actions</th>
+                <th className="py-2 px-4 border-b">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -392,17 +384,17 @@ function User() {
             onClick={handlePrevPage}
             disabled={currentPage === 1}
           >
-            Previous
+            Sebelumnya
           </button>
           <span>
-            Page {currentPage} of {totalPages}
+            Halaman {currentPage} dari {totalPages}
           </span>
           <button
             className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
           >
-            Next
+            Berikutnya
           </button>
         </div>
       </div>
@@ -411,7 +403,7 @@ function User() {
       {showAddModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded">
-            <h2 className="text-xl font-bold mb-4">Add User</h2>
+            <h2 className="text-xl font-bold mb-4">Tambah Pengguna</h2>
             <form onSubmit={handleSubmitAdd}>
               <div className="mb-4">
                 <label className="block text-gray-700">Nama</label>
@@ -469,14 +461,14 @@ function User() {
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  {addLoading ? "Adding..." : "Add"}
+                  {addLoading ? "Menambahkan..." : "Tambah"}
                 </button>
                 <button
                   type="button"
                   className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
                   onClick={() => setShowAddModal(false)}
                 >
-                  Cancel
+                  Batal
                 </button>
               </div>
             </form>
@@ -487,7 +479,7 @@ function User() {
       {showEditModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-8 rounded">
-            <h2 className="text-xl font-bold mb-4">Edit User</h2>
+            <h2 className="text-xl font-bold mb-4">Edit Pengguna</h2>
             <form onSubmit={handleSubmitEdit}>
               <div className="mb-4">
                 <label className="block text-gray-700">Nama</label>
@@ -544,14 +536,14 @@ function User() {
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  {editLoading ? "Saving..." : "Save"}
+                  {editLoading ? "Menyimpan..." : "Simpan"}
                 </button>
                 <button
                   type="button"
                   className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
                   onClick={() => setShowEditModal(false)}
                 >
-                  Cancel
+                  Batal
                 </button>
               </div>
             </form>
@@ -559,7 +551,7 @@ function User() {
         </div>
       )}
 
-{showImageModal && (
+      {showImageModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -582,8 +574,31 @@ function User() {
           </div>
         </div>
       )}
+
+      {deleteConfirmationModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded">
+            <h2 className="text-xl font-bold mb-4">Konfirmasi Penghapusan</h2>
+            <p>Apakah Anda yakin ingin menghapus pengguna ini?</p>
+            <div className="flex justify-between mt-4">
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={confirmDelete}
+              >
+                {deleteLoading ? "Menghapus..." : "Hapus"}
+              </button>
+              <button
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
+                onClick={handleCancelDelete}
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </LayoutAdmin>
   );
-};
+}
 
 export default User;

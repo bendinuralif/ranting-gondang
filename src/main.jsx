@@ -46,6 +46,7 @@ import DetailKegiatan from './admin/page/Kegiatan/Detail.jsx';
 import DetailBerita from './admin/page/Berita/Detail.jsx';
 import TambahBerita from './admin/page/Berita/Tambah.jsx';
 import User from './admin/page/User.jsx';
+import Setting from './admin/component/Setting.jsx';
 
 
 const router = createBrowserRouter([
@@ -220,6 +221,10 @@ const router = createBrowserRouter([
   {
     path: "/user",
     element: <User />,
+  },
+  {
+    path: "/setting",
+    element: <Setting />,
   },
   // {
   //   path: "/uploadexcel",
