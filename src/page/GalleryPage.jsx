@@ -72,8 +72,8 @@ const GalleryPage = () => {
         <div className="flex items-center justify-center py-4 md:py-8 flex-wrap mt-20">
           {/* Tombol Filter */}
           <button
-            className={`text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 focus:ring-4 focus:outline-none rounded-full 
-              ${activeButton === null ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-white hover:border-gray-200 hover:bg-red-700 hover:text-white'}
+            className={`text-sm md:text-xl font-medium px-6 py-3 text-center me-3 mb-3 focus:ring-4 focus:outline-none rounded-full transition-transform transform hover:scale-105
+              ${activeButton === null ? 'bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white shadow-lg' : 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-100'}
             `}
             onClick={() => handleButtonClick(null)}
           >
@@ -82,8 +82,8 @@ const GalleryPage = () => {
           {years.sort((a, b) => a - b).map(year => (
             <button
               key={year}
-              className={`text-sm md:text-xl font-medium px-5 py-2.5 text-center me-3 mb-3 focus:ring-4 focus:outline-none rounded-full 
-                ${activeButton === year ? 'bg-gray-700 text-white' : 'bg-white text-gray-900 border border-white hover:border-gray-200 hover:bg-red-700 hover:text-white'}
+              className={`text-sm md:text-xl font-medium px-6 py-3 text-center me-3 mb-3 focus:ring-4 focus:outline-none rounded-full transition-transform transform hover:scale-105
+                ${activeButton === year ? 'bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white shadow-lg' : 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-100'}
               `}
               onClick={() => handleButtonClick(year)}
             >
@@ -108,7 +108,7 @@ const GalleryPage = () => {
         {lastDoc && (
           <div className="flex justify-center my-10">
             <button
-              className="bg-gray-700 text-white text-sm md:text-xl font-medium px-5 py-2.5 rounded-full hover:bg-red-700"
+              className="bg-gradient-to-r from-red-400 via-red-500 to-red-600 text-white text-sm md:text-xl font-medium px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-transform"
               onClick={fetchMoreData}
               disabled={isLoading}
             >

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BsInstagram, BsEnvelope } from "react-icons/bs";
+import { SiTiktok } from 'react-icons/si';
 import logo from '../assets/img/Logo.png'
 
 function CustomFooter() {
@@ -17,10 +18,10 @@ function CustomFooter() {
             <a href="https://www.instagram.com/psht.ranting_gondang/" className="text-white">
               <BsInstagram size={25}  /> {/* Adjust the size as needed */}
             </a>
-            {/* <a href="#" className="text-white">
-              <BsTwitter size={30} />
+            <a href="https://www.tiktok.com/@psht.rantinggondang" className="text-white">
+              <SiTiktok size={25} />
             </a>
-            <a href="#" className="text-white">
+            {/* <a href="#" className="text-white">
               <BsGithub size={30} />
             </a> */}
             <a href="mailto:rantinggondang@gmail.com" className="text-white">
