@@ -47,6 +47,7 @@ import DetailBerita from './admin/page/Berita/Detail.jsx';
 import TambahBerita from './admin/page/Berita/Tambah.jsx';
 import User from './admin/page/User.jsx';
 import Setting from './admin/component/Setting.jsx';
+import EditUser from './admin/page/EditUser.jsx';
 
 
 const router = createBrowserRouter([
@@ -225,6 +226,10 @@ const router = createBrowserRouter([
   {
     path: "/setting",
     element: <Setting />,
+  },
+  {
+    path: "/edit-user",
+    element: <EditUser />,
   },
   // {
   //   path: "/uploadexcel",

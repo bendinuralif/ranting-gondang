@@ -19,7 +19,7 @@ import app from "./../../lib/firebase/init";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
-function User() {
+function EditUser() {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
@@ -58,22 +58,14 @@ function User() {
   const [editLoading, setEditLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     const checkSession = () => {
-      const userSession = sessionStorage.getItem("user");
+      const userSession = JSON.parse(sessionStorage.getItem("user"));
       if (userSession) {
-        const user = JSON.parse(userSession);
-        setSession(user);
-        if (user.role !== "Pengurus") {
-          setAlertMessage("Halaman tidak tersedia untuk Anda");
-          setTimeout(() => {
-            window.location.href = "/dashboard"; // Redirect after showing alert message
-          }, 1000);
-        }
+        setSession(userSession);
       } else {
-        window.location.href = "/dashboard";
+        window.location.href = "/login";
       }
     };
 
@@ -85,21 +77,23 @@ function User() {
         const mainCollectionRef = collection(db, "user");
         const snapshot = await getDocs(mainCollectionRef);
         const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        res.sort((a, b) => {
+
+        const filteredData = res.filter((user) => user.niw === session?.niw);
+        filteredData.sort((a, b) => {
           if (sortOrder === "asc") {
             return a.nama.localeCompare(b.nama);
           } else {
             return b.nama.localeCompare(a.nama);
           }
         });
-        setData(res);
+        setData(filteredData);
       } catch (error) {
         console.error("Error fetching Firestore data:", error);
       }
     };
 
     fetchData();
-  }, [sortOrder]);
+  }, [sortOrder, session]);
 
   useEffect(() => {
     const totalPagesCount = Math.ceil(data.length / rowsPerPage);
@@ -177,28 +171,10 @@ function User() {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "user", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
-      const fetchData = async () => {
-        const db = getFirestore(app);
-        try {
-          const mainCollectionRef = collection(db, "user");
-          const snapshot = await getDocs(mainCollectionRef);
-          const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-          res.sort((a, b) => {
-            if (sortOrder === "asc") {
-              return a.nama.localeCompare(b.nama);
-            } else {
-              return b.nama.localeCompare(a.nama);
-            }
-          });
-          setData(res);
-        } catch (error) {
-          console.error("Error fetching Firestore data:", error);
-        }
-      };
+      setDeleteLoading(false);
       fetchData();
       setSelectedItemToDelete(null);
       setDeleteConfirmationModalOpen(false);
-      setDeleteLoading(false);
     } catch (error) {
       console.error("Error deleting item:", error);
       setDeleteLoading(false);
@@ -230,26 +206,8 @@ function User() {
       await updateDoc(itemRef, { ...editedItem, gambar: downloadURL });
       console.log("Item updated successfully!");
       setShowEditModal(false);
-      const fetchData = async () => {
-        const db = getFirestore(app);
-        try {
-          const mainCollectionRef = collection(db, "user");
-          const snapshot = await getDocs(mainCollectionRef);
-          const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-          res.sort((a, b) => {
-            if (sortOrder === "asc") {
-              return a.nama.localeCompare(b.nama);
-            } else {
-              return b.nama.localeCompare(a.nama);
-            }
-          });
-          setData(res);
-        } catch (error) {
-          console.error("Error fetching Firestore data:", error);
-        }
-      };
-      fetchData();
       setEditLoading(false);
+      fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
       setEditLoading(false);
@@ -275,29 +233,12 @@ function User() {
         setFile(null);
         setFilePreview(null);
         setShowAddModal(false);
-        const fetchData = async () => {
-          const db = getFirestore(app);
-          try {
-            const mainCollectionRef = collection(db, "user");
-            const snapshot = await getDocs(mainCollectionRef);
-            const res = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-            res.sort((a, b) => {
-              if (sortOrder === "asc") {
-                return a.nama.localeCompare(b.nama);
-              } else {
-                return b.nama.localeCompare(a.nama);
-              }
-            });
-            setData(res);
-          } catch (error) {
-            console.error("Error fetching Firestore data:", error);
-          }
-        };
+        setAddLoading(false);
         fetchData();
       } else {
         console.error("Gagal mengunggah gambar.");
+        setAddLoading(false);
       }
-      setAddLoading(false);
     } catch (error) {
       console.error("Error adding item:", error);
       setAddLoading(false);
@@ -309,39 +250,10 @@ function User() {
     setShowImageModal(true);
   };
 
-  if (alertMessage) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="bg-white p-6 rounded shadow">
-          <h1 className="text-2xl font-bold mb-4">{alertMessage}</h1>
-        </div>
-      </div>
-    );
-  }
   return (
     <LayoutAdmin>
       <div className="container mx-auto py-8 px-10">
-        <h1 className="text-3xl font-bold mb-6">User</h1>
-
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={() => setShowAddModal(true)}
-            >
-              Tambah Pengguna
-            </button>
-          </div>
-          <div>
-            <label htmlFor="rowsPerPage" className="mr-2">Baris per halaman:</label>
-            <select id="rowsPerPage" value={rowsPerPage} onChange={handleChangeRowsPerPage}>
-              <option value={5}>5</option>
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value="All">Semua</option>
-            </select>
-          </div>
-        </div>
+        <h1 className="text-3xl font-bold mb-6">Edit User</h1>
 
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border">
@@ -394,193 +306,78 @@ function User() {
             </tbody>
           </table>
         </div>
-
-        <div className="flex justify-between items-center mt-4">
-          <button
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
-            onClick={handlePrevPage}
-            disabled={currentPage === 1}
-          >
-            Sebelumnya
-          </button>
-          <span>
-            Halaman {currentPage} dari {totalPages}
-          </span>
-          <button
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-          >
-            Berikutnya
-          </button>
-        </div>
       </div>
 
-      {/* Modals */}
-      {showAddModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-8 rounded">
-      <h2 className="text-xl font-bold mb-4">Tambah Pengguna</h2>
-      <form onSubmit={handleSubmitAdd}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Nama</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.nama}
-            onChange={(e) => setNewItem({ ...newItem, nama: e.target.value })}
-            required
-          />
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg">
+            <h2 className="text-xl font-bold mb-4">Edit Pengguna</h2>
+            <form onSubmit={handleSubmitEdit}>
+              <div className="mb-4">
+                <label className="block text-gray-700">Nama</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={editedItem.nama}
+                  onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">NIW</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={editedItem.niw}
+                  onChange={(e) => setEditedItem({ ...editedItem, niw: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Password</label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full px-3 py-2 border rounded"
+                  value={editedItem.password}
+                  onChange={(e) => setEditedItem({ ...editedItem, password: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Gambar</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                {filePreview && (
+                  <img src={filePreview} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded" />
+                )}
+              </div>
+              <div className="flex justify-between">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  {editLoading ? "Menyimpan..." : "Simpan"}
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">NIW</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.niw}
-            onChange={(e) => setNewItem({ ...newItem, niw: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.password}
-            onChange={(e) => setNewItem({ ...newItem, password: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Role</label>
-          <select
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.role}
-            onChange={(e) => setNewItem({ ...newItem, role: e.target.value })}
-            required
-          >
-            <option value="">Pilih Role</option>
-            <option value="Admin">Admin</option>
-            <option value="Pengurus">Pengurus</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Gambar</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            required
-          />
-          {filePreview && (
-            <img src={filePreview} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded" />
-          )}
-        </div>
-        <div className="flex justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            {addLoading ? "Menambahkan..." : "Tambah"}
-          </button>
-          <button
-            type="button"
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
-            onClick={() => setShowAddModal(false)}
-          >
-            Batal
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
-
-
-{showEditModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-8 rounded">
-      <h2 className="text-xl font-bold mb-4">Edit Pengguna</h2>
-      <form onSubmit={handleSubmitEdit}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Nama</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.nama}
-            onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">NIW</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.niw}
-            onChange={(e) => setEditedItem({ ...editedItem, niw: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.password}
-            onChange={(e) => setEditedItem({ ...editedItem, password: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Role</label>
-          <select
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.role}
-            onChange={(e) => setEditedItem({ ...editedItem, role: e.target.value })}
-            required
-          >
-            <option value="">Pilih Role</option>
-            <option value="Admin">Admin</option>
-            <option value="Pengurus">Pengurus</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Gambar</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-          {filePreview && (
-            <img src={filePreview} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded" />
-          )}
-        </div>
-        <div className="flex justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            {editLoading ? "Menyimpan..." : "Simpan"}
-          </button>
-          <button
-            type="button"
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
-            onClick={() => setShowEditModal(false)}
-          >
-            Batal
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
-
+      {/* Image Modal */}
       {showImageModal && (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -602,31 +399,8 @@ function User() {
           </div>
         </div>
       )}
-
-      {deleteConfirmationModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded">
-            <h2 className="text-xl font-bold mb-4">Konfirmasi Penghapusan</h2>
-            <p>Apakah Anda yakin ingin menghapus pengguna ini?</p>
-            <div className="flex justify-between mt-4">
-              <button
-                className="bg-red-500 text-white px-4 py-2 rounded"
-                onClick={confirmDelete}
-              >
-                {deleteLoading ? "Menghapus..." : "Hapus"}
-              </button>
-              <button
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
-                onClick={handleCancelDelete}
-              >
-                Batal
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </LayoutAdmin>
   );
 }
 
-export default User;
+export default EditUser;
