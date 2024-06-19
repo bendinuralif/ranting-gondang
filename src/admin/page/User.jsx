@@ -66,7 +66,7 @@ function User() {
       if (userSession) {
         const user = JSON.parse(userSession);
         setSession(user);
-        if (user.role !== "Pengurus") {
+        if (user.role !== "Admin") {
           setAlertMessage("Halaman tidak tersedia untuk Anda");
           setTimeout(() => {
             window.location.href = "/dashboard"; // Redirect after showing alert message
