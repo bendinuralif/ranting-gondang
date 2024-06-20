@@ -155,7 +155,7 @@ function CustomSidebar({ isOpen }) {
               User
             </FlowbiteSidebar.Item>
             <FlowbiteSidebar.Item
-              href="edit-user"
+              href="/edit-user"
               icon={HiTable}
               className="hover:bg-red-700 transition-colors duration-300"
             >

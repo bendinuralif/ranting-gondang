@@ -189,12 +189,12 @@ const Dashboard = () => {
             Jumlah item:
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ItemCard title="Siswa" count={counts.siswa.count} youngestYear={counts.siswa.youngestYear} oldestYear={counts.siswa.oldestYear} link="/siswa" />
-            <ItemCard title="Warga" count={counts.warga.count} youngestYear={counts.warga.youngestYear} oldestYear={counts.warga.oldestYear} link="/warga" />
-            <ItemCard title="SubRayon" count={counts.subRayon.count} link="/subrayon" />
-            <ItemCard title="Rayon" count={counts.rayon.count} link="/rayon" />
-            <ItemCard title="Pusdiklat" count={counts.pusdiklat.count} link="/pusdiklat" />
-            <ItemCard title="Struktur Organisasi" count={counts.strukturOrganisasi.count} link="/strukturorganisasi" />
+            <ItemCard title="Siswa" count={counts.siswa.count} youngestYear={counts.siswa.youngestYear} oldestYear={counts.siswa.oldestYear} link="/detail-siswa" />
+            <ItemCard title="Warga" count={counts.warga.count} youngestYear={counts.warga.youngestYear} oldestYear={counts.warga.oldestYear} link="/detail-warga" />
+            <ItemCard title="SubRayon" count={counts.subRayon.count} link="/detail-subrayon" />
+            <ItemCard title="Rayon" count={counts.rayon.count} link="/detail-rayon" />
+            <ItemCard title="Pusdiklat" count={counts.pusdiklat.count} link="/detail-pusdiklat" />
+            <ItemCard title="Struktur Organisasi" count={counts.strukturOrganisasi.count} link="/detail-strukturorganisasi" />
           </div>
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">

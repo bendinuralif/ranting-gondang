@@ -6,7 +6,7 @@ import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt,faPlus  } from '@fortawesome/free-solid-svg-icons';
 
-function DetailSejarahSingkat() {
+function DetailKetuaRantingSingkat() {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
@@ -51,7 +51,7 @@ function DetailSejarahSingkat() {
     const fetchData = async () => {
       const db = getFirestore(app);
       try {
-        const mainCollectionRef = collection(db, "Sejarah");
+        const mainCollectionRef = collection(db, "KetuaRanting");
         const snapshot = await getDocs(mainCollectionRef);
 
         const promises = snapshot.docs.map(async (doc) => {
@@ -88,7 +88,7 @@ function DetailSejarahSingkat() {
   const fetchData = async () => {
     const db = getFirestore(app);
     try {
-      const res = await retrieveData("Sejarah", db);
+      const res = await retrieveData("KetuaRanting", db);
       res.sort((a, b) => a.no - b.no);
       setData(res);
     } catch (error) {
@@ -109,7 +109,7 @@ function DetailSejarahSingkat() {
           const json = JSON.parse(e.target.result);
           const db = getFirestore(app);
           for (const item of json) {
-            await addDoc(collection(db, "Sejarah"), item);
+            await addDoc(collection(db, "KetuaRanting"), item);
           }
           console.log("Data uploaded successfully!");
           fetchData();
@@ -161,7 +161,7 @@ function DetailSejarahSingkat() {
   const confirmDelete = async () => {
     try {
       const db = getFirestore(app);
-      await deleteDoc(doc(db, "Sejarah", selectedItemToDelete.id));
+      await deleteDoc(doc(db, "KetuaRanting", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
       fetchData();
       setSelectedItemToDelete(null);
@@ -176,7 +176,7 @@ function DetailSejarahSingkat() {
       const db = getFirestore(app);
       const { no, nama, tahun } = selectedItem;
       const itemId = selectedItem.id;
-      const itemRef = doc(db, "Sejarah", itemId);
+      const itemRef = doc(db, "KetuaRanting", itemId);
       await updateDoc(itemRef, {
         no: no,
         nama: nama,
@@ -199,7 +199,7 @@ function DetailSejarahSingkat() {
     try {
       const db = getFirestore(app);
       const { no, nama, tahun } = newItem;
-      await addDoc(collection(db, "Sejarah"), {
+      await addDoc(collection(db, "KetuaRanting"), {
         no: no,
         nama: nama,
         tahun: tahun,
@@ -528,4 +528,4 @@ function DetailSejarahSingkat() {
   );
 }
 
-export default DetailSejarahSingkat;
+export default DetailKetuaRantingSingkat;

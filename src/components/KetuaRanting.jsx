@@ -8,7 +8,7 @@ function KetuaRanting() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await retrieveData('Sejarah');
+        const res = await retrieveData('KetuaRanting');
         const sortedData = res.sort((a, b) => {
           if (typeof a.no === "string" && typeof b.no === "string") {
             return a.no.localeCompare(b.no);
