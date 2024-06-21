@@ -17,7 +17,7 @@ import {
 } from "firebase/storage";
 import app from "./../../lib/firebase/init";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faEye, faEyeSlash, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 function User() {
   const [data, setData] = useState([]);
@@ -185,41 +185,37 @@ function User() {
 
 function UserProfile({ data, onEdit, onShowImage, showPassword, togglePasswordVisibility }) {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 relative">
-      <div className="flex items-center">
-        <div className="mr-6 relative">
-          {data.gambar ? (
-            <img
-              src={data.gambar}
-              alt="User"
-              className="h-32 w-32 object-cover rounded-full shadow-lg cursor-pointer border-2 border-blue-500"
-              onClick={() => onShowImage(data.gambar)}
-            />
-          ) : (
-            <div className="h-32 w-32 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-500 border-2 border-blue-500">
-              {data.nama.charAt(0)}
-            </div>
-          )}
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-blue-700 mb-1">Nama: {data.nama}</h2>
-          <p className="text-gray-600 mb-1">Niw: {data.niw}</p>
-          <p className="text-gray-600 capitalize mb-1">Role: {data.role}</p>
-          <p className="text-gray-600">
-            Password: {showPassword ? data.password : "******"}
-          </p>
-          <button
-            className="mt-2 text-blue-500 hover:text-blue-700"
-            onClick={togglePasswordVisibility}
-          >
-            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-          </button>
-        </div>
+    <div className="bg-white rounded-lg shadow-lg p-6 relative border border-gray-200 max-w-md mx-auto">
+      <div className="flex flex-col items-center">
+        {data.gambar ? (
+          <img
+            src={data.gambar}
+            alt="User"
+            className="h-32 w-32 object-cover rounded-full shadow-lg cursor-pointer border-2 border-blue-500 mb-4"
+            onClick={() => onShowImage(data.gambar)}
+          />
+        ) : (
+          <div className="h-32 w-32 bg-gray-200 rounded-full flex items-center justify-center text-2xl font-bold text-gray-500 border-2 border-blue-500 mb-4">
+            {data.nama.charAt(0)}
+          </div>
+        )}
+        <h2 className="text-2xl font-bold text-blue-700 mb-1">{data.nama}</h2>
+        <p className="text-gray-600 mb-1">Niw: {data.niw}</p>
+        <p className="text-gray-600 capitalize mb-1">Role: {data.role}</p>
+        <p className="text-gray-600 mb-4">
+          Password: {showPassword ? data.password : "******"}<button
+          className="text-blue-500 hover:text-blue-700 mb-4 pl-3"
+          onClick={togglePasswordVisibility}
+        >
+          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+        </button>
+        </p>
+        
         <button
-          className="ml-auto text-blue-500 hover:text-blue-700 text-2xl"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           onClick={() => onEdit(data)}
         >
-          <FontAwesomeIcon icon={faEdit} />
+          <FontAwesomeIcon icon={faEdit} /> Edit
         </button>
       </div>
     </div>
@@ -239,7 +235,15 @@ function EditModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-bold mb-4">Edit User</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Edit User</h2>
+          <button
+            className="text-gray-700 hover:text-gray-900"
+            onClick={() => setShowEditModal(false)}
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
         <form onSubmit={handleSubmitEdit}>
           <div className="mb-4">
             <label className="block text-gray-700">Name</label>
