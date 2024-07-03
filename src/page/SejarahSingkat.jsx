@@ -106,7 +106,7 @@ function SejarahSingkat() {
               Pada tahun 1985, PSHT Ranting Gondang mengikuti pengesahan pertama di Stadion Wilis Madiun, dihadiri oleh peserta dari seluruh Indonesia. Sejumlah 5 warga baru dari PSHT Ranting Gondang disahkan, termasuk Mas Purwanto, dengan total anggota dari Cabang Sragen sebanyak 27 orang. Tahun berikutnya, yakni 1986, sebanyak 8 warga baru disahkan, termasuk Mas Tri Bintoro Gatot, dan mereka membuka latihan di tempat tinggal masing-masing, seperti Mas Sugino di Kaliwedi, Mas Trimo di Tegalrejo, Mas Sutarno dan Mas Joko di Jetis, dan Mas Anus di Tawang. Semenjak itu latihan di PSHT Ranting gondang mulai banyak.
               <br />
               <br />
-              Pada tahun 1998, PSHT Ranting Gondang mengalami banyak masalah sehingga ketua ranting digantikan oleh Kangmas Karmo untuk menenangkan situasi. Setelah suasana membaik pada tahun 2002, ketua ranting digantikan oleh Mas Gatot. Di bawah kepemimpinan Mas Gatot, PSHT Ranting Gondang berkembang pesat, dan pada tahun 2014, membangun Padepokan.
+              Pada tahun 2002, PSHT Ranting Gondang mengalami banyak masalah sehingga ketua ranting digantikan oleh Kangmas Karmo untuk menenangkan situasi. Setelah suasana membaik pada tahun 2006, ketua ranting digantikan oleh Mas Gatot. Di bawah kepemimpinan Mas Gatot, PSHT Ranting Gondang berkembang pesat, dan pada tahun 2014, membangun Padepokan.
               <br />
               <br />
               Pada periode 2021-2024, kepemimpinan PSHT Ranting Gondang dipegang oleh Mas Sumarno. Pada periode ini, terjadi perubahan struktur organisasi dan perluasan kegiatan dengan menambah bidang Pengabdian Masyarakat, untuk lebih mengorganisir kegiatan yang memberi dampak langsung dan positif kepada masyarakat.
