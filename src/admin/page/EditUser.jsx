@@ -321,7 +321,7 @@ function EditUser() {
   return (
     <LayoutAdmin>
       <div className="container mx-auto py-8 px-10">
-        <h1 className="text-3xl font-bold mb-6">User</h1>
+        <h1 className="text-3xl font-bold mb-6">Edit User</h1>
 
         <div className="flex justify-between items-center mb-4">
           <div>
