@@ -7,17 +7,39 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [login, setLogin] = useState(false);
   const [error, setError] = useState(null); // State for holding error message
+  const [niwEmpty, setNiwEmpty] = useState(false); // State for NIW field validation
+  const [passwordEmpty, setPasswordEmpty] = useState(false); // State for password field validation
 
   const handleNiwChange = (event) => {
     setNiw(event.target.value);
+    if (event.target.value) {
+      setNiwEmpty(false);
+    }
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
+    if (event.target.value) {
+      setPasswordEmpty(false);
+    }
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    let valid = true;
+
+    if (!niw) {
+      setNiwEmpty(true);
+      valid = false;
+    }
+
+    if (!password) {
+      setPasswordEmpty(true);
+      valid = false;
+    }
+
+    if (!valid) return;
+
     setLogin(true);
     try {
       const user = await AdminLogin(niw, password);
@@ -68,6 +90,9 @@ const Login = () => {
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="NIW address"
                 />
+                {niwEmpty && (
+                  <p className="text-red-500 text-xs mt-1">NIW harus diisi.</p>
+                )}
               </div>
               <div>
                 <label htmlFor="password" className="sr-only">
@@ -84,6 +109,9 @@ const Login = () => {
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                 />
+                {passwordEmpty && (
+                  <p className="text-red-500 text-xs mt-1">Password harus diisi.</p>
+                )}
               </div>
             </div>
 

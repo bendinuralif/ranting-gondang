@@ -1,11 +1,12 @@
-import { Avatar, Dropdown, Navbar } from "flowbite-react";
+import { Avatar, Dropdown, Navbar, Modal, Button } from "flowbite-react";
 import logo from '../assets/img/Logo.png';
 import React, { useState, useEffect } from "react";
 import app from "../../../src/lib/firebase/init";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { HiExclamationCircle } from "react-icons/hi";  // Importing HiExclamationCircle
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -16,6 +17,7 @@ export function CustomNavbar({ toggleSidebar }) {
   const [userData, setUserData] = useState(null);
   const [session, setSession] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [editedItem, setEditedItem] = useState({
     nama: '',
     niw: '',
@@ -172,6 +174,14 @@ export function CustomNavbar({ toggleSidebar }) {
     setShowPassword(!showPassword);
   };
 
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      navigate("/"); // Redirect to home page after logout
+    }).catch((error) => {
+      console.error("Error signing out: ", error);
+    });
+  };
+
   return (
     <>
       <Navbar fluid rounded className="bg-gray-800">
@@ -203,11 +213,31 @@ export function CustomNavbar({ toggleSidebar }) {
               </Dropdown.Header>
               <Dropdown.Item as="a" href="/edit-user">Settings</Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item as="a" href="/logout">Logout</Dropdown.Item>
+              <Dropdown.Item as="button" onClick={() => setShowLogoutModal(true)}>Logout</Dropdown.Item>
             </Dropdown>
           )}
         </div>
       </Navbar>
+
+      <Modal show={showLogoutModal} onClose={() => setShowLogoutModal(false)}>
+        <Modal.Header>
+          <div className="flex items-center">
+            <HiExclamationCircle className="text-red-600 text-xl mr-2" />
+            <span>Konfirmasi Logout</span>
+          </div>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="text-lg text-gray-700">Apakah anda yakin untuk log out?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color="failure" onClick={handleLogout} className="hover:bg-red-600">
+            Log Out
+          </Button>
+          <Button color="gray" onClick={() => setShowLogoutModal(false)} className="hover:bg-gray-500">
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

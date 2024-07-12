@@ -202,22 +202,22 @@ function UserProfile({ data, onEdit, onShowImage, showPassword, togglePasswordVi
         <h2 className="text-2xl font-bold text-blue-700 mb-1">{data.nama}</h2>
         <p className="text-gray-600 mb-1">Niw: {data.niw}</p>
         <p className="text-gray-600 capitalize mb-1">Role: {data.role}</p>
-        <p className="text-gray-600 mb-4">
+  <p className="text-gray-600 mb-4">
           Password: {showPassword ? data.password : "******"}<button
-          className="text-blue-500 hover:text-blue-700 mb-4 pl-3"
-          onClick={togglePasswordVisibility}
-        >
-          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-        </button>
-        </p>
+      className="text-blue-500 hover:text-blue-700 mb-4 pl-3"
+      onClick={togglePasswordVisibility}
+    >
+      <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+    </button>
+  </p>
         
-        <button
+  <button
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => onEdit(data)}
-        >
-          <FontAwesomeIcon icon={faEdit} /> Edit
-        </button>
-      </div>
+    onClick={() => onEdit(data)}
+  >
+    <FontAwesomeIcon icon={faEdit} /> Edit
+  </button>
+</div>
     </div>
   );
 }
