@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { Link } from "react-router-dom";
-import { retrieveData, uploadData } from "../../../lib/firebase/service";
-import {
-  collection,
-  addDoc,
-  getFirestore,
-  deleteDoc,
-  doc,
-  writeBatch,
-  getDocs,
-  updateDoc,
-} from "firebase/firestore";
+import { collection, addDoc, getFirestore, deleteDoc, doc, writeBatch, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt, faPlus, faPrint } from "@fortawesome/free-solid-svg-icons";
@@ -29,7 +18,7 @@ function DetailSiswa() {
   const [paginatedData, setPaginatedData] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [addModalOpen, setAddModalOpen] = useState(false); // State for add modal
+  const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [itemToDeleteName, setItemToDeleteName] = useState("");
   const [showDeleteSelectedButton, setShowDeleteSelectedButton] = useState(false);
@@ -54,7 +43,6 @@ function DetailSiswa() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
-  const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
 
   useEffect(() => {

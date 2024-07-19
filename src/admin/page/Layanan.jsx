@@ -145,6 +145,11 @@ function LayananAdmin() {
     }
   };
 
+  const formatDate = (dateString) => {
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    return new Date(dateString).toLocaleString('id-ID', options);
+  };
+
   const handlePrintAll = () => {
     let printContent = `
       <h2>Detail Layanan</h2>
@@ -154,7 +159,7 @@ function LayananAdmin() {
             <th>No</th>
             <th>Nama</th>
             <th>No Telepon</th>
-            <th>Alamat</</th>
+            <th>Alamat</th>
             <th>Deskripsi</th>
             <th>Tanggal Selesai</th>
           </tr>
@@ -170,7 +175,7 @@ function LayananAdmin() {
           <td>${item.noTelepon}</td>
           <td>${item.alamat}</td>
           <td>${item.deskripsi}</td>
-          <td>${item.tanggalSelesai ? new Date(item.tanggalSelesai).toLocaleString() : "Belum Selesai"}</td>
+          <td>${item.tanggalSelesai ? formatDate(item.tanggalSelesai) : "Belum Selesai"}</td>
         </tr>
       `;
     });
@@ -185,6 +190,40 @@ function LayananAdmin() {
     printWindow.document.close();
     printWindow.print();
   };
+
+  const handlePrint = (item) => {
+    let printContent = `
+      <h2>Detail Layanan</h2>
+      <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>No Telepon</th>
+            <th>Alamat</th>
+            <th>Deskripsi</th>
+            <th>Tanggal Selesai</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>${item.nama}</td>
+            <td>${item.noTelepon}</td>
+            <td>${item.alamat}</td>
+            <td>${item.deskripsi}</td>
+            <td>${item.tanggalSelesai ? formatDate(item.tanggalSelesai) : "Belum Selesai"}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+
+    const printWindow = window.open("", "", "width=800,height=600");
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
 
   return (
     <LayoutAdmin>
@@ -221,7 +260,7 @@ function LayananAdmin() {
                   <td className="px-6 py-4 text-sm text-gray-500">{item.alamat}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{item.deskripsi}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {item.tanggalSelesai ? new Date(item.tanggalSelesai).toLocaleString() : (
+                    {item.tanggalSelesai ? formatDate(item.tanggalSelesai) : (
                       <button
                         onClick={() => handleEdit(item)}
                         className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ${
@@ -246,7 +285,7 @@ function LayananAdmin() {
                       onClick={() => handlePrint(item)}
                       className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-2 rounded"
                     >
-                    <FontAwesomeIcon icon={faPrint} className="mr-2" />
+                    <FontAwesomeIcon icon={faPrint} className="m-1" />
                     </button>
                   </td>
                 </tr>

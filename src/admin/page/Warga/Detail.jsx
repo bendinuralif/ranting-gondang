@@ -19,7 +19,7 @@ function DetailWarga() {
   const [paginatedData, setPaginatedData] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [addModalOpen, setAddModalOpen] = useState(false); // State for Add Modal
+  const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [itemToDeleteName, setItemToDeleteName] = useState("");
   const [showDeleteSelectedButton, setShowDeleteSelectedButton] = useState(false);
@@ -31,7 +31,7 @@ function DetailWarga() {
     alamat: "",
     tahun: ""
   });
-  const [newItem, setNewItem] = useState({ // State for new item
+  const [newItem, setNewItem] = useState({
     nama: "",
     no: "",
     jeniskelamin: "",
@@ -44,7 +44,6 @@ function DetailWarga() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
-  const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -599,7 +598,7 @@ function DetailWarga() {
           </div>
         )}
 
-        {addModalOpen && ( // Add Modal
+        {addModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
             <div className="bg-white p-6 rounded shadow-lg w-11/12 md:w-1/2">
               <h2 className="text-lg font-semibold mb-4">Tambah Item</h2>

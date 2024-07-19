@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDebounce } from "use-debounce";
 import Layout from "../page/Layout";
 import { retrieveData } from "../lib/firebase/service";
@@ -8,54 +8,56 @@ function Warga() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalDataCount, setTotalDataCount] = useState(0);
   const [tahunOptions, setTahunOptions] = useState([]);
-  const [selectedTahun, setSelectedTahun] = useState();
+  const [selectedTahun, setSelectedTahun] = useState("Semua");
   const [paginatedData, setPaginatedData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
-  useEffect(() => {
-    fetchData();
-  }, [selectedTahun, currentPage, rowsPerPage]);
-
-  useEffect(() => {
-    const totalPagesCount = Math.ceil(data.length / rowsPerPage);
-    setTotalPages(totalPagesCount);
-  }, [data, rowsPerPage]);
-
-  const fetchData = async () => {
+  // Fetch data only when necessary
+  const fetchData = useCallback(async () => {
     try {
-      const res = await retrieveData("Warga", {
-        limit: rowsPerPage,
-        offset: (currentPage - 1) * rowsPerPage,
-        tahun: selectedTahun,
-        searchQuery: debouncedSearchQuery,
-      });
-      const availableYears = Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a);
+      const res = await retrieveData("Warga");
+      const availableYears = ["Semua", ...Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a)];
       setTahunOptions(availableYears);
-
-      if (!selectedTahun && availableYears.length > 0) {
-        setSelectedTahun(availableYears[0]);
-      }
-
-      const filteredData = selectedTahun ? res.filter((item) => item.tahun == selectedTahun) : res;
-
-      const filteredAndSortedData = filteredData.filter(
-        (item) => typeof item.no === "string" || typeof item.no === "number"
-      );
-      const sortedData = filteredAndSortedData.sort((a, b) => {
-        if (typeof a.no === "string" && typeof b.no === "string") {
-          return a.no.localeCompare(b.no);
-        } else {
-          return a.no - b.no;
-        }
-      });
-
-      setData(sortedData);
+      setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    const filteredData = selectedTahun === "Semua" 
+      ? data 
+      : data.filter((item) => item.tahun === selectedTahun);
+
+    const searchData = filteredData.filter((item) =>
+      item.nama.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      item.jeniskelamin.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      item.alamat.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+    );
+
+    const sortedData = searchData.sort((a, b) => {
+      if (typeof a.no === "string" && typeof b.no === "string") {
+        return a.no.localeCompare(b.no);
+      } else {
+        return a.no - b.no;
+      }
+    });
+
+    const totalPagesCount = Math.ceil(sortedData.length / rowsPerPage);
+    setTotalPages(totalPagesCount);
+
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    setPaginatedData(sortedData.slice(startIndex, endIndex));
+    setTotalDataCount(filteredData.length);
+  }, [data, selectedTahun, debouncedSearchQuery, currentPage, rowsPerPage]);
 
   const handleChangeRowsPerPage = (e) => {
     setRowsPerPage(parseInt(e.target.value, 10));
@@ -71,25 +73,14 @@ function Warga() {
   };
 
   const handleChangeTahun = (e) => {
-    const selectedYear = e.target.value;
-    setSelectedTahun(selectedYear);
+    setSelectedTahun(e.target.value);
+    setCurrentPage(1);
   };
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
-
-  useEffect(() => {
-    const filteredData = data.filter((item) =>
-      item.nama.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-      item.jeniskelamin.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-      item.alamat.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
-    );
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    setPaginatedData(filteredData.slice(startIndex, endIndex));
-  }, [data, currentPage, rowsPerPage, debouncedSearchQuery]);
 
   return (
     <Layout>
@@ -121,6 +112,7 @@ function Warga() {
                     </option>
                   ))}
                 </select>
+                <span>Total: {totalDataCount}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <input
@@ -159,7 +151,7 @@ function Warga() {
                     key={index}
                     className={`bg-${index % 2 === 0 ? "gray-100" : "white"} border-b dark:bg-gray-800 dark:border-gray-700`}
                   >
-                    <td className="px-4 py-3">{index + 1}</td>
+                    <td className="px-4 py-3">{(currentPage - 1) * rowsPerPage + index + 1}</td>
                     <td className="px-4 py-3">{item.nama}</td>
                     <td className="px-4 py-3">{item.jeniskelamin}</td>
                     <td className="px-4 py-3">{item.alamat}</td>
