@@ -211,7 +211,7 @@ export function CustomNavbar({ toggleSidebar }) {
                 <span className="block text-sm">{session.nama}</span>
                 <span className="block truncate text-sm font-medium">{session.niw}</span>
               </Dropdown.Header>
-              <Dropdown.Item as="a" href="/edit-user">Settings</Dropdown.Item>
+              <Dropdown.Item as="a" href="/user">Settings</Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item as="button" onClick={() => setShowLogoutModal(true)}>Logout</Dropdown.Item>
             </Dropdown>

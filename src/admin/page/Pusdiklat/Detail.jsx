@@ -186,7 +186,7 @@ function DetailPusdiklat() {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => setAddModalOpen(true)}
-            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
           >
             <FontAwesomeIcon icon={faPlus} /> Tambah
           </button>
@@ -364,14 +364,14 @@ function DetailPusdiklat() {
                   type="button"
                   onClick={() => setAddModalOpen(false)}
                   className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-green-500 text-white font-bold py-2 px-4 rounded"
-                >
-                  Add
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Save
                 </button>
               </div>
             </form>

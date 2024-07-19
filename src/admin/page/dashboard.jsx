@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, orderBy, limit, where, startAfter } from "firebase/firestore";
 import LayoutAdmin from "./LayoutAdmin";
 import 'tailwindcss/tailwind.css';
 import { Line } from 'react-chartjs-2';
@@ -46,7 +46,8 @@ const Dashboard = () => {
     strukturOrganisasi: { count: 0 },
   });
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
-  const [recentActivities, setRecentActivities] = useState([]);
+  const [lastVisible, setLastVisible] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,7 +69,9 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (session) {
+    if (session && !loading) {
+      setLoading(true); // Set loading to true when fetch starts
+
       const fetchData = async () => {
         const db = getFirestore();
         const currentYear = new Date().getFullYear();
@@ -153,21 +156,16 @@ const Dashboard = () => {
             ],
           });
 
-          // Fetch recent activities
-          const recentActivitiesSnapshot = await getDocs(query(collection(db, "RecentActivities"), orderBy("timestamp", "desc"), limit(10)));
-          const recentActivitiesData = recentActivitiesSnapshot.docs.map(doc => doc.data());
-
-          console.log("Recent activities data fetched:", recentActivitiesData); // Debugging statement
-          setRecentActivities(recentActivitiesData);
-
         } catch (error) {
           console.error("Failed to fetch data from Firebase", error);
+        } finally {
+          setLoading(false); // Set loading to false when fetch ends
         }
       };
 
       fetchData();
     }
-  }, [session]);
+  }, [session, lastVisible, loading]);
 
   if (!session) {
     return null;
@@ -217,16 +215,6 @@ const Dashboard = () => {
               }
             }
           }} />
-        </div>
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Aktivitas Terbaru</h3>
-          <ul>
-            {recentActivities.map((activity, index) => (
-              <li key={index} className="mb-2">
-                {activity.description} - {new Date(activity.timestamp.seconds * 1000).toLocaleString()}
-              </li>
-            ))}
-          </ul>
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">Notifikasi</h3>

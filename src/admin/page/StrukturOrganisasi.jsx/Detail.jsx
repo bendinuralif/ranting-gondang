@@ -4,7 +4,7 @@ import { retrieveData } from "../../../lib/firebase/service";
 import { collection, addDoc, getFirestore, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function DetailStrukturOrganisasi() {
   const [data, setData] = useState([]);
@@ -151,9 +151,9 @@ function DetailStrukturOrganisasi() {
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Struktur Organisasi</h2>
         <button
           onClick={() => setAddModalOpen(true)}
-          className="mb-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-        >
-          Tambah Struktur Organisasi
+          className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+          >
+            <FontAwesomeIcon icon={faPlus} /> Tambah
         </button>
         <div className="overflow-x-auto ">
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -350,14 +350,14 @@ function DetailStrukturOrganisasi() {
                   type="button"
                   onClick={() => setAddModalOpen(false)}
                   className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-green-500 text-white font-bold py-2 px-4 rounded"
-                >
-                  Add
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Save
                 </button>
               </div>
             </form>
