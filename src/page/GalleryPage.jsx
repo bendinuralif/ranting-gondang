@@ -123,9 +123,9 @@ const GalleryPage = () => {
             <div className="relative w-full h-full flex flex-col items-center justify-center">
               <button className="absolute top-4 right-4 text-white text-2xl" onClick={handleCloseEnlargedImage}>×</button>
               <img className="gallery-image w-auto h-auto max-h-full max-w-full rounded-lg cursor-pointer" style={{ borderRadius: 10 }} src={enlargedImage} alt={enlargedImageTitle} />
-              <div className="absolute bottom-4 right-4">
+              {/* <div className="absolute bottom-4 right-4">
                 <a href={enlargedImage} download className="text-white text-2xl bg-gray-800 p-2 rounded-full">⬇️</a>
-              </div>
+              </div> */}
               <div className="text-white absolute bottom-4 left-4">{enlargedImageTitle}</div>
             </div>
           </div>

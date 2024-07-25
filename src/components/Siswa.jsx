@@ -32,14 +32,14 @@ function Siswa() {
   }, [fetchData]);
 
   useEffect(() => {
-    const filteredData = selectedTahun === "Semua" 
-      ? data 
-      : data.filter((item) => item.tahun === selectedTahun);
+    const filteredData = selectedTahun === "Semua"
+      ? data
+      : data.filter((item) => item.tahun.toString() === selectedTahun);
 
     const searchData = filteredData.filter((item) =>
-      item.nama.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-      item.jeniskelamin.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-      item.rayon.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+      (item.nama || "").toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      (item.jeniskelamin || "").toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+      (item.rayon || "").toLowerCase().includes(debouncedSearchQuery.toLowerCase())
     );
 
     const sortedData = searchData.sort((a, b) => {
@@ -56,7 +56,7 @@ function Siswa() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
     setPaginatedData(sortedData.slice(startIndex, endIndex));
-    setTotalDataCount(filteredData.length);
+    setTotalDataCount(searchData.length); // Update totalDataCount to reflect the count of filtered and searched data
   }, [data, selectedTahun, debouncedSearchQuery, currentPage, rowsPerPage]);
 
   const handleChangeRowsPerPage = (e) => {
@@ -112,7 +112,7 @@ function Siswa() {
                     </option>
                   ))}
                 </select>
-                <span>Total: {totalDataCount}</span>
+                <span className="text-gray-700 dark:text-gray-300">Total: {totalDataCount}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <input
@@ -148,7 +148,9 @@ function Siswa() {
                 {paginatedData.map((item, index) => (
                   <tr
                     key={index}
-                    className={`bg-${index % 2 === 0 ? "gray-100" : "white"} border-b dark:bg-gray-800 dark:border-gray-700`}
+                    className={`${
+                      index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                    } hover:bg-gray-200 dark:hover:bg-gray-600 border-b dark:bg-gray-800 dark:border-gray-700`}
                   >
                     <td className="px-4 py-3">{(currentPage - 1) * rowsPerPage + index + 1}</td>
                     <td className="px-4 py-3">{item.nama}</td>
@@ -159,45 +161,47 @@ function Siswa() {
                 ))}
               </tbody>
             </table>
-            <div className="flex justify-end items-center px-4 py-4">
-              <label htmlFor="rowsPerPage" className="mr-2 text-gray-700 dark:text-gray-300">
-                Rows per page:
-              </label>
-              <select
-                id="rowsPerPage"
-                onChange={handleChangeRowsPerPage}
-                value={rowsPerPage}
-                className="border rounded-lg px-3 py-2 focus:ring focus:ring-red-200 dark:bg-gray-700 dark:text-gray-300"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
+            <div className="flex justify-between items-center p-4">
+              <div className="flex items-center space-x-2">
+                <label htmlFor="rowsPerPage" className="text-gray-700 dark:text-gray-300">
+                  Rows per page:
+                </label>
+                <select
+                  id="rowsPerPage"
+                  onChange={handleChangeRowsPerPage}
+                  value={rowsPerPage}
+                  className="border rounded-lg px-3 py-2 focus:ring focus:ring-red-200 dark:bg-gray-700 dark:text-gray-300"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  className={`px-3 py-2 rounded-lg ${
+                    currentPage === 1 ? "cursor-not-allowed bg-gray-300" : "bg-red-500 text-white hover:bg-red-600"
+                  }`}
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  className={`px-3 py-2 rounded-lg ${
+                    currentPage === totalPages ? "cursor-not-allowed bg-gray-300" : "bg-red-500 text-white hover:bg-red-600"
+                  }`}
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="flex justify-between items-center p-4">
-            <button
-              className={`px-3 py-2 rounded-lg ${
-                currentPage === 1 ? "cursor-not-allowed bg-gray-300" : "bg-red-500 text-white hover:bg-red-600"
-              }`}
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span className="text-gray-600 dark:text-gray-400">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              className={`px-3 py-2 rounded-lg ${
-                currentPage === totalPages ? "cursor-not-allowed bg-gray-300" : "bg-red-500 text-white hover:bg-red-600"
-              }`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
           </div>
         </div>
       </div>

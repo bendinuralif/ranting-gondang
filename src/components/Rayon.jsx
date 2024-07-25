@@ -42,7 +42,7 @@ function Rayon() {
               </thead>
               <tbody>
                 {data.map((item, index) => (
-                  <tr key={index} className={`bg-${index % 2 === 0 ? 'gray-100' : 'white'} border-b dark:bg-gray-800 dark:border-gray-700`}>
+                  <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} hover:bg-gray-200 dark:hover:bg-gray-600 border-b dark:bg-gray-800 dark:border-gray-700`}>
                     <td className="px-4 py-3">{index + 1}</td>
                     <td className="px-4 py-3">{item.nama}</td>
                     <td className="px-4 py-3">{item.rayon}</td>
