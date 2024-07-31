@@ -418,166 +418,181 @@ function EditUser() {
 
       {/* Modals */}
       {showAddModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-8 rounded">
-      <h2 className="text-xl font-bold mb-4">Tambah Pengguna</h2>
-      <form onSubmit={handleSubmitAdd}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Nama</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.nama}
-            onChange={(e) => setNewItem({ ...newItem, nama: e.target.value })}
-            required
-          />
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded">
+            <h2 className="text-xl font-bold mb-4">Tambah Pengguna</h2>
+            <form onSubmit={handleSubmitAdd}>
+              <div className="mb-4">
+                <label className="block text-gray-700">Nama</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={newItem.nama}
+                  onChange={(e) => setNewItem({ ...newItem, nama: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">NIW</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={newItem.niw}
+                  onChange={(e) => setNewItem({ ...newItem, niw: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Password</label>
+                <div className="flex items-center">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="w-full px-3 py-2 border rounded"
+                    value={newItem.password}
+                    onChange={(e) => setNewItem({ ...newItem, password: e.target.value })}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="ml-2 text-gray-500 focus:outline-none"
+                    onClick={togglePasswordVisibility}
+                  >
+                    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                  </button>
+                </div>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Role</label>
+                <select
+                  className="w-full px-3 py-2 border rounded"
+                  value={newItem.role}
+                  onChange={(e) => setNewItem({ ...newItem, role: e.target.value })}
+                  required
+                >
+                  <option value="">Pilih Role</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Pengurus">Pengurus</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Gambar</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  required
+                />
+                {filePreview && (
+                  <img src={filePreview} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded" />
+                )}
+              </div>
+              <div className="flex justify-between">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  {addLoading ? "Menambahkan..." : "Tambah"}
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
+                  onClick={() => setShowAddModal(false)}
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">NIW</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.niw}
-            onChange={(e) => setNewItem({ ...newItem, niw: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.password}
-            onChange={(e) => setNewItem({ ...newItem, password: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Role</label>
-          <select
-            className="w-full px-3 py-2 border rounded"
-            value={newItem.role}
-            onChange={(e) => setNewItem({ ...newItem, role: e.target.value })}
-            required
-          >
-            <option value="">Pilih Role</option>
-            <option value="Admin">Admin</option>
-            <option value="Pengurus">Pengurus</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Gambar</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            required
-          />
-          {filePreview && (
-            <img src={filePreview} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded" />
-          )}
-        </div>
-        <div className="flex justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            {addLoading ? "Menambahkan..." : "Tambah"}
-          </button>
-          <button
-            type="button"
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
-            onClick={() => setShowAddModal(false)}
-          >
-            Batal
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
-
-
-{showEditModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="bg-white p-8 rounded">
-      <h2 className="text-xl font-bold mb-4">Edit Pengguna</h2>
-      <form onSubmit={handleSubmitEdit}>
-        <div className="mb-4">
-          <label className="block text-gray-700">Nama</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.nama}
-            onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
-            required
-          />
+      {showEditModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-8 rounded">
+            <h2 className="text-xl font-bold mb-4">Edit Pengguna</h2>
+            <form onSubmit={handleSubmitEdit}>
+              <div className="mb-4">
+                <label className="block text-gray-700">Nama</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={editedItem.nama}
+                  onChange={(e) => setEditedItem({ ...editedItem, nama: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">NIW</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border rounded"
+                  value={editedItem.niw}
+                  onChange={(e) => setEditedItem({ ...editedItem, niw: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Password</label>
+                <div className="flex items-center">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="w-full px-3 py-2 border rounded"
+                    value={editedItem.password}
+                    onChange={(e) => setEditedItem({ ...editedItem, password: e.target.value })}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="ml-2 text-gray-500 focus:outline-none"
+                    onClick={togglePasswordVisibility}
+                  >
+                    <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                  </button>
+                </div>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Role</label>
+                <select
+                  className="w-full px-3 py-2 border rounded"
+                  value={editedItem.role}
+                  onChange={(e) => setEditedItem({ ...editedItem, role: e.target.value })}
+                  required
+                >
+                  <option value="">Pilih Role</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Pengurus">Pengurus</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Gambar</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+                {filePreview && (
+                  <img src={filePreview} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded" />
+                )}
+              </div>
+              <div className="flex justify-between">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  {editLoading ? "Menyimpan..." : "Simpan"}
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">NIW</label>
-          <input
-            type="text"
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.niw}
-            onChange={(e) => setEditedItem({ ...editedItem, niw: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.password}
-            onChange={(e) => setEditedItem({ ...editedItem, password: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Role</label>
-          <select
-            className="w-full px-3 py-2 border rounded"
-            value={editedItem.role}
-            onChange={(e) => setEditedItem({ ...editedItem, role: e.target.value })}
-            required
-          >
-            <option value="">Pilih Role</option>
-            <option value="Admin">Admin</option>
-            <option value="Pengurus">Pengurus</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Gambar</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-          {filePreview && (
-            <img src={filePreview} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded" />
-          )}
-        </div>
-        <div className="flex justify-between">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            {editLoading ? "Menyimpan..." : "Simpan"}
-          </button>
-          <button
-            type="button"
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
-            onClick={() => setShowEditModal(false)}
-          >
-            Batal
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
+      )}
 
       {showImageModal && (
         <div className="fixed z-10 inset-0 overflow-y-auto">

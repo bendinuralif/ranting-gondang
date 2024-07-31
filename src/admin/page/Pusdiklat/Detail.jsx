@@ -26,26 +26,25 @@ function DetailPusdiklat() {
     nama: "",
     pusdiklat: "",
   });
+  const [isLoading, setIsLoading] = useState(false); // State untuk indikator loading
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const [statistics, setStatistics] = useState([]);
-  const [session, setSession] = useState(null); // Menyimpan informasi sesi
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Logika untuk memeriksa sesi pengguna
     const checkSession = () => {
-      const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+      const userSession = sessionStorage.getItem("user");
       if (userSession) {
-        setSession(userSession); // Set sesi jika ada
+        setSession(userSession);
       } else {
-        // Redirect ke halaman login jika tidak ada sesi
-        window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+        window.location.href = "/login";
       }
     };
 
-    checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
+    checkSession();
 
     fetchData();
   }, []);
@@ -138,8 +137,8 @@ function DetailPusdiklat() {
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Pusdiklat", selectedItemToDelete.id));
+      setData(data.filter(item => item.id !== selectedItemToDelete.id)); // Hapus dari state dulu
       console.log("Item deleted successfully!");
-      fetchData();
       setSelectedItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
@@ -148,6 +147,7 @@ function DetailPusdiklat() {
 
   const handleSubmitEdit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading saat submit
     try {
       const db = getFirestore(app);
       const { nama, pusdiklat } = selectedItem;
@@ -163,10 +163,12 @@ function DetailPusdiklat() {
     } catch (error) {
       console.error("Error updating item:", error);
     }
+    setIsLoading(false); // Matikan loading setelah submit
   };
 
   const handleAddNewItem = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading saat submit
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "Pusdiklat"), newItem);
@@ -177,6 +179,7 @@ function DetailPusdiklat() {
     } catch (error) {
       console.error("Error adding new item:", error);
     }
+    setIsLoading(false); // Matikan loading setelah submit
   };
 
   return (
@@ -196,18 +199,10 @@ function DetailPusdiklat() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="p-4"></th>
-                <th scope="col" className="px-2 py-3">
-                  No
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Nama
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Pusdiklat
-                </th>
-                <th scope="col" className="px-2 py-3">
-                  Action
-                </th>
+                <th scope="col" className="px-2 py-3">No</th>
+                <th scope="col" className="px-2 py-3">Nama</th>
+                <th scope="col" className="px-2 py-3">Pusdiklat</th>
+                <th scope="col" className="px-2 py-3">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -237,9 +232,7 @@ function DetailPusdiklat() {
           </table>
           <div className="flex justify-between items-center px-3 pb-3">
             <div>
-              <label htmlFor="rowsPerPage" className="mr-2">
-                Baris per halaman:
-              </label>
+              <label htmlFor="rowsPerPage" className="mr-2">Baris per halaman:</label>
               <select
                 id="rowsPerPage"
                 value={rowsPerPage}
@@ -260,9 +253,7 @@ function DetailPusdiklat() {
               >
                 Prev
               </button>
-              <span>
-                Halaman {currentPage} dari {totalPages}
-              </span>
+              <span>Halaman {currentPage} dari {totalPages}</span>
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages}
@@ -280,31 +271,23 @@ function DetailPusdiklat() {
             <h2 className="text-lg font-semibold mb-4">Edit Item</h2>
             <form onSubmit={handleSubmitEdit}>
               <div className="mb-4">
-                <label htmlFor="nama" className="block text-sm font-medium text-gray-700">
-                  Nama:
-                </label>
+                <label htmlFor="nama" className="block text-sm font-medium text-gray-700">Nama:</label>
                 <input
                   type="text"
                   id="nama"
                   value={selectedItem.nama}
-                  onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, nama: e.target.value })
-                  }
+                  onChange={(e) => setSelectedItem({ ...selectedItem, nama: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="pusdiklat" className="block text-sm font-medium text-gray-700">
-                  Pusdiklat:
-                </label>
+                <label htmlFor="pusdiklat" className="block text-sm font-medium text-gray-700">Pusdiklat:</label>
                 <input
                   type="text"
                   id="pusdiklat"
                   value={selectedItem.pusdiklat}
-                  onChange={(e) =>
-                    setSelectedItem({ ...selectedItem, pusdiklat: e.target.value })
-                  }
+                  onChange={(e) => setSelectedItem({ ...selectedItem, pusdiklat: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   required
                 />
@@ -320,8 +303,9 @@ function DetailPusdiklat() {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  disabled={isLoading}
                 >
-                  Save
+                  {isLoading ? 'Loading...' : 'Save'}
                 </button>
               </div>
             </form>
@@ -334,9 +318,7 @@ function DetailPusdiklat() {
             <h2 className="text-lg font-semibold mb-4">Tambah Item Baru</h2>
             <form onSubmit={handleAddNewItem}>
               <div className="mb-4">
-                <label htmlFor="nama" className="block text-sm font-medium text-gray-700">
-                  Nama:
-                </label>
+                <label htmlFor="nama" className="block text-sm font-medium text-gray-700">Nama:</label>
                 <input
                   type="text"
                   id="nama"
@@ -347,9 +329,7 @@ function DetailPusdiklat() {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="pusdiklat" className="block text-sm font-medium text-gray-700">
-                  Pusdiklat:
-                </label>
+                <label htmlFor="pusdiklat" className="block text-sm font-medium text-gray-700">Pusdiklat:</label>
                 <input
                   type="text"
                   id="pusdiklat"
@@ -364,14 +344,15 @@ function DetailPusdiklat() {
                   type="button"
                   onClick={() => setAddModalOpen(false)}
                   className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Save
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Loading...' : 'Save'}
                 </button>
               </div>
             </form>

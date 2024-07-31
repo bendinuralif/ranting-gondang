@@ -27,6 +27,7 @@ function DetailRayon() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const [session, setSession] = useState(null);
 
@@ -116,6 +117,7 @@ function DetailRayon() {
   };
 
   const handleDelete = (item) => {
+    setData(data.filter(i => i.id !== item.id));
     setSelectedItemToDelete(item);
   };
 
@@ -123,38 +125,49 @@ function DetailRayon() {
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Rayon", selectedItemToDelete.id));
-      fetchData();
       setSelectedItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
+      setErrorMessage("Delete gagal.");
+      setShowErrorModal(true);
     }
   };
 
   const handleSubmitEdit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const db = getFirestore(app);
       await updateDoc(doc(db, "Rayon", selectedItem.id), {
         nama: selectedItem.nama,
         rayon: selectedItem.rayon,
       });
-      fetchData();
+      setIsLoading(false);
       setEditModalOpen(false);
+      fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
+      setIsLoading(false);
+      setErrorMessage("Update gagal.");
+      setShowErrorModal(true);
     }
   };
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "Rayon"), newItem);
-      fetchData();
+      setIsLoading(false);
       setAddModalOpen(false);
       setNewItem({ nama: "", rayon: "" });
+      fetchData();
     } catch (error) {
       console.error("Error adding item:", error);
+      setIsLoading(false);
+      setErrorMessage("Add gagal.");
+      setShowErrorModal(true);
     }
   };
 
@@ -280,8 +293,9 @@ function DetailRayon() {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition"
+                  disabled={isLoading}
                 >
-                  Save
+                  {isLoading ? "Loading..." : "Save"}
                 </button>
               </div>
             </form>
@@ -327,8 +341,9 @@ function DetailRayon() {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition"
+                  disabled={isLoading}
                 >
-                  Save
+                  {isLoading ? "Loading..." : "Save"}
                 </button>
               </div>
             </form>

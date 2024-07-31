@@ -40,6 +40,7 @@ function DetailKegiatan() {
   });
   const [sortOrder, setSortOrder] = useState("asc");
   const [session, setSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // state untuk menandai loading
 
   useEffect(() => {
     const checkSession = () => {
@@ -151,7 +152,7 @@ function DetailKegiatan() {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Kegiatan", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
-      fetchData();
+      setData(data.filter(item => item.id !== selectedItemToDelete.id)); // Hapus item dari state sebelum Firestore
       setSelectedItemToDelete(null);
       setDeleteConfirmationModalOpen(false);
     } catch (error) {
@@ -181,6 +182,7 @@ function DetailKegiatan() {
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading saat mulai tambah
     try {
       const downloadURL = await handleUploadGambar();
       if (downloadURL) {
@@ -197,6 +199,7 @@ function DetailKegiatan() {
     } catch (error) {
       console.error("Error adding item:", error);
     }
+    setIsLoading(false); // Set loading selesai
   };
 
   const handleImageClick = (imageUrl) => {
@@ -237,18 +240,16 @@ function DetailKegiatan() {
                 <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-4 py-2"></td>
                   <td className="px-2 py-2">
-                  <div
-  className="h-20 w-30 cursor-pointer overflow-hidden flex items-center justify-center"
-  onClick={() => handleImageClick(item.downloadURL)}
->
-  <img
-    src={item.downloadURL}
-    alt={item.judul}
-    className="h-full w-full object-cover"
-  />
-</div>
-
-
+                    <div
+                      className="h-20 w-30 cursor-pointer overflow-hidden flex items-center justify-center"
+                      onClick={() => handleImageClick(item.downloadURL)}
+                    >
+                      <img
+                        src={item.downloadURL}
+                        alt={item.judul}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                   </td>
                   <td className="px-2 py-2">{item.judul}</td>
                   <td className="px-2 py-2">{item.deskripsi}</td>
@@ -391,8 +392,9 @@ function DetailKegiatan() {
                     <button
                       type="submit"
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                      disabled={isLoading} // Disable tombol saat loading
                     >
-                      Simpan
+                      {isLoading ? "Loading..." : "Simpan"}
                     </button>
                     <button
                       onClick={() => {

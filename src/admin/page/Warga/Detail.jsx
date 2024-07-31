@@ -43,6 +43,7 @@ function DetailWarga() {
   const [errorMessage, setErrorMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
+  const [loading, setLoading] = useState(false);
 
   const [session, setSession] = useState(null);
 
@@ -188,13 +189,16 @@ function DetailWarga() {
 
   const confirmDelete = async () => {
     try {
+      setLoading(true);
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Warga", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
       fetchData();
       setSelectedItemToDelete(null);
+      setLoading(false);
     } catch (error) {
       console.error("Error deleting item:", error);
+      setLoading(false);
     }
   };
 
@@ -204,6 +208,7 @@ function DetailWarga() {
 
   const handleConfirmedDeleteSelected = async () => {
     try {
+      setLoading(true);
       const db = getFirestore(app);
       const batch = writeBatch(db);
       Object.entries(checkedItems).forEach(([itemId, isChecked]) => {
@@ -219,8 +224,10 @@ function DetailWarga() {
       setShowDeleteSelectedButton(false);
       toggleConfirmDeleteModal();
       setConfirmDeleteModalOpen(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error deleting selected items:", error);
+      setLoading(false);
     }
   };
 
@@ -239,6 +246,7 @@ function DetailWarga() {
 
   const handleDeleteSelected = async () => {
     try {
+      setLoading(true);
       const db = getFirestore(app);
       const batch = writeBatch(db);
 
@@ -254,14 +262,17 @@ function DetailWarga() {
       fetchData();
       setCheckedItems({});
       setShowDeleteSelectedButton(false);
+      setLoading(false);
     } catch (error) {
       console.error("Error deleting selected items:", error);
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const db = getFirestore(app);
       const itemId = selectedItem.id;
       const itemRef = doc(db, "Warga", itemId);
@@ -275,21 +286,26 @@ function DetailWarga() {
       console.log("Item updated successfully!");
       setEditModalOpen(false);
       fetchData();
+      setLoading(false);
     } catch (error) {
       console.error("Error updating item:", error);
+      setLoading(false);
     }
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const db = getFirestore(app);
       await addDoc(collection(db, "Warga"), newItem);
       console.log("New item added successfully!");
       setAddModalOpen(false);
       fetchData();
+      setLoading(false);
     } catch (error) {
       console.error("Error adding new item:", error);
+      setLoading(false);
     }
   };
 
@@ -723,6 +739,14 @@ function DetailWarga() {
                   Delete
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {loading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded shadow-lg">
+              <p className="text-lg font-semibold">Loading...</p>
             </div>
           </div>
         )}

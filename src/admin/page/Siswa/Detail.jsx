@@ -42,6 +42,7 @@ function DetailSiswa() {
   const [errorMessage, setErrorMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
+  const [loading, setLoading] = useState(false);
 
   const [session, setSession] = useState(null);
 
@@ -71,6 +72,7 @@ function DetailSiswa() {
   }, [data, rowsPerPage]);
 
   const fetchData = async () => {
+    setLoading(true);
     const db = getFirestore(app);
     try {
       const snapshot = await getDocs(collection(db, "Siswa"));
@@ -104,6 +106,7 @@ function DetailSiswa() {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+    setLoading(false);
   };
 
   const handleFileChange = (e) => {
@@ -114,6 +117,7 @@ function DetailSiswa() {
   const handleUpload = async () => {
     try {
       if (file) {
+        setLoading(true);
         const reader = new FileReader();
         reader.onload = async (e) => {
           const json = JSON.parse(e.target.result);
@@ -138,6 +142,7 @@ function DetailSiswa() {
       setErrorMessage("Upload gagal.");
       setShowErrorModal(true);
     }
+    setLoading(false);
   };
 
   const handleChangeRowsPerPage = (e) => {
@@ -194,6 +199,7 @@ function DetailSiswa() {
   };
 
   const confirmDelete = async () => {
+    setLoading(true);
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Siswa", selectedItemToDelete.id));
@@ -203,6 +209,7 @@ function DetailSiswa() {
     } catch (error) {
       console.error("Error deleting item:", error);
     }
+    setLoading(false);
   };
 
   const toggleConfirmDeleteModal = () => {
@@ -210,6 +217,7 @@ function DetailSiswa() {
   };
 
   const handleConfirmedDeleteSelected = async () => {
+    setLoading(true);
     try {
       const db = getFirestore(app);
       const batch = writeBatch(db);
@@ -229,6 +237,7 @@ function DetailSiswa() {
     } catch (error) {
       console.error("Error deleting selected items:", error);
     }
+    setLoading(false);
   };
 
   const confirmDeleteSelected = () => {
@@ -245,6 +254,7 @@ function DetailSiswa() {
   };
 
   const handleDeleteSelected = async () => {
+    setLoading(true);
     try {
       const db = getFirestore(app);
       const batch = writeBatch(db);
@@ -264,10 +274,12 @@ function DetailSiswa() {
     } catch (error) {
       console.error("Error deleting selected items:", error);
     }
+    setLoading(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const db = getFirestore(app);
       const itemId = selectedItem.id;
@@ -285,10 +297,12 @@ function DetailSiswa() {
     } catch (error) {
       console.error("Error updating item:", error);
     }
+    setLoading(false);
   };
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "Siswa"), newItem);
@@ -298,6 +312,7 @@ function DetailSiswa() {
     } catch (error) {
       console.error("Error adding item:", error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -814,6 +829,13 @@ function DetailSiswa() {
           </div>
         )}
       </div>
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <h2 className="text-lg font-semibold mb-4">Loading...</h2>
+          </div>
+        </div>
+      )}
     </LayoutAdmin>
   );
 }

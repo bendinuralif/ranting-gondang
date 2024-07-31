@@ -28,6 +28,7 @@ function DetailStrukturOrganisasi() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [session, setSession] = useState(null);
 
@@ -96,6 +97,7 @@ function DetailStrukturOrganisasi() {
   };
 
   const confirmDelete = async () => {
+    setLoading(true);
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "StrukturOrganisasi", selectedItemToDelete.id));
@@ -104,11 +106,14 @@ function DetailStrukturOrganisasi() {
       setSelectedItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const db = getFirestore(app);
       const { no, nama, jabatan } = selectedItem;
@@ -124,11 +129,14 @@ function DetailStrukturOrganisasi() {
       fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "StrukturOrganisasi"), newItem);
@@ -142,6 +150,8 @@ function DetailStrukturOrganisasi() {
       fetchData();
     } catch (error) {
       console.error("Error adding item:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -152,8 +162,8 @@ function DetailStrukturOrganisasi() {
         <button
           onClick={() => setAddModalOpen(true)}
           className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-          >
-            <FontAwesomeIcon icon={faPlus} /> Tambah
+        >
+          <FontAwesomeIcon icon={faPlus} /> Tambah
         </button>
         <div className="overflow-x-auto ">
           <table className="w-full text-xs md:text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -350,14 +360,14 @@ function DetailStrukturOrganisasi() {
                   type="button"
                   onClick={() => setAddModalOpen(false)}
                   className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-                  >
-                    Save
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                >
+                  Save
                 </button>
               </div>
             </form>
@@ -440,6 +450,14 @@ function DetailStrukturOrganisasi() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-1/3 text-center">
+            <h2 className="text-lg font-semibold mb-4">Loading...</h2>
+            <p>Mohon tunggu, sedang memproses...</p>
           </div>
         </div>
       )}

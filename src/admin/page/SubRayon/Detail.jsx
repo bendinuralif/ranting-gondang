@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { retrieveData, uploadData } from "../../../lib/firebase/service";
-import { collection, addDoc, getFirestore, deleteDoc, doc } from "firebase/firestore";
+import { retrieveData } from "../../../lib/firebase/service";
+import { collection, addDoc, getFirestore, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
-import { updateDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 
@@ -33,43 +32,22 @@ function DetailSubRayon() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [statistics, setStatistics] = useState([]);
-  const [session, setSession] = useState(null); // Menyimpan informasi sesi
+  const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Logika untuk memeriksa sesi pengguna
     const checkSession = () => {
-      const userSession = sessionStorage.getItem("user"); // Misalnya, Anda menyimpan sesi pengguna dalam sessionStorage
+      const userSession = sessionStorage.getItem("user");
       if (userSession) {
-        setSession(userSession); // Set sesi jika ada
+        setSession(userSession);
       } else {
-        // Redirect ke halaman login jika tidak ada sesi
-        window.location.href = "/login"; // Ubah "/login" sesuai dengan rute login Anda
+        window.location.href = "/login";
       }
     };
 
-    checkSession(); // Panggil fungsi untuk memeriksa sesi saat komponen dimuat
-
-    const fetchData = async () => {
-      const db = getFirestore(app);
-      try {
-        const mainCollectionRef = collection(db, MAIN_COLLECTION);
-        const snapshot = await getDocs(mainCollectionRef);
-
-        const promises = snapshot.docs.map(async (doc) => {
-          const subCollectionRef = collection(db, doc.id);
-          const subSnapshot = await getDocs(subCollectionRef);
-          return { collection: doc.id, count: subSnapshot.size };
-        });
-
-        const stats = await Promise.all(promises);
-        setStatistics(stats);
-      } catch (error) {
-        console.error("Error fetching Firestore data:", error);
-        // Handle error here
-      }
-    };
+    checkSession();
 
     fetchData();
   }, []);
@@ -162,6 +140,7 @@ function DetailSubRayon() {
   };
 
   const confirmDelete = async () => {
+    setLoading(true);
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "SubRayon", selectedItemToDelete.id));
@@ -170,11 +149,14 @@ function DetailSubRayon() {
       setSelectedItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const db = getFirestore(app);
       const { sub, rayon } = selectedItem;
@@ -189,11 +171,14 @@ function DetailSubRayon() {
       fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "SubRayon"), newItem);
@@ -207,6 +192,8 @@ function DetailSubRayon() {
       fetchData();
     } catch (error) {
       console.error("Error adding item:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -253,13 +240,13 @@ function DetailSubRayon() {
                       onClick={() => handleEdit(item)}
                       className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
-                      <FontAwesomeIcon icon={faEdit} /> {/* Ganti teks "Edit" dengan ikon edit */}
+                      <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
                       onClick={() => handleDelete(item)}
                       className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                     >
-                      <FontAwesomeIcon icon={faTrashAlt} /> {/* Ganti teks "Hapus" dengan ikon hapus */}
+                      <FontAwesomeIcon icon={faTrashAlt} />
                     </button>
                   </td>
                 </tr>
@@ -425,6 +412,13 @@ function DetailSubRayon() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {loading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg">
+            <h2 className="text-lg font-semibold mb-4">Loading...</h2>
           </div>
         </div>
       )}

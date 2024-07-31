@@ -40,6 +40,7 @@ function DetailBerita() {
   });
   const [sortOrder, setSortOrder] = useState("asc");
   const [session, setSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // State to manage loading
 
   useEffect(() => {
     const checkSession = () => {
@@ -142,6 +143,7 @@ function DetailBerita() {
   };
 
   const handleDelete = (item) => {
+    setData((prevData) => prevData.filter((dataItem) => dataItem.id !== item.id)); // Remove from state
     setSelectedItemToDelete(item);
     setDeleteConfirmationModalOpen(true);
   };
@@ -151,7 +153,6 @@ function DetailBerita() {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Berita", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
-      fetchData();
       setSelectedItemToDelete(null);
       setDeleteConfirmationModalOpen(false);
     } catch (error) {
@@ -181,6 +182,7 @@ function DetailBerita() {
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading state
     try {
       const downloadURL = await handleUploadGambar();
       if (downloadURL) {
@@ -196,6 +198,8 @@ function DetailBerita() {
       }
     } catch (error) {
       console.error("Error adding item:", error);
+    } finally {
+      setIsLoading(false); // Clear loading state
     }
   };
 
@@ -252,7 +256,7 @@ function DetailBerita() {
                   <td className="px-2 py-2">{item.judul}</td>
                   <td className="px-2 py-2">{item.deskripsi}</td>
                   <td className="px-2 py-2">{format(new Date(item.tanggal), "dd-MMM-yyyy")}</td>
-                  <td className="px-2 py-2">{item.link} </td>
+                  <td className="px-2 py-2">{item.link}</td>
                   <td className="px-2 py-2">
                     <button
                       onClick={() => handleEdit(item)}
@@ -405,8 +409,9 @@ function DetailBerita() {
                     <button
                       type="submit"
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                      disabled={isLoading} // Disable the button when loading
                     >
-                      Simpan
+                      {isLoading ? 'Loading...' : 'Simpan'}
                     </button>
                     <button
                       onClick={() => {

@@ -39,6 +39,7 @@ function DetailGaleri() {
 
   const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // state untuk menandai loading
 
   useEffect(() => {
     const checkSession = () => {
@@ -172,7 +173,7 @@ function DetailGaleri() {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Galeri", selectedItemToDelete.id));
       console.log("Item deleted successfully!");
-      fetchData();
+      setData(data.filter(item => item.id !== selectedItemToDelete.id)); // Hapus item dari state sebelum Firestore
       setSelectedItemToDelete(null);
       setDeleteConfirmationModalOpen(false);
     } catch (error) {
@@ -191,7 +192,21 @@ function DetailGaleri() {
       const db = getFirestore(app);
       const itemId = editedItem.id;
       const itemRef = doc(db, "Galeri", itemId);
-      await updateDoc(itemRef, editedItem);
+
+      if (editedItem.newImage) {
+        const storage = getStorage(app);
+        const storageRef = ref(storage, `images/${editedItem.newImage.name}`);
+        await uploadBytes(storageRef, editedItem.newImage);
+        const downloadURL = await getDownloadURL(storageRef);
+        editedItem.downloadURL = downloadURL;
+      }
+
+      await updateDoc(itemRef, {
+        nama: editedItem.nama,
+        tahun: editedItem.tahun,
+        downloadURL: editedItem.downloadURL
+      });
+
       console.log("Item updated successfully!");
       setShowEditModal(false);
       fetchData();
@@ -211,6 +226,7 @@ function DetailGaleri() {
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading saat mulai tambah
     try {
       const downloadURL = await handleUploadGambar();
       if (downloadURL) {
@@ -227,6 +243,7 @@ function DetailGaleri() {
     } catch (error) {
       console.error("Error adding item:", error);
     }
+    setIsLoading(false); // Set loading selesai
   };
 
   return (
@@ -257,19 +274,23 @@ function DetailGaleri() {
                 <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-2 py-2"></td>
                   <td className="px-2 py-2">
-                    <img
-                      src={item.downloadURL}
-                      alt={item.nama}
+                    <div
                       className="h-20 w-30 cursor-pointer overflow-hidden flex items-center justify-center"
                       onClick={() => handleImageClick(item.downloadURL)}
-                    />
+                    >
+                      <img
+                        src={item.downloadURL}
+                        alt={item.nama}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                   </td>
                   <td className="px-2 py-2">{item.nama}</td>
                   <td className="px-2 py-2">{item.tahun}</td>
                   <td className="px-2 py-2">
                     <button
                       onClick={() => handleEdit(item)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
@@ -327,7 +348,10 @@ function DetailGaleri() {
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div
+              className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              role="dialog" aria-modal="true" aria-labelledby="modal-headline"
+            >
               <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <form onSubmit={handleSubmitAdd}>
                   <div className="sm:flex sm:items-start">
@@ -387,8 +411,9 @@ function DetailGaleri() {
                     <button
                       type="submit"
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                      disabled={isLoading} // Disable tombol saat loading
                     >
-                      Simpan
+                      {isLoading ? "Loading..." : "Simpan"}
                     </button>
                     <button
                       onClick={() => {
@@ -415,7 +440,10 @@ function DetailGaleri() {
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+            <div
+              className="inline-block align-middle bg-white dark:bg-gray-900 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+              role="dialog" aria-modal="true" aria-labelledby="modal-headline"
+            >
               <div className="bg-white dark:bg-gray-900 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <form onSubmit={handleSubmitEdit}>
                   <div className="sm:flex sm:items-start">
@@ -544,7 +572,7 @@ function DetailGaleri() {
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div className="bg-gray-50 dark:bg-gray-800 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <button
                   onClick={() => {
                     confirmDelete(selectedItemToDelete);
