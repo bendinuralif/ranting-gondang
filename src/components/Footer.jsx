@@ -30,7 +30,7 @@ function CustomFooter() {
           </div>
         </div>
         <hr className="border-gray-700 my-2 mb-4" />
-        <div className="text-center text-gray-400 text-xs md:text-sm">
+        <div className="text-center text-green-500 text-xs md:text-sm">
           &copy; PSHT Ranting Gondang™ 2024    bendi
         </div>
       </div>
