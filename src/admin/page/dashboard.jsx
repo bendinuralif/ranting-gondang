@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getFirestore, collection, getDocs, query, orderBy, limit, where, startAfter } from "firebase/firestore";
+import { getFirestore, collection, getDocs, query, orderBy, limit, where } from "firebase/firestore";
 import LayoutAdmin from "./LayoutAdmin";
 import 'tailwindcss/tailwind.css';
 import { Line } from 'react-chartjs-2';
@@ -35,6 +35,19 @@ const ItemCard = ({ title, count, youngestYear, oldestYear, link }) => {
   );
 };
 
+const NotificationCard = ({ title, count }) => {
+  return (
+    <div className="bg-gradient-to-r from-blue-400 to-blue-600 shadow-lg rounded-lg p-6 mb-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-xl font-semibold text-white">{title}</h3>
+        </div>
+        <p className="text-2xl font-bold text-white">{count}</p>
+      </div>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   const [session, setSession] = useState(null);
   const [counts, setCounts] = useState({
@@ -46,7 +59,7 @@ const Dashboard = () => {
     strukturOrganisasi: { count: 0 },
   });
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
-  const [lastVisible, setLastVisible] = useState(null);
+  const [layananCount, setLayananCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -156,6 +169,10 @@ const Dashboard = () => {
             ],
           });
 
+          // Fetch layanan count
+          const layananSnapshot = await getDocs(collection(db, 'Layanan'));
+          setLayananCount(layananSnapshot.size);
+
         } catch (error) {
           console.error("Failed to fetch data from Firebase", error);
         } finally {
@@ -165,7 +182,7 @@ const Dashboard = () => {
 
       fetchData();
     }
-  }, [session, lastVisible, loading]);
+  }, [session, loading]);
 
   if (!session) {
     return null;
@@ -218,7 +235,7 @@ const Dashboard = () => {
         </div>
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
           <h3 className="text-2xl font-semibold text-gray-800 mb-4">Notifikasi</h3>
-          {/* Add code for notifications here */}
+          <NotificationCard title="Jumlah Layanan" count={layananCount} />
         </div>
       </div>
     </LayoutAdmin>

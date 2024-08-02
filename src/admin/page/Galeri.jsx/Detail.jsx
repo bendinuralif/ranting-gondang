@@ -37,7 +37,6 @@ function DetailGaleri() {
   });
   const [sortOrder, setSortOrder] = useState("asc");
 
-  const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // state untuk menandai loading
 
@@ -52,26 +51,6 @@ function DetailGaleri() {
     };
 
     checkSession();
-
-    const fetchData = async () => {
-      const db = getFirestore(app);
-      try {
-        const mainCollectionRef = collection(db, "Galeri");
-        const snapshot = await getDocs(mainCollectionRef);
-        
-        const promises = snapshot.docs.map(async (doc) => {
-          const subCollectionRef = collection(db, doc.id);
-          const subSnapshot = await getDocs(subCollectionRef);
-          return { collection: doc.id, count: subSnapshot.size };
-        });
-
-        const stats = await Promise.all(promises);
-        setStatistics(stats);
-      } catch (error) {
-        console.error("Error fetching Firestore data:", error);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -91,6 +70,7 @@ function DetailGaleri() {
   }, [data, currentPage, rowsPerPage]);
 
   const fetchData = async () => {
+    setIsLoading(true); // Start loading
     const db = getFirestore(app);
     try {
       const querySnapshot = await getDocs(collection(db, "Galeri"));
@@ -107,6 +87,8 @@ function DetailGaleri() {
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -169,6 +151,7 @@ function DetailGaleri() {
   };
 
   const confirmDelete = async () => {
+    setIsLoading(true); // Start loading
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Galeri", selectedItemToDelete.id));
@@ -178,6 +161,8 @@ function DetailGaleri() {
       setDeleteConfirmationModalOpen(false);
     } catch (error) {
       console.error("Error deleting item:", error);
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -188,6 +173,7 @@ function DetailGaleri() {
 
   const handleSubmitEdit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading
     try {
       const db = getFirestore(app);
       const itemId = editedItem.id;
@@ -212,6 +198,8 @@ function DetailGaleri() {
       fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
+    } finally {
+      setIsLoading(false); // End loading
     }
   };
 
@@ -226,7 +214,7 @@ function DetailGaleri() {
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Set loading saat mulai tambah
+    setIsLoading(true); // Start loading
     try {
       const downloadURL = await handleUploadGambar();
       if (downloadURL) {
@@ -242,14 +230,23 @@ function DetailGaleri() {
       }
     } catch (error) {
       console.error("Error adding item:", error);
+    } finally {
+      setIsLoading(false); // End loading
     }
-    setIsLoading(false); // Set loading selesai
   };
 
   return (
     <LayoutAdmin>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <h2 className="text-lg md:text-2xl font-semibold mb-4">Detail Galeri</h2>
+        {isLoading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg w-1/3 text-center">
+              <h2 className="text-lg font-semibold mb-4">Loading...</h2>
+              <p>Mohon tunggu, sedang memproses...</p>
+            </div>
+          </div>
+        )}
         <div className="overflow-x-auto bg-white shadow-md rounded-lg p-4">
           <div className="flex justify-end items-center mb-4">
             <button
@@ -508,8 +505,9 @@ function DetailGaleri() {
                     <button
                       type="submit"
                       className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                      disabled={isLoading} // Disable tombol saat loading
                     >
-                      Simpan
+                      {isLoading ? "Loading..." : "Simpan"}
                     </button>
                     <button
                       onClick={() => setShowEditModal(false)}
@@ -549,7 +547,7 @@ function DetailGaleri() {
         </div>
       )}
 
-      {selectedItemToDelete && (
+      {deleteConfirmationModalOpen && (
         <div className="fixed z-10 inset-0 overflow-y-auto">
           <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -600,3 +598,4 @@ function DetailGaleri() {
 }
 
 export default DetailGaleri;
+

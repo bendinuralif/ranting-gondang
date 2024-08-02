@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { retrieveData } from "../../../lib/firebase/service";
 import { collection, addDoc, getFirestore, deleteDoc, doc, updateDoc, getDocs } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -60,6 +59,7 @@ function DetailKetuaRantingSingkat() {
   }, [data, currentPage, rowsPerPage]);
 
   const fetchData = async () => {
+    setLoading(true);
     const db = getFirestore(app);
     try {
       const snapshot = await getDocs(collection(db, "KetuaRanting"));
@@ -67,6 +67,10 @@ function DetailKetuaRantingSingkat() {
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setErrorMessage("Error fetching data");
+      setShowErrorModal(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,7 +89,6 @@ function DetailKetuaRantingSingkat() {
           for (const item of json) {
             await addDoc(collection(db, "KetuaRanting"), item);
           }
-          console.log("Data uploaded successfully!");
           fetchData();
           setUploadMessage("Upload berhasil!");
           setShowSuccessModal(true);
@@ -95,7 +98,8 @@ function DetailKetuaRantingSingkat() {
         };
         reader.readAsText(file);
       } else {
-        console.error("Please select a file to upload.");
+        setErrorMessage("Please select a file to upload.");
+        setShowErrorModal(true);
       }
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -106,22 +110,12 @@ function DetailKetuaRantingSingkat() {
 
   const handleChangeRowsPerPage = (e) => {
     const value = e.target.value;
-    if (value === "All") {
-      setRowsPerPage(data.length);
-      setCurrentPage(1);
-    } else {
-      setRowsPerPage(parseInt(value, 10));
-      setCurrentPage(1);
-    }
+    setRowsPerPage(value === "All" ? data.length : parseInt(value, 10));
+    setCurrentPage(1);
   };
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
+  const handleNextPage = () => setCurrentPage((prevPage) => prevPage + 1);
+  const handlePrevPage = () => setCurrentPage((prevPage) => prevPage - 1);
 
   const handleEdit = (item) => {
     setSelectedItem(item);
@@ -137,11 +131,12 @@ function DetailKetuaRantingSingkat() {
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "KetuaRanting", selectedItemToDelete.id));
-      console.log("Item deleted successfully!");
       setData(data.filter((item) => item.id !== selectedItemToDelete.id));
       setSelectedItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
+      setErrorMessage("Delete gagal.");
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -156,15 +151,16 @@ function DetailKetuaRantingSingkat() {
       const itemId = selectedItem.id;
       const itemRef = doc(db, "KetuaRanting", itemId);
       await updateDoc(itemRef, {
-        no: no,
-        nama: nama,
-        tahun: tahun,
+        no,
+        nama,
+        tahun,
       });
-      console.log("Item updated successfully!");
       setData(data.map((item) => (item.id === itemId ? selectedItem : item)));
       setEditModalOpen(false);
     } catch (error) {
       console.error("Error updating item:", error);
+      setErrorMessage("Update gagal.");
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -181,16 +177,17 @@ function DetailKetuaRantingSingkat() {
       const db = getFirestore(app);
       const { no, nama, tahun } = newItem;
       const docRef = await addDoc(collection(db, "KetuaRanting"), {
-        no: no,
-        nama: nama,
-        tahun: tahun,
+        no,
+        nama,
+        tahun,
       });
-      console.log("Item added successfully!");
       setData([...data, { id: docRef.id, ...newItem }]);
       setNewItem({ no: "", nama: "", tahun: "" });
       setAddModalOpen(false);
     } catch (error) {
       console.error("Error adding new item:", error);
+      setErrorMessage("Add gagal.");
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -330,8 +327,9 @@ function DetailKetuaRantingSingkat() {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? "Loading..." : "Save"}
                 </button>
               </div>
             </form>
@@ -388,8 +386,9 @@ function DetailKetuaRantingSingkat() {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600 transition"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? "Loading..." : "Save"}
                 </button>
               </div>
             </form>
@@ -415,7 +414,7 @@ function DetailKetuaRantingSingkat() {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl max-w-sm w-full">
             <div className="p-6">
-              <h2 className="text-lg font-semibold mb-4 text-center text-red-600">Upload gagal!</h2>
+              <h2 className="text-lg font-semibold mb-4 text-center text-red-600">Error</h2>
               <p className="text-sm text-gray-700">{errorMessage}</p>
             </div>
             <div className="bg-gray-100 p-4 flex justify-center">

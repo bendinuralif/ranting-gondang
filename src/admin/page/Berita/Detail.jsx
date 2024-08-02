@@ -558,6 +558,14 @@ function DetailBerita() {
           </div>
         </div>
       )}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-1/3 text-center">
+            <h2 className="text-lg font-semibold mb-4">Loading...</h2>
+            <p>Mohon tunggu, sedang memproses...</p>
+          </div>
+        </div>
+      )}
     </LayoutAdmin>
   );
 }

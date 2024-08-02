@@ -57,6 +57,7 @@ function DetailRayon() {
   }, [data, currentPage, rowsPerPage]);
 
   const fetchData = async () => {
+    setIsLoading(true);
     const db = getFirestore(app);
     try {
       const snapshot = await getDocs(collection(db, "Rayon"));
@@ -64,7 +65,10 @@ function DetailRayon() {
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setErrorMessage("Error fetching data");
+      setShowErrorModal(true);
     }
+    setIsLoading(false);
   };
 
   const handleFileChange = (e) => {
@@ -79,6 +83,7 @@ function DetailRayon() {
       return;
     }
     
+    setIsLoading(true);
     try {
       const reader = new FileReader();
       reader.onload = async (e) => {
@@ -100,6 +105,7 @@ function DetailRayon() {
       setErrorMessage("Upload gagal.");
       setShowErrorModal(true);
     }
+    setIsLoading(false);
   };
 
   const handleChangeRowsPerPage = (e) => {
@@ -122,15 +128,18 @@ function DetailRayon() {
   };
 
   const confirmDelete = async () => {
+    setIsLoading(true);
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Rayon", selectedItemToDelete.id));
       setSelectedItemToDelete(null);
+      fetchData();
     } catch (error) {
       console.error("Error deleting item:", error);
       setErrorMessage("Delete gagal.");
       setShowErrorModal(true);
     }
+    setIsLoading(false);
   };
 
   const handleSubmitEdit = async (e) => {
@@ -142,15 +151,14 @@ function DetailRayon() {
         nama: selectedItem.nama,
         rayon: selectedItem.rayon,
       });
-      setIsLoading(false);
       setEditModalOpen(false);
       fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
-      setIsLoading(false);
       setErrorMessage("Update gagal.");
       setShowErrorModal(true);
     }
+    setIsLoading(false);
   };
 
   const handleSubmitAdd = async (e) => {
@@ -159,16 +167,15 @@ function DetailRayon() {
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "Rayon"), newItem);
-      setIsLoading(false);
       setAddModalOpen(false);
       setNewItem({ nama: "", rayon: "" });
       fetchData();
     } catch (error) {
       console.error("Error adding item:", error);
-      setIsLoading(false);
       setErrorMessage("Add gagal.");
       setShowErrorModal(true);
     }
+    setIsLoading(false);
   };
 
   return (
@@ -414,6 +421,13 @@ function DetailRayon() {
                 Tidak
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-8 rounded-lg">
+            <h2 className="text-lg font-semibold mb-4">Loading...</h2>
           </div>
         </div>
       )}

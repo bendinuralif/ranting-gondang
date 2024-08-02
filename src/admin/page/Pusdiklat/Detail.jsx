@@ -12,9 +12,7 @@ function DetailPusdiklat() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedTahun, setSelectedTahun] = useState("");
   const [paginatedData, setPaginatedData] = useState([]);
-  const [checkedItems, setCheckedItems] = useState({});
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
@@ -26,12 +24,10 @@ function DetailPusdiklat() {
     nama: "",
     pusdiklat: "",
   });
-  const [isLoading, setIsLoading] = useState(false); // State untuk indikator loading
+  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const [statistics, setStatistics] = useState([]);
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -45,7 +41,6 @@ function DetailPusdiklat() {
     };
 
     checkSession();
-
     fetchData();
   }, []);
 
@@ -61,6 +56,7 @@ function DetailPusdiklat() {
   }, [data, currentPage, rowsPerPage]);
 
   const fetchData = async () => {
+    setIsLoading(true);
     const db = getFirestore(app);
     try {
       const res = await getDocs(collection(db, "Pusdiklat"));
@@ -68,6 +64,8 @@ function DetailPusdiklat() {
       setData(fetchedData);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -77,6 +75,7 @@ function DetailPusdiklat() {
   };
 
   const handleUpload = async () => {
+    setIsLoading(true);
     try {
       if (file) {
         const reader = new FileReader();
@@ -86,7 +85,6 @@ function DetailPusdiklat() {
           for (const item of json) {
             await addDoc(collection(db, "Pusdiklat"), item);
           }
-          console.log("Data uploaded successfully!");
           fetchData();
           setUploadMessage("Upload berhasil!");
           setShowSuccessModal(true);
@@ -96,12 +94,15 @@ function DetailPusdiklat() {
         };
         reader.readAsText(file);
       } else {
-        console.error("Please select a file to upload.");
+        setErrorMessage("Please select a file to upload.");
+        setShowErrorModal(true);
       }
     } catch (error) {
       console.error("Error uploading file:", error);
       setErrorMessage("Upload gagal.");
       setShowErrorModal(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -116,13 +117,8 @@ function DetailPusdiklat() {
     }
   };
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
+  const handleNextPage = () => setCurrentPage((prevPage) => prevPage + 1);
+  const handlePrevPage = () => setCurrentPage((prevPage) => prevPage - 1);
 
   const handleEdit = (item) => {
     setSelectedItem(item);
@@ -134,52 +130,54 @@ function DetailPusdiklat() {
   };
 
   const confirmDelete = async () => {
+    setIsLoading(true);
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "Pusdiklat", selectedItemToDelete.id));
-      setData(data.filter(item => item.id !== selectedItemToDelete.id)); // Hapus dari state dulu
-      console.log("Item deleted successfully!");
+      setData(data.filter(item => item.id !== selectedItemToDelete.id)); // Remove from state
       setSelectedItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleSubmitEdit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Set loading saat submit
+    setIsLoading(true); // Set loading when submitting
     try {
       const db = getFirestore(app);
       const { nama, pusdiklat } = selectedItem;
       const itemId = selectedItem.id;
       const itemRef = doc(db, "Pusdiklat", itemId);
       await updateDoc(itemRef, {
-        nama: nama,
-        pusdiklat: pusdiklat,
+        nama,
+        pusdiklat,
       });
-      console.log("Item updated successfully!");
       setEditModalOpen(false);
       fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
+    } finally {
+      setIsLoading(false); // Turn off loading after submitting
     }
-    setIsLoading(false); // Matikan loading setelah submit
   };
 
   const handleAddNewItem = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Set loading saat submit
+    setIsLoading(true); // Set loading when submitting
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "Pusdiklat"), newItem);
-      console.log("Item added successfully!");
       setNewItem({ nama: "", pusdiklat: "" });
       setAddModalOpen(false);
       fetchData();
     } catch (error) {
       console.error("Error adding new item:", error);
+    } finally {
+      setIsLoading(false); // Turn off loading after submitting
     }
-    setIsLoading(false); // Matikan loading setelah submit
   };
 
   return (
@@ -435,6 +433,14 @@ function DetailPusdiklat() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg w-1/3 text-center">
+            <h2 className="text-lg font-semibold mb-4">Loading...</h2>
+            <p>Mohon tunggu, sedang memproses...</p>
           </div>
         </div>
       )}

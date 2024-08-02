@@ -176,16 +176,14 @@ function DetailSiswa() {
   }, [data, currentPage, rowsPerPage, selectedTahun, searchQuery]);
 
   const handleCheckboxChange = (itemId) => {
-    setCheckedItems((prevCheckedItems) => ({
-      ...prevCheckedItems,
-      [itemId]: !prevCheckedItems[itemId],
-    }));
-
-    const isCheckedItemsExist = Object.values({
-      ...prevCheckedItems,
-      [itemId]: !prevCheckedItems[itemId],
-    }).some((isChecked) => isChecked);
-    setShowDeleteSelectedButton(isCheckedItemsExist);
+    setCheckedItems((prevCheckedItems) => {
+      const newCheckedItems = {
+        ...prevCheckedItems,
+        [itemId]: !prevCheckedItems[itemId],
+      };
+      setShowDeleteSelectedButton(Object.values(newCheckedItems).some(Boolean));
+      return newCheckedItems;
+    });
   };
 
   const handleEdit = (item) => {
@@ -251,30 +249,6 @@ function DetailSiswa() {
     } else {
       console.log("Tidak ada item yang dicentang untuk dihapus");
     }
-  };
-
-  const handleDeleteSelected = async () => {
-    setLoading(true);
-    try {
-      const db = getFirestore(app);
-      const batch = writeBatch(db);
-
-      for (const itemId in checkedItems) {
-        if (checkedItems[itemId]) {
-          const itemRef = doc(db, "Siswa", itemId);
-          batch.delete(itemRef);
-        }
-      }
-
-      await batch.commit();
-      console.log("Selected items deleted successfully!");
-      fetchData();
-      setCheckedItems({});
-      setShowDeleteSelectedButton(false);
-    } catch (error) {
-      console.error("Error deleting selected items:", error);
-    }
-    setLoading(false);
   };
 
   const handleSubmit = async (e) => {

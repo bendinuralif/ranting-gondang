@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { retrieveData } from "../../../lib/firebase/service";
 import { collection, addDoc, getFirestore, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -58,13 +57,19 @@ function DetailStrukturOrganisasi() {
   }, [data, currentPage, rowsPerPage]);
 
   const fetchData = async () => {
+    setLoading(true);
     const db = getFirestore(app);
     try {
-      const res = await retrieveData("StrukturOrganisasi", db);
+      const snapshot = await getDocs(collection(db, "StrukturOrganisasi"));
+      const res = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       res.sort((a, b) => a.no - b.no);
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
+      setErrorMessage("Error fetching data");
+      setShowErrorModal(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,13 +84,8 @@ function DetailStrukturOrganisasi() {
     }
   };
 
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prevPage) => prevPage - 1);
-  };
+  const handleNextPage = () => setCurrentPage((prevPage) => prevPage + 1);
+  const handlePrevPage = () => setCurrentPage((prevPage) => prevPage - 1);
 
   const handleEdit = (item) => {
     setSelectedItem(item);
@@ -106,6 +106,8 @@ function DetailStrukturOrganisasi() {
       setSelectedItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
+      setErrorMessage("Delete gagal.");
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -120,15 +122,17 @@ function DetailStrukturOrganisasi() {
       const itemId = selectedItem.id;
       const itemRef = doc(db, "StrukturOrganisasi", itemId);
       await updateDoc(itemRef, {
-        no: no,
-        nama: nama,
-        jabatan: jabatan,
+        no,
+        nama,
+        jabatan,
       });
       console.log("Item updated successfully!");
       setEditModalOpen(false);
       fetchData();
     } catch (error) {
       console.error("Error updating item:", error);
+      setErrorMessage("Update gagal.");
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -150,6 +154,8 @@ function DetailStrukturOrganisasi() {
       fetchData();
     } catch (error) {
       console.error("Error adding item:", error);
+      setErrorMessage("Add gagal.");
+      setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
@@ -303,8 +309,9 @@ function DetailStrukturOrganisasi() {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? "Loading..." : "Save"}
                 </button>
               </div>
             </form>
@@ -366,8 +373,9 @@ function DetailStrukturOrganisasi() {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? "Loading..." : "Save"}
                 </button>
               </div>
             </form>
@@ -377,9 +385,9 @@ function DetailStrukturOrganisasi() {
       {showSuccessModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg">
-            <h2 className="text-lg font-semibold mb-4">Upload berhasil!</h2>
+            <h2 className="text-lg font-semibold mb-4">Action berhasil!</h2>
             <button
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm ml-2 px-10 py-2.5 "
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm ml-2 px-10 py-2.5"
               onClick={() => setShowSuccessModal(false)}
             >
               Tutup
@@ -391,7 +399,7 @@ function DetailStrukturOrganisasi() {
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white rounded-lg overflow-hidden shadow-xl max-w-sm w-full">
             <div className="p-6">
-              <h2 className="text-lg font-semibold mb-4 text-center text-red-600">Upload gagal!</h2>
+              <h2 className="text-lg font-semibold mb-4 text-center text-red-600">Action gagal!</h2>
               <p className="text-sm text-gray-700">{errorMessage}</p>
             </div>
             <div className="bg-gray-100 p-4 flex justify-center">

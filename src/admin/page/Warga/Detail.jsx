@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { retrieveData, uploadData } from "../../../lib/firebase/service";
 import { collection, addDoc, getFirestore, deleteDoc, doc, writeBatch, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -165,16 +164,14 @@ function DetailWarga() {
   };
 
   const handleCheckboxChange = (itemId) => {
-    setCheckedItems((prevCheckedItems) => ({
-      ...prevCheckedItems,
-      [itemId]: !prevCheckedItems[itemId],
-    }));
-
-    const isCheckedItemsExist = Object.values({
-      ...prevCheckedItems,
-      [itemId]: !prevCheckedItems[itemId],
-    }).some((isChecked) => isChecked);
-    setShowDeleteSelectedButton(isCheckedItemsExist);
+    setCheckedItems((prevCheckedItems) => {
+      const newCheckedItems = {
+        ...prevCheckedItems,
+        [itemId]: !prevCheckedItems[itemId],
+      };
+      setShowDeleteSelectedButton(Object.values(newCheckedItems).some(Boolean));
+      return newCheckedItems;
+    });
   };
 
   const handleEdit = (item) => {

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "./LayoutAdmin";
 import { retrieveData, uploadData } from "./../../lib/firebase/service";
-import { collection, addDoc, getFirestore, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getFirestore, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import app from "./../../lib/firebase/init";
-import { updateDoc } from "firebase/firestore";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTrashAlt, faPrint } from '@fortawesome/free-solid-svg-icons';
 import 'tailwindcss/tailwind.css';
@@ -223,7 +222,6 @@ function LayananAdmin() {
     printWindow.document.close();
     printWindow.print();
   };
-
 
   return (
     <LayoutAdmin>
