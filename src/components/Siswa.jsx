@@ -10,17 +10,21 @@ function Siswa() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalDataCount, setTotalDataCount] = useState(0);
   const [tahunOptions, setTahunOptions] = useState([]);
-  const [selectedTahun, setSelectedTahun] = useState("Semua");
+  const [selectedTahun, setSelectedTahun] = useState("");
   const [paginatedData, setPaginatedData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
-  // Fetch data only when necessary
   const fetchData = useCallback(async () => {
     try {
       const res = await retrieveData("Siswa");
-      const availableYears = ["Semua", ...Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a)];
+      const years = Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a);
+      const availableYears = ["Semua", ...years];
       setTahunOptions(availableYears);
+
+      // Set the initial selected year to the latest year
+      setSelectedTahun(years[0]?.toString() || "Semua");
+
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -32,6 +36,8 @@ function Siswa() {
   }, [fetchData]);
 
   useEffect(() => {
+    if (selectedTahun === "") return;
+
     const filteredData = selectedTahun === "Semua"
       ? data
       : data.filter((item) => item.tahun.toString() === selectedTahun);

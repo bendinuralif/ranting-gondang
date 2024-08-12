@@ -19,8 +19,13 @@ function Warga() {
   const fetchData = useCallback(async () => {
     try {
       const res = await retrieveData("Warga");
-      const availableYears = ["Semua", ...Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a)];
+      const years = Array.from(new Set(res.map((item) => item.tahun))).sort((a, b) => b - a);
+      const availableYears = ["Semua", ...years];
       setTahunOptions(availableYears);
+
+      // Set the initial selected year to the latest year
+      setSelectedTahun(years[0] || "Semua");
+
       setData(res);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -34,7 +39,7 @@ function Warga() {
   useEffect(() => {
     const filteredData = selectedTahun === "Semua"
       ? data
-      : data.filter((item) => item.tahun === selectedTahun);
+      : data.filter((item) => item.tahun === parseInt(selectedTahun, 10));
 
     const searchData = filteredData.filter((item) =>
       (item.nama || "").toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
