@@ -46,14 +46,17 @@ function UploadData() {
         const db = getFirestore(app);
         const collectionRef = collection(db, selectedCollection);
 
-        // Upload each document in the data array
-        for (const item of data) {
-          await addDoc(collectionRef, item);
-        }
+        // Unggah semua dokumen secara paralel menggunakan Promise.all
+        const uploadPromises = data.map((item) => addDoc(collectionRef, item));
+        await Promise.all(uploadPromises);
 
         console.log("Data uploaded successfully!");
         setShowSuccessModal(true);
         setIsLoading(false); // Indicate that the upload process has finished
+
+        // Reset the state after a successful upload
+        setSelectedCollection("");
+        setFile(null);
       };
 
       reader.readAsText(file);

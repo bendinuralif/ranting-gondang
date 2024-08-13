@@ -3,8 +3,9 @@ import LayoutAdmin from "../LayoutAdmin";
 import { collection, addDoc, getFirestore, deleteDoc, doc, writeBatch, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt, faPrint, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrashAlt, faPrint, faPlus, faFileExcel } from '@fortawesome/free-solid-svg-icons'; // Tambahkan faFileExcel
 import { useDebounce } from "use-debounce";
+import * as XLSX from "xlsx"; // Import library xlsx
 
 function DetailWarga() {
   const [data, setData] = useState([]);
@@ -318,6 +319,25 @@ function DetailWarga() {
     setPaginatedData(filteredData.slice(startIndex, endIndex));
   }, [data, currentPage, rowsPerPage, debouncedSearchQuery]);
 
+  // Fungsi untuk ekspor data ke Excel
+  const handleExportExcel = () => {
+    const formattedData = data.map((item) => ({
+      id: item.id,
+      no: item.no,
+      nama: item.nama,
+      "jenis kelamin": item.jeniskelamin,
+      alamat: item.alamat,
+      tahun: item.tahun,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(formattedData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "DataWarga");
+
+    // Generate file Excel dan otomatis unduh
+    XLSX.writeFile(wb, "DataWarga.xlsx");
+  };
+
   const handlePrintAll = () => {
     let printContent = `
       <h2>Detail Warga</h2>
@@ -379,6 +399,12 @@ function DetailWarga() {
               </select>
             </div>
             <div>
+              <button
+                onClick={handleExportExcel} // Tombol ekspor ke Excel
+                className="bg-green-600 text-white font-bold py-2 px-4 rounded mr-2"
+              >
+                <FontAwesomeIcon icon={faFileExcel} className="mr-2" /> Ekspor Excel
+              </button>
               <button
                 onClick={handlePrintAll}
                 className="bg-green-500 text-white font-bold py-2 px-4 rounded mr-2"
