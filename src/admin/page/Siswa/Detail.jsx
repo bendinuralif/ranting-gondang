@@ -3,9 +3,9 @@ import LayoutAdmin from "../LayoutAdmin";
 import { collection, addDoc, getFirestore, deleteDoc, doc, writeBatch, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt, faPlus, faPrint, faFileExcel } from "@fortawesome/free-solid-svg-icons"; // Tambahkan faFileExcel
+import { faEdit, faTrashAlt, faPlus, faPrint, faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import { useDebounce } from "use-debounce";
-import * as XLSX from "xlsx"; // Import library xlsx
+import * as XLSX from "xlsx";
 
 function DetailSiswa() {
   const [data, setData] = useState([]);
@@ -318,8 +318,9 @@ function DetailSiswa() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "DataSiswa");
 
-    // Generate file Excel dan otomatis unduh
-    XLSX.writeFile(wb, "DataSiswa.xlsx");
+    // Generate file Excel dengan nama file yang mencantumkan tahun yang dipilih
+    const fileName = selectedTahun ? `DataSiswa_${selectedTahun}.xlsx` : `DataSiswa.xlsx`;
+    XLSX.writeFile(wb, fileName);
   };
 
   const handlePrintAll = () => {

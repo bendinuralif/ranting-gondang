@@ -3,7 +3,7 @@ import LayoutAdmin from "../LayoutAdmin";
 import { collection, addDoc, getFirestore, deleteDoc, doc, writeBatch, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt, faPrint, faPlus, faFileExcel } from '@fortawesome/free-solid-svg-icons'; // Tambahkan faFileExcel
+import { faEdit, faTrashAlt, faPrint, faPlus, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { useDebounce } from "use-debounce";
 import * as XLSX from "xlsx"; // Import library xlsx
 
@@ -334,8 +334,11 @@ function DetailWarga() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "DataWarga");
 
+    // Menentukan nama file berdasarkan tahun yang dipilih
+    const fileName = selectedTahun ? `DataWarga_${selectedTahun}.xlsx` : "DataWarga.xlsx";
+
     // Generate file Excel dan otomatis unduh
-    XLSX.writeFile(wb, "DataWarga.xlsx");
+    XLSX.writeFile(wb, fileName);
   };
 
   const handlePrintAll = () => {
