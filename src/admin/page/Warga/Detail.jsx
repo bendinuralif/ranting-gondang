@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import LayoutAdmin from "../LayoutAdmin";
 import { collection, addDoc, getFirestore, deleteDoc, doc, writeBatch, getDocs, updateDoc } from "firebase/firestore";
 import app from "../../../lib/firebase/init";
@@ -7,7 +7,7 @@ import { faEdit, faTrashAlt, faPrint, faPlus, faFileExcel } from '@fortawesome/f
 import { useDebounce } from "use-debounce";
 import * as XLSX from "xlsx"; // Import library xlsx
 
-function DetailWarga() {
+const DetailWarga = () => {
   const [data, setData] = useState([]);
   const [file, setFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
@@ -27,16 +27,22 @@ function DetailWarga() {
   const [selectedItem, setSelectedItem] = useState({
     nama: "",
     no: "",
+    noCabang: "017", // Diisi otomatis dengan noCabang "017"
+    noInduk: "", // Akan diisi otomatis dengan format 6 digit
     jeniskelamin: "",
     alamat: "",
-    tahun: ""
+    tahun: "",
+    niw: ""
   });
   const [newItem, setNewItem] = useState({
     nama: "",
     no: "",
+    noCabang: "017", // Diisi otomatis dengan noCabang "017"
+    noInduk: "", // Akan diisi otomatis dengan format 6 digit
     jeniskelamin: "",
     alamat: "",
-    tahun: ""
+    tahun: "",
+    niw: ""
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -61,36 +67,27 @@ function DetailWarga() {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (selectedTahun) {
-      fetchData();
-    }
-  }, [selectedTahun]);
-
-  useEffect(() => {
-    const totalPagesCount = Math.ceil(data.length / rowsPerPage);
-    setTotalPages(totalPagesCount);
-  }, [data, rowsPerPage]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     const db = getFirestore(app);
     try {
       const snapshot = await getDocs(collection(db, "Warga"));
+
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        tahun: parseInt(doc.data().tahun, 10), // Ensure the year is an integer
+      }));
+
       const availableYears = Array.from(
-        new Set(snapshot.docs.map((doc) => doc.data().tahun))
+        new Set(data.map((doc) => doc.tahun))
       ).sort((a, b) => b - a);
       setTahunOptions(availableYears);
 
-      if (!selectedTahun && availableYears.length > 0) {
-        setSelectedTahun(availableYears[0]);
-      }
-
       const filteredData = selectedTahun
-        ? snapshot.docs.filter((doc) => doc.data().tahun === selectedTahun)
-        : snapshot.docs;
+        ? data.filter((item) => item.tahun === selectedTahun)
+        : data;
 
-      const data = filteredData.map((doc) => ({ id: doc.id, ...doc.data() }));
-      const filteredAndSortedData = data.filter(
+      const filteredAndSortedData = filteredData.filter(
         (item) => typeof item.no === "string" || typeof item.no === "number"
       ).sort((a, b) => {
         if (typeof a.no === "string" && typeof b.no === "string") {
@@ -104,6 +101,61 @@ function DetailWarga() {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  }, [selectedTahun]);
+
+  useEffect(() => {
+    if (selectedTahun) {
+      fetchData();
+    }
+  }, [selectedTahun, fetchData]);
+
+  useEffect(() => {
+    const totalPagesCount = Math.ceil(data.length / rowsPerPage);
+    setTotalPages(totalPagesCount);
+  }, [data, rowsPerPage]);
+
+  // Function to get the next available number for the selected year
+  const getNextNoForYear = async (selectedYear) => {
+    const db = getFirestore(app);
+
+    // Fetch all data for the selected year
+    const snapshot = await getDocs(collection(db, "Warga"));
+    const dataForYear = snapshot.docs
+      .map((doc) => doc.data())
+      .filter((item) => item.tahun === selectedYear);
+
+    if (dataForYear.length === 0) {
+      // Jika belum ada data di tahun tersebut, mulai dari nomor 1
+      return 1;
+    }
+
+    // Temukan nomor terbesar dan tambahkan 1
+    const maxNo = Math.max(...dataForYear.map((item) => parseInt(item.no, 10)));
+    return maxNo + 1;
+  };
+
+  const generateUniqueNIW = async (tahun, noCabang, no) => {
+    const db = getFirestore(app);
+    let niw = `${tahun.toString().slice(-2)}${String(noCabang).padStart(3, '0')}${String(no).padStart(6, '0')}`;
+    let isUnique = false;
+    let counter = 1;
+
+    while (!isUnique) {
+      // Cek apakah ada data dengan NIW yang sama
+      const snapshot = await getDocs(collection(db, "Warga"));
+      const existingData = snapshot.docs.find(doc => doc.data().niw === niw);
+
+      if (existingData) {
+        // Jika NIW sudah ada, tambahkan counter untuk membuatnya unik
+        niw = `${tahun.toString().slice(-2)}${String(noCabang).padStart(3, '0')}${String(no).padStart(6, '0')}${counter}`;
+        counter += 1;
+      } else {
+        // Jika NIW tidak ada, maka NIW ini unik
+        isUnique = true;
+      }
+    }
+
+    return niw;
   };
 
   const handleFileChange = (e) => {
@@ -160,7 +212,7 @@ function DetailWarga() {
   };
 
   const handleChangeTahun = (e) => {
-    const selectedYear = parseInt(e.target.value);
+    const selectedYear = parseInt(e.target.value, 10);
     setSelectedTahun(selectedYear);
   };
 
@@ -175,8 +227,18 @@ function DetailWarga() {
     });
   };
 
-  const handleEdit = (item) => {
-    setSelectedItem(item);
+  const handleEdit = async (item) => {
+    let niw = item.niw;
+    if (!niw || niw.trim() === "") {
+      niw = await generateUniqueNIW(item.tahun, item.noCabang, item.no);
+    }
+
+    setSelectedItem({
+      ...item,
+      noCabang: "017", // Diisi otomatis dengan noCabang
+      noInduk: String(item.no).padStart(6, '0'),  // noInduk diisi otomatis dari no dengan format 6 digit
+      niw // Set correct NIW
+    });
     setEditModalOpen(true);
   };
 
@@ -193,9 +255,9 @@ function DetailWarga() {
       console.log("Item deleted successfully!");
       fetchData();
       setSelectedItemToDelete(null);
-      setLoading(false);
     } catch (error) {
       console.error("Error deleting item:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -220,12 +282,11 @@ function DetailWarga() {
       fetchData();
       setCheckedItems({});
       setShowDeleteSelectedButton(false);
-      toggleConfirmDeleteModal();
-      setConfirmDeleteModalOpen(false);
-      setLoading(false);
     } catch (error) {
       console.error("Error deleting selected items:", error);
+    } finally {
       setLoading(false);
+      toggleConfirmDeleteModal();
     }
   };
 
@@ -260,9 +321,9 @@ function DetailWarga() {
       fetchData();
       setCheckedItems({});
       setShowDeleteSelectedButton(false);
-      setLoading(false);
     } catch (error) {
       console.error("Error deleting selected items:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -272,21 +333,29 @@ function DetailWarga() {
     try {
       setLoading(true);
       const db = getFirestore(app);
+
+      // Generate NIW yang unik
+      const niw = await generateUniqueNIW(selectedItem.tahun, selectedItem.noCabang, selectedItem.no);
+
       const itemId = selectedItem.id;
       const itemRef = doc(db, "Warga", itemId);
+
       await updateDoc(itemRef, {
         nama: selectedItem.nama,
         no: selectedItem.no,
+        noCabang: "017", 
+        noInduk: String(selectedItem.no).padStart(6, '0'),
         jeniskelamin: selectedItem.jeniskelamin,
         alamat: selectedItem.alamat,
         tahun: selectedItem.tahun,
+        niw: niw
       });
       console.log("Item updated successfully!");
       setEditModalOpen(false);
       fetchData();
-      setLoading(false);
     } catch (error) {
       console.error("Error updating item:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -296,13 +365,31 @@ function DetailWarga() {
     try {
       setLoading(true);
       const db = getFirestore(app);
-      await addDoc(collection(db, "Warga"), newItem);
+
+      // Dapatkan nomor berikutnya untuk tahun yang dipilih
+      const nextNo = await getNextNoForYear(newItem.tahun);
+    
+      // Set nilai nomor dan noInduk otomatis
+      const no = nextNo.toString();
+      const noInduk = no.padStart(6, '0');
+
+      // Generate NIW yang unik
+      const niw = await generateUniqueNIW(newItem.tahun, newItem.noCabang, no);
+
+      // Tambahkan item baru ke database
+      await addDoc(collection(db, "Warga"), {
+        ...newItem,
+        no: no,  // Assign nomor otomatis
+        noInduk: noInduk, // Assign noInduk
+        niw: niw,
+      });
+
       console.log("New item added successfully!");
       setAddModalOpen(false);
-      fetchData();
-      setLoading(false);
+      fetchData(); // Reload data
     } catch (error) {
       console.error("Error adding new item:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -312,7 +399,8 @@ function DetailWarga() {
       item.nama.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
       item.jeniskelamin.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
       item.alamat.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
-      item.tahun.toString().includes(debouncedSearchQuery.toLowerCase())
+      item.tahun.toString().includes(debouncedSearchQuery.toLowerCase()) ||
+      item.niw.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) // Tambahkan filter untuk niw
     );
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -325,6 +413,7 @@ function DetailWarga() {
       id: item.id,
       no: item.no,
       nama: item.nama,
+      niw: item.niw, // Tambahkan niw ke ekspor Excel
       "jenis kelamin": item.jeniskelamin,
       alamat: item.alamat,
       tahun: item.tahun,
@@ -334,10 +423,8 @@ function DetailWarga() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "DataWarga");
 
-    // Menentukan nama file berdasarkan tahun yang dipilih
     const fileName = selectedTahun ? `DataWarga_${selectedTahun}.xlsx` : "DataWarga.xlsx";
 
-    // Generate file Excel dan otomatis unduh
     XLSX.writeFile(wb, fileName);
   };
 
@@ -349,6 +436,7 @@ function DetailWarga() {
           <tr>
             <th>No</th>
             <th>Nama</th>
+            <th>NIW</th>
             <th>Jenis Kelamin</th>
             <th>Alamat</th>
             <th>Tahun</th>
@@ -362,6 +450,7 @@ function DetailWarga() {
         <tr>
           <td>${index + 1}</td>
           <td>${item.nama}</td>
+          <td>${item.niw}</td>
           <td>${item.jeniskelamin}</td>
           <td>${item.alamat}</td>
           <td>${item.tahun}</td>
@@ -444,6 +533,7 @@ function DetailWarga() {
               <tr>
                 <th className="p-3 text-center">No.</th>
                 <th className="p-3">Nama</th>
+                <th className="p-3">NIW</th> {/* Tambahkan header NIW */}
                 <th className="p-3">Jenis Kelamin</th>
                 <th className="p-3">Alamat</th>
                 <th className="p-3">Tahun</th>
@@ -463,39 +553,48 @@ function DetailWarga() {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="bg-white border-b hover:bg-gray-50"
-                >
-                  <td className="p-3 text-center">{index + 1}</td>
-                  <td className="p-3">{item.nama}</td>
-                  <td className="p-3">{item.jeniskelamin}</td>
-                  <td className="p-3">{item.alamat}</td>
-                  <td className="p-3">{item.tahun}</td>
-                  <td className="p-3 text-center">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
-                  </td>
-                  <td className="p-3 text-center">
-                    <input
-                      type="checkbox"
-                      checked={checkedItems[item.id] || false}
-                      onChange={() => handleCheckboxChange(item.id)}
-                    />
+              {paginatedData.length > 0 ? (
+                paginatedData.map((item, index) => (
+                  <tr
+                    key={item.id}
+                    className="bg-white border-b hover:bg-gray-50"
+                  >
+                    <td className="p-3 text-center">{index + 1}</td>
+                    <td className="p-3">{item.nama}</td>
+                    <td className="p-3">{item.niw}</td> {/* Tampilkan nilai NIW */}
+                    <td className="p-3">{item.jeniskelamin}</td>
+                    <td className="p-3">{item.alamat}</td>
+                    <td className="p-3">{item.tahun}</td>
+                    <td className="p-3 text-center">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item)}
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </button>
+                    </td>
+                    <td className="p-3 text-center">
+                      <input
+                        type="checkbox"
+                        checked={checkedItems[item.id] || false}
+                        onChange={() => handleCheckboxChange(item.id)}
+                      />
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="p-3 text-center">
+                    Data tidak ditemukan
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
           <div className="flex justify-between items-center mt-4">
@@ -564,8 +663,34 @@ function DetailWarga() {
                     id="no"
                     value={selectedItem.no}
                     onChange={(e) =>
-                      setSelectedItem({ ...selectedItem, no: e.target.value })
-                    }
+                      setSelectedItem({ ...selectedItem, no: e.target.value, noInduk: String(e.target.value).padStart(6, '0') })
+                    } // Update noInduk saat no berubah
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="noCabang" className="block text-sm font-medium text-gray-700">
+                    No Cabang:
+                  </label>
+                  <input
+                    type="text"
+                    id="noCabang"
+                    value={selectedItem.noCabang}
+                    readOnly // Diisi otomatis, tidak bisa diubah
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="noInduk" className="block text-sm font-medium text-gray-700">
+                    No Induk:
+                  </label>
+                  <input
+                    type="text"
+                    id="noInduk"
+                    value={selectedItem.noInduk}
+                    readOnly // Diisi otomatis, tidak bisa diubah
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
                   />
@@ -586,6 +711,7 @@ function DetailWarga() {
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
                   >
+                   <option value="" disabled>Silahkan dipilih</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
                   </select>
@@ -618,6 +744,18 @@ function DetailWarga() {
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="niw" className="block text-sm font-medium text-gray-700">
+                    NIW:
+                  </label>
+                  <input
+                    type="text"
+                    id="niw"
+                    value={`${selectedItem.tahun.toString().slice(-2)}${String(selectedItem.noCabang).padStart(3, '0')}${String(selectedItem.noInduk).padStart(6, '0')}`}
+                    readOnly
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
                 </div>
                 <div className="flex justify-end">
@@ -669,8 +807,34 @@ function DetailWarga() {
                     id="no"
                     value={newItem.no}
                     onChange={(e) =>
-                      setNewItem({ ...newItem, no: e.target.value })
-                    }
+                      setNewItem({ ...newItem, no: e.target.value, noInduk: String(e.target.value).padStart(6, '0') })
+                    } // Update noInduk saat no berubah
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="noCabang" className="block text-sm font-medium text-gray-700">
+                    No Cabang:
+                  </label>
+                  <input
+                    type="text"
+                    id="noCabang"
+                    value={newItem.noCabang}
+                    readOnly // Diisi otomatis, tidak bisa diubah
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="noInduk" className="block text-sm font-medium text-gray-700">
+                    No Induk:
+                  </label>
+                  <input
+                    type="text"
+                    id="noInduk"
+                    value={newItem.noInduk}
+                    readOnly // Diisi otomatis, tidak bisa diubah
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
                   />
@@ -691,6 +855,7 @@ function DetailWarga() {
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
                   >
+                    <option value="" disabled>Silahkan dipilih</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
                   </select>
@@ -723,6 +888,18 @@ function DetailWarga() {
                     }
                     className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="niw" className="block text-sm font-medium text-gray-700">
+                    NIW:
+                  </label>
+                  <input
+                    type="text"
+                    id="niw"
+                    value={`${newItem.tahun.toString().slice(-2)}${String(newItem.noCabang).padStart(3, '0')}${String(newItem.noInduk).padStart(6, '0')}`}
+                    readOnly
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   />
                 </div>
                 <div className="flex justify-end">
@@ -817,6 +994,6 @@ function DetailWarga() {
       </div>
     </LayoutAdmin>
   );
-}
+};
 
 export default DetailWarga;
