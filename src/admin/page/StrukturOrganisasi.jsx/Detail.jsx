@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import LayoutAdmin from "../LayoutAdmin";
-import { collection, addDoc, getFirestore, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getFirestore,
+  deleteDoc,
+  doc,
+  updateDoc,
+  getDocs,
+} from "firebase/firestore";
 import app from "../../../lib/firebase/init";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -14,31 +22,19 @@ function DetailStrukturOrganisasi() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
-  const [selectedItem, setSelectedItem] = useState({
-    no: "",
-    nama: "",
-    jabatan: "",
-  });
-  const [newItem, setNewItem] = useState({
-    no: "",
-    nama: "",
-    jabatan: "",
-  });
+  const [selectedItem, setSelectedItem] = useState({ no: "", nama: "", jabatan: "" });
+  const [newItem, setNewItem] = useState({ no: "", nama: "", jabatan: "" });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [session, setSession] = useState(null);
 
   useEffect(() => {
     const checkSession = () => {
       const userSession = sessionStorage.getItem("user");
-      if (userSession) {
-        setSession(userSession);
-      } else {
-        window.location.href = "/login";
-      }
+      if (userSession) setSession(userSession);
+      else window.location.href = "/login";
     };
 
     checkSession();
@@ -46,8 +42,7 @@ function DetailStrukturOrganisasi() {
   }, []);
 
   useEffect(() => {
-    const totalPagesCount = Math.ceil(data.length / rowsPerPage);
-    setTotalPages(totalPagesCount);
+    setTotalPages(Math.ceil(data.length / rowsPerPage));
   }, [data, rowsPerPage]);
 
   useEffect(() => {
@@ -84,24 +79,21 @@ function DetailStrukturOrganisasi() {
     }
   };
 
-  const handleNextPage = () => setCurrentPage((prevPage) => prevPage + 1);
-  const handlePrevPage = () => setCurrentPage((prevPage) => prevPage - 1);
+  const handleNextPage = () => setCurrentPage(prev => prev + 1);
+  const handlePrevPage = () => setCurrentPage(prev => prev - 1);
 
   const handleEdit = (item) => {
     setSelectedItem(item);
     setEditModalOpen(true);
   };
 
-  const handleDelete = (item) => {
-    setSelectedItemToDelete(item);
-  };
+  const handleDelete = (item) => setSelectedItemToDelete(item);
 
   const confirmDelete = async () => {
     setLoading(true);
     try {
       const db = getFirestore(app);
       await deleteDoc(doc(db, "StrukturOrganisasi", selectedItemToDelete.id));
-      console.log("Item deleted successfully!");
       fetchData();
       setSelectedItemToDelete(null);
     } catch (error) {
@@ -119,14 +111,8 @@ function DetailStrukturOrganisasi() {
     try {
       const db = getFirestore(app);
       const { no, nama, jabatan } = selectedItem;
-      const itemId = selectedItem.id;
-      const itemRef = doc(db, "StrukturOrganisasi", itemId);
-      await updateDoc(itemRef, {
-        no,
-        nama,
-        jabatan,
-      });
-      console.log("Item updated successfully!");
+      const itemRef = doc(db, "StrukturOrganisasi", selectedItem.id);
+      await updateDoc(itemRef, { no, nama, jabatan });
       setEditModalOpen(false);
       fetchData();
     } catch (error) {
@@ -144,13 +130,8 @@ function DetailStrukturOrganisasi() {
     try {
       const db = getFirestore(app);
       await addDoc(collection(db, "StrukturOrganisasi"), newItem);
-      console.log("Item added successfully!");
       setAddModalOpen(false);
-      setNewItem({
-        no: "",
-        nama: "",
-        jabatan: "",
-      });
+      setNewItem({ no: "", nama: "", jabatan: "" });
       fetchData();
     } catch (error) {
       console.error("Error adding item:", error);
