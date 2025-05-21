@@ -100,7 +100,6 @@ function SejarahSingkat() {
               <br />
               <br />
               Pada tahun 1983, latihan pertama dilakukan di tunggul yang didirikan oleh Mas Kamto lalun di lanjutkan oleh kangmas karmo dan mas kusno, namun berhenti setelah 6 bulan karena masalah perizinan. Kemudian, Kangmas Karmo membuka latihan resmi di SD N 3 Gondang dengan bantuan Kang Mas Priyanto dan warga dari Mantingan (Mas Marjuki, Mas Siswo). Jumlah siswa PSHT Ranting Gondang pada saat itu sekitar 150 orang yang latihannya dilakukan sore dan malam.
-              kejuaraan.
               <br />
               <br />
               Pada tahun 1985, PSHT Ranting Gondang mengikuti pengesahan pertama di Stadion Wilis Madiun, dihadiri oleh peserta dari seluruh Indonesia. Sejumlah 5 warga baru dari PSHT Ranting Gondang disahkan, termasuk Mas Purwanto, dengan total anggota dari Cabang Sragen sebanyak 27 orang. Tahun berikutnya, yakni 1986, sebanyak 8 warga baru disahkan, termasuk Mas Tri Bintoro Gatot, dan mereka membuka latihan di tempat tinggal masing-masing, seperti Mas Sugino di Kaliwedi, Mas Trimo di Tegalrejo, Mas Sutarno dan Mas Joko di Jetis, dan Mas Anus di Tawang. Semenjak itu latihan di PSHT Ranting gondang mulai banyak.
